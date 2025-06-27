@@ -1,77 +1,25 @@
-import React, { createContext, useState, useEffect } from "react";
-import authService from "../services/authService";
+import React, {createContext, useEffect, useState} from 'react';
+import apiClient from '../services/apiClient';
+import authService from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
-export const AuthContext = createContext({});
-
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+export const AuthContext = createContext();
+export function AuthProvider({children}) {
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    console.log("AuthContext: Checking for existing token:", token ? "Found" : "Not found");
-    
-    if (token) {
-      authService
-        .getCurrentUser()
-        .then(userData => {
-          console.log("AuthContext: User data loaded:", userData);
-          setUser(userData);
-        })
-        .catch((error) => {
-          console.error("AuthContext: Failed to load user:", error);
-          localStorage.removeItem("token");
-        })
-        .finally(() => setLoading(false));
+  const navigate = useNavigate();
+  useEffect(()=>{
+    if(token){
+      localStorage.setItem('token', token);
+      apiClient.defaults.headers.Authorization = `Bearer ${token}`;
     } else {
-      setLoading(false);
+      localStorage.removeItem('token');
     }
-  }, []);
-
-  const login = async (creds) => {
-    try {
-      console.log("AuthContext: Logging in...");
-      const { access_token } = await authService.login(creds);
-      localStorage.setItem("token", access_token);
-      
-      const userData = await authService.getCurrentUser();
-      console.log("AuthContext: User logged in:", userData);
-      setUser(userData);
-      
-      return userData;
-    } catch (error) {
-      console.error("Login error:", error);
-      throw error;
-    }
-  };
-
-  const signup = async (creds) => {
-    try {
-      console.log('AuthContext: Attempting signup with:', { ...creds, password: '***' });
-      
-      // Just try to create the user
-      const response = await authService.signup(creds);
-      console.log('AuthContext: Signup response:', response);
-      
-      // Don't auto-login for now, just return the response
-      return response;
-      
-    } catch (error) {
-      console.error('AuthContext: Signup error:', error);
-      throw error;
-    }
-  };
-
-  const logout = () => {
-    console.log("AuthContext: Logging out...");
-    localStorage.removeItem("token");
-    setUser(null);
-    window.location.href = "/";
-  };
-
+    setLoading(false);
+  }, [token]);
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{token,setToken,loading}}>
       {children}
     </AuthContext.Provider>
   );
-};
+}

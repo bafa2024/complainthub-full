@@ -1,36 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.routes import webhook, tickets, analytics, auth
-from app.database import engine
-from app.db.base_class import Base
-from app.models import User, Brand, Ticket  # Import all models
-from dotenv import load_dotenv
-load_dotenv()  # reads .env into os.environ
+from app.api.v1.routes.webhook import router as webhook_router
+from app.database import engine, Base
 
-# Create tables on startup
+# Create tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Complaint Hub API v1")
+app = FastAPI(title="ComplaintHub Voicebot Service")
 
-# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-   allow_origins=["https://complaint-hub-beta.onrender.com"],
-    allow_credentials=True,
-    allow_methods=["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+    allow_origins=["*"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
-app.include_router(webhook.router, prefix="/api/v1/webhook", tags=["webhook"])
-app.include_router(tickets.router, prefix="/api/v1/tickets", tags=["tickets"])
-app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
-
-@app.get("/")
-def root():
-    return {"status": "API is running"}
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
+app.include_router(webhook_router, prefix="/api/v1", tags=["webhook"])
