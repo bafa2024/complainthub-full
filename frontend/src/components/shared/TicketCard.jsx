@@ -1,12 +1,35 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-export default function TicketCard({ ticket }) {
+import './TicketCard.css'; // Make sure the CSS is imported
+
+const TicketCard = ({ ticket, linkPrefix = '/tickets' }) => {
+  if (!ticket) {
+    return null;
+  }
+
+  // Correctly constructs the path without the extra backslash
+  const ticketDetailPath = `${linkPrefix}/${ticket.id}`;
+
   return (
-    <div style={{border:'1px solid #ccc',padding:'1rem',marginBottom:'1rem'}}>
-      <Link to={\`/brand/tickets/\${ticket.id}\`}>
-        #{ticket.id}: {ticket.user_name || 'Anonymous'}
-      </Link>
-      <div>Status: {ticket.status}</div>
-    </div>
+    <Link to={ticketDetailPath} className="ticket-card">
+      <div className="ticket-card-header">
+        {/* Correctly accesses the nested owner's name, provides a fallback */}
+        <h3>{ticket.title || 'No Title'}</h3>
+        <span className={`status-badge status-${ticket.status}`}>{ticket.status.replace('_', ' ')}</span>
+      </div>
+      <div className="ticket-card-body">
+        <p>
+          Brand: {ticket.brand?.name || 'N/A'}
+        </p>
+        <p>
+          User: {ticket.owner?.full_name || ticket.owner?.email || 'Anonymous'}
+        </p>
+        <p>
+          Date: {new Date(ticket.created_at).toLocaleDateString()}
+        </p>
+      </div>
+    </Link>
   );
-}
+};
+
+export default TicketCard;

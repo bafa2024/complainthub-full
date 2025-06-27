@@ -1,27 +1,21 @@
-# backend/app/database.py
-
-import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy.engine.url import make_url
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from app.config.settings import settings # Imports the 'settings' instance
+from typing import Generator
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./voicebot.db")
-url = make_url(DATABASE_URL)
+SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
-if url.drivername.startswith("sqlite"):
-    engine = create_engine(
-        DATABASE_URL,
-        connect_args={"check_same_thread": False}
-    )
-else:
-    engine = create_engine(DATABASE_URL)
-
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 Base = declarative_base()
 
-def get_db():
-    db = SessionLocal()
+def get_db() -> Generator:
     try:
+        db = SessionLocal()
         yield db
     finally:
         db.close()

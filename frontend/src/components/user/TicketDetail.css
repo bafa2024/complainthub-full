@@ -1,0 +1,71 @@
+/* frontend/src/components/user/TicketDetail.css */
+
+.ticket-detail-container {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 2rem auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+.ticket-detail-container > a {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.ticket-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 1rem;
+}
+
+.ticket-detail-header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.ticket-info {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 2rem;
+    color: #6c757d;
+}
+
+.ticket-info p {
+    margin: 0;
+}
+
+.ticket-body h3, .ticket-actions h3 {
+    margin-bottom: 1rem;
+}
+
+.ticket-body p.transcript {
+    background-color: #f8f9fa;
+    border-left: 3px solid #007bff;
+    padding: 1rem;
+    border-radius: 4px;
+    font-style: italic;
+    white-space: pre-wrap;
+}
+
+.ticket-actions form {
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket-actions textarea {
+    margin-bottom: 1rem;
+}
+
+.ticket-actions .btn-secondary {
+    margin-top: 1rem;
+    background-color: #6c757d;
+    align-self: flex-start;
+}

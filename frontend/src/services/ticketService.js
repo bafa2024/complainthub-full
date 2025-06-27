@@ -1,61 +1,60 @@
-// src/services/ticketService.js
+// --- MOCKED TICKET SERVICE FOR UI TESTING ---
 
-import apiClient from './apiClient';
+// We are defining a fake list of tickets to return.
+const mockTickets = [
+  {
+    id: 1,
+    title: "Late Delivery for Order #123",
+    status: "new",
+    brand: { name: "E-Commerce Inc." },
+    owner: { full_name: "John Doe" },
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    title: "Product arrived damaged",
+    status: "in-progress",
+    brand: { name: "E-Commerce Inc." },
+    owner: { full_name: "Jane Smith" },
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 3,
+    title: "Cannot reset my password",
+    status: "resolved",
+    brand: { name: "SaaS Platform" },
+    owner: { full_name: "Peter Jones" },
+    created_at: new Date().toISOString(),
+  },
+];
 
-const ticketService = {
-  /**
-   * Fetch a paginated list of tickets for the brand
-   * @param {number} skip  how many to skip (default 0)
-   * @param {number} limit how many to take (default 50)
-   */
-  list: (skip = 0, limit = 50) =>
-    apiClient.get('/tickets/brand', {
-      params: { skip, limit },
-    }),
-
-  /**
-   * Fetch aggregate statistics for brand tickets
-   */
-  stats: () =>
-    apiClient.get('/tickets/brand/stats'),
-
-  /**
-   * Update the status of a ticket
-   * @param {number|string} id     ticket ID
-   * @param {string}        status new status (e.g. "open", "in_progress", "resolved")
-   */
-  updateStatus: (id, status) =>
-    apiClient.put(`/tickets/brand/tickets/${id}/status`, { status }),
-
-  /**
-   * Assign a ticket to a specific brand user
-   * @param {number|string} id         ticket ID
-   * @param {number|string} assigneeId ID of the brand user to assign to
-   */
-  assign: (id, assigneeId) =>
-    apiClient.put(
-      `/tickets/brand/tickets/${id}/assign`,
-      null,
-      { params: { assignee: assigneeId } }
-    ),
-
-  /**
-   * Fetch detailed information for a single ticket
-   * @param {number|string} id ticket ID
-   */
-  getById: id =>
-    apiClient.get(`/tickets/brand/tickets/${id}`),
-
-  /**
-   * Post a brand response to a ticket
-   * @param {number|string} ticketId ID of the ticket
-   * @param {string}        message  response message content
-   */
-  addResponse: (ticketId, message) =>
-    apiClient.post(
-      `/tickets/brand/tickets/${ticketId}/response`,
-      { message }
-    ),
+const getTickets = async () => {
+  console.log("Mocking API call: Returning fake ticket data.");
+  // The function now immediately returns our mock data instead of calling the backend.
+  return Promise.resolve(mockTickets);
 };
 
-export default ticketService;
+const getTicketById = async (ticketId) => {
+    console.log(`Mocking API call for ticket ID: ${ticketId}`);
+    // Find the ticket in our mock list or return the first one as a fallback.
+    const ticket = mockTickets.find(t => t.id === parseInt(ticketId)) || mockTickets[0];
+    return Promise.resolve(ticket);
+};
+
+const createTicket = async (ticketData) => {
+    console.log("Mocking API call: createTicket", ticketData);
+    return Promise.resolve({ ...ticketData, id: Math.floor(Math.random() * 1000) });
+};
+
+const updateTicket = async (ticketId, updateData) => {
+    console.log(`Mocking API call: updateTicket ${ticketId}`, updateData);
+    return Promise.resolve({ id: ticketId, ...updateData });
+};
+
+
+export default {
+  getTickets,
+  getTicketById,
+  createTicket,
+  updateTicket,
+};

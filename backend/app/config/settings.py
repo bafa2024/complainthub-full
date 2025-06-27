@@ -1,15 +1,19 @@
-import os
-from dotenv import load_dotenv
-load_dotenv()
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-class Settings:
-    PROJECT_NAME = "AI Complaint Management"
-    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:postgres@localhost/complaintdb")
-    SECRET_KEY = os.getenv("SECRET_KEY", "changeme")
-    ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-    DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY", "")
-    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "AI Complaint Management"
+    API_V1_STR: str = "/api/v1"
+
+    DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres@localhost/complaintdb"
+
+    SECRET_KEY: str = "a_very_secret_key_that_you_should_change"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
+
+    OPENAI_API_KEY: str = ""
+    DEEPGRAM_API_KEY: str = ""
+    GOOGLE_API_KEY: str = ""
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8')
 
 settings = Settings()

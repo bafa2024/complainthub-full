@@ -1,0 +1,39 @@
+/* Add these styles to the bottom of your existing Admin.css file */
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.admin-form-container {
+    background-color: #f8f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.admin-form-container h3 {
+    margin-top: 0;
+}
+
+.form-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-edit {
+    background: none;
+    border: 1px solid #007bff;
+    color: #007bff;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-edit:hover {
+    background-color: #007bff;
+    color: #fff;
+}

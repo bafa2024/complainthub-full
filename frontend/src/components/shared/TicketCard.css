@@ -1,0 +1,49 @@
+/* frontend/src/components/shared/TicketCard.css */
+.ticket-card {
+    background-color: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-left: 5px solid #007bff;
+    transition: box-shadow 0.2s ease-in-out;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.ticket-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.ticket-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.ticket-card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.ticket-card-body p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.status-badge {
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 10rem;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.status-new { background-color: #17a2b8; border-color: #17a2b8; }
+.status-open { background-color: #007bff; border-color: #007bff; }
+.status-in-progress { background-color: #ffc107; color: #212529; border-color: #ffc107; }
+.status-resolved { background-color: #28a745; border-color: #28a745; }
+.status-closed { background-color: #6c757d; border-color: #6c757d; }

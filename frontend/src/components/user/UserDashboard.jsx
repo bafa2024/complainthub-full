@@ -1,637 +1,161 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import ticketService from '../../services/ticketService';
-import authService from '../../services/authService';
+import LoadingSpinner from '../shared/LoadingSpinner';
+import TicketCard from '../shared/TicketCard';
+import { Modal } from 'bootstrap';
 
-export default function UserDashboard() {
-  const { user } = useContext(AuthContext);
+// SVG Icons for the buttons
+const FormIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
+    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+    <path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+  </svg>
+);
+
+const VoiceIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-telephone-fill" viewBox="0 0 16 16">
+    <path fillRule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.28 1.465l-2.138 2.138a.64.64 0 0 0 .045.901l6.206 6.207a.64.64 0 0 0 .901.045l2.138-2.138c.49-.164 1.042-.048 1.465.28l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
+  </svg>
+);
+
+const ChatIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+    <path d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+  </svg>
+);
+
+
+const UserDashboard = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showVoiceModal, setShowVoiceModal] = useState(false);
-  const [showRatingModal, setShowRatingModal] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [rating, setRating] = useState(0);
-
-  // Debug: Log user data
-  useEffect(() => {
-    console.log('Current user in dashboard:', user);
-  }, [user]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    loadTickets();
+    // This is using the mocked service for now.
+    const fetchTickets = async () => {
+      try {
+        setLoading(true);
+        const userTickets = await ticketService.getTickets();
+        setTickets(userTickets);
+        setError('');
+      } catch (err) {
+        setError('Failed to load tickets. Please try again later.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTickets();
   }, []);
 
-  const loadTickets = async () => {
-    try {
-      const data = await ticketService.listTickets();
-      setTickets(data);
-    } catch (error) {
-      console.error('Failed to load tickets:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleLodgeByVoice = () => {
+    // This function will now open the Bootstrap modal
+    const voiceModal = new Modal(document.getElementById('voiceComplaintModal'));
+    voiceModal.show();
   };
 
-  const handleLogout = () => {
-    authService.logout();
-  };
-
-  // Add to UserDashboard.jsx for actual voice recording
-const startRecording = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
-    const chunks = [];
-    
-    mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-    mediaRecorder.onstop = async () => {
-      const blob = new Blob(chunks, { type: 'audio/webm' });
-      await ticketService.uploadVoiceComplaint(blob, { 
-        brand_id: selectedBrand,
-        channel: 'voice'
-      });
-    };
-    
-    mediaRecorder.start();
-    setMediaRecorder(mediaRecorder);
-  } catch (error) {
-    console.error('Failed to start recording:', error);
-  }
-};
-
-
- // Add WebSocket service
-const websocketService = {
-  connect: (userId) => {
-    const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
-    
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      // Handle real-time updates
-      if (data.type === 'ticket_update') {
-        // Update ticket in UI
+  const getStatusCounts = () => {
+    // This logic is now corrected to handle the 'in-progress' key
+    const counts = { new: 0, 'in-progress': 0, resolved: 0 };
+    tickets.forEach(ticket => {
+      if (ticket.status in counts) {
+        counts[ticket.status]++;
       }
-    };
-    
-    return ws;
-  }
-};
-
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-    if (!isRecording) {
-      // Start recording logic
-      console.log('Starting recording...');
-    } else {
-      // Stop recording logic
-      console.log('Stopping recording...');
-      alert('Recording saved! Your complaint will be processed.');
-      setShowVoiceModal(false);
-    }
+    });
+    return counts;
   };
+  const statusCounts = getStatusCounts();
 
-  const handleRating = (value) => {
-    setRating(value);
-  };
-
-  const submitRating = async () => {
-    if (selectedTicket && rating > 0) {
-      try {
-        await ticketService.rateTicket(selectedTicket.id, rating, '');
-        alert('Thank you for your feedback!');
-        setShowRatingModal(false);
-        setRating(0);
-        loadTickets();
-      } catch (error) {
-        console.error('Failed to submit rating:', error);
-      }
-    }
-  };
-
-  const getStatusBadgeStyle = (status) => {
-    const baseStyle = {
-      display: 'inline-block',
-      padding: '4px 12px',
-      borderRadius: '20px',
-      fontSize: '12px',
-      fontWeight: '600',
-      textTransform: 'uppercase',
-    };
-
-    switch (status) {
-      case 'progress':
-        return { ...baseStyle, background: '#cce5ff', color: '#004085' };
-      case 'resolved':
-        return { ...baseStyle, background: '#d4edda', color: '#155724' };
-      case 'new':
-        return { ...baseStyle, background: '#fff3cd', color: '#856404' };
-      default:
-        return baseStyle;
-    }
-  };
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div style={styles.container}>
-      {/* Header */}
-      <header style={styles.header}>
-        <div style={styles.headerContainer}>
-          <div style={styles.logo}>ComplaintHub</div>
-          <div style={styles.headerNav}>
-            <div style={styles.notificationBell}>
-              🔔 <span style={styles.notificationBadge}>3</span>
-            </div>
-            <div style={styles.userMenu}>
-              <div style={styles.userName}>
-                {user ? `Hello, ${user.name}` : "Loading..."}
-              </div>
-              <button style={styles.btnSecondary}>Settings</button>
-              <button onClick={handleLogout} style={styles.btnPrimary}>Logout</button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main style={styles.mainContent}>
-        <div style={styles.welcomeSection}>
-          <h1>Welcome back, {user?.name || 'User'}!</h1>
-          <p>Track and manage all your complaints in one place</p>
-        </div>
-
-        <div style={styles.actionButtons}>
-          <button 
-            style={styles.btnLarge} 
-            onClick={() => setShowVoiceModal(true)}
-          >
-            📞 New Voice Complaint
+    <div>
+      <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h1 className="mb-0">My Dashboard</h1>
+        <div className="btn-group shadow-sm" role="group" aria-label="Lodge Complaint Actions">
+          <Link to="/new-complaint" className="btn btn-outline-secondary d-flex align-items-center gap-2">
+            <FormIcon />
+            Lodge via Form
+          </Link>
+          <button onClick={handleLodgeByVoice} className="btn btn-outline-secondary d-flex align-items-center gap-2">
+            <VoiceIcon />
+            Lodge via Voice Call
           </button>
-          <button style={styles.btnLarge}>
-            💬 New Chat Complaint
-          </button>
+          <Link to="/chat" className="btn btn-primary d-flex align-items-center gap-2">
+            <ChatIcon />
+            Start a Chat
+          </Link>
         </div>
+      </div>
 
-        {/* Stats Grid */}
-        <div style={styles.statsGrid}>
-          <div style={styles.statCard}>
-            <div style={styles.statValue}>8</div>
-            <div style={styles.statLabel}>Total Complaints</div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statValue}>5</div>
-            <div style={styles.statLabel}>Resolved</div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statValue}>2</div>
-            <div style={styles.statLabel}>In Progress</div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statValue}>1</div>
-            <div style={styles.statLabel}>Pending</div>
-          </div>
-        </div>
+      {error && <div className="alert alert-danger">{error}</div>}
 
-        {/* Recent Activity */}
-        <div style={styles.section}>
-          <div style={styles.sectionHeader}>
-            <h3 style={styles.sectionTitle}>Recent Activity</h3>
-            <a href="/user/tickets" style={styles.btnSecondary}>View All</a>
-          </div>
-
-          {loading ? (
-            <p>Loading tickets...</p>
-          ) : (
-            <table style={styles.dataTable}>
-              <thead>
-                <tr>
-                  <th style={styles.th}>Ticket ID</th>
-                  <th style={styles.th}>Brand</th>
-                  <th style={styles.th}>Issue</th>
-                  <th style={styles.th}>Status</th>
-                  <th style={styles.th}>Date</th>
-                  <th style={styles.th}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tickets.map((ticket) => (
-                  <tr key={ticket.id} style={styles.tr}>
-                    <td style={styles.td}>#{ticket.id}</td>
-                    <td style={styles.td}>{ticket.brand_name || 'Unknown'}</td>
-                    <td style={styles.td}>{ticket.description.substring(0, 50)}...</td>
-                    <td style={styles.td}>
-                      <span style={getStatusBadgeStyle(ticket.status)}>
-                        {ticket.status}
-                      </span>
-                    </td>
-                    <td style={styles.td}>
-                      {new Date(ticket.created_at).toLocaleDateString()}
-                    </td>
-                    <td style={styles.td}>
-                      {ticket.status === 'resolved' ? (
-                        <button 
-                          style={styles.btnPrimary}
-                          onClick={() => {
-                            setSelectedTicket(ticket);
-                            setShowRatingModal(true);
-                          }}
-                        >
-                          Rate
-                        </button>
-                      ) : (
-                        <a href={`/user/ticket/${ticket.id}`} style={styles.btnPrimary}>
-                          View
-                        </a>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </main>
-
-      {/* Voice Modal */}
-      {showVoiceModal && (
-        <div style={styles.modal}>
-          <div style={styles.modalContent}>
-            <div style={styles.modalHeader}>
-              <h3 style={styles.modalTitle}>🎤 Record Your Complaint</h3>
-              <button 
-                style={styles.modalClose}
-                onClick={() => setShowVoiceModal(false)}
-              >
-                ×
-              </button>
+      <div className="row text-center mb-4 g-3">
+        <div className="col-md-4">
+            <div className="card h-100">
+                <div className="card-body">
+                    <h2 className="display-4 fw-bold">{tickets.length}</h2>
+                    <p className="text-muted mb-0">Total Tickets</p>
+                </div>
             </div>
-            
-            <p>Click the button below to start recording your complaint. Speak clearly and include:</p>
-            <ul style={{ margin: '20px 0', paddingLeft: '20px' }}>
-              <li>Brand name</li>
-              <li>Product/Service details</li>
-              <li>Description of the issue</li>
-              <li>What resolution you expect</li>
-            </ul>
-            
-            <button 
-              style={isRecording ? styles.btnRecordActive : styles.btnRecord}
-              onClick={toggleRecording}
-            >
-              {isRecording ? '⏹\nStop Recording' : '🎤\nStart Recording'}
-            </button>
-            
-            <p style={{ textAlign: 'center', color: '#6c757d' }}>
-              Maximum recording time: 3 minutes
-            </p>
-            
-            <div style={styles.tollFreeSection}>
-              <p style={{ textAlign: 'center' }}>Need help? Call our toll-free number:</p>
-              <p style={styles.tollFreeNumber}>1-800-COMPLAIN</p>
+        </div>
+        <div className="col-md-4">
+             <div className="card h-100">
+                <div className="card-body">
+                    {/* Correctly accessing the 'in-progress' count */}
+                    <h2 className="display-4 fw-bold">{statusCounts.new + statusCounts['in-progress']}</h2>
+                    <p className="text-muted mb-0">Active Tickets</p>
+                </div>
             </div>
-          </div>
+        </div>
+        <div className="col-md-4">
+             <div className="card h-100">
+                <div className="card-body">
+                    <h2 className="display-4 fw-bold">{statusCounts.resolved}</h2>
+                    <p className="text-muted mb-0">Resolved Tickets</p>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <h2>My Tickets</h2>
+      {tickets.length > 0 ? (
+        <div className="list-group">
+          {tickets.map((ticket) => (
+            <TicketCard key={ticket.id} ticket={ticket} linkPrefix="/tickets" />
+          ))}
+        </div>
+      ) : (
+        <div className="card card-body text-center">
+          <p className="mb-0">You haven't submitted any tickets yet.</p>
         </div>
       )}
-
-      {/* Rating Modal */}
-      {showRatingModal && (
-        <div style={styles.modal}>
-          <div style={styles.modalContent}>
-            <div style={styles.modalHeader}>
-              <h3 style={styles.modalTitle}>Rate Your Experience</h3>
-              <button 
-                style={styles.modalClose}
-                onClick={() => {
-                  setShowRatingModal(false);
-                  setRating(0);
-                }}
-              >
-                ×
-              </button>
+      
+      {/* Bootstrap Modal for Voice Complaint Info */}
+      <div className="modal fade" id="voiceComplaintModal" tabIndex="-1" aria-labelledby="voiceModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="voiceModalLabel">Lodge a Complaint by Phone</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
-            <p>How satisfied are you with the resolution of your complaint?</p>
-            
-            <div style={styles.starRating}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  onClick={() => handleRating(star)}
-                  style={{
-                    ...styles.star,
-                    color: star <= rating ? '#f39c12' : '#ccc',
-                  }}
-                >
-                  ⭐
-                </span>
-              ))}
+            <div className="modal-body text-center">
+              <p className="lead">To speak with our automated AI assistant, please call our 24/7 toll-free hotline at:</p>
+              <h2 className="my-3">
+                <a href="tel:1-800-555-0199">1-800-555-0199</a>
+              </h2>
+              <small className="text-muted">Standard call rates may apply.</small>
             </div>
-            <p style={{ textAlign: 'center', marginTop: '10px', color: '#6c757d' }}>
-              (Click to rate)
-            </p>
-            
-            <div style={{ marginBottom: '20px' }}>
-              <label style={styles.label}>Tell us more (Optional)</label>
-              <textarea 
-                style={styles.textarea}
-                rows="3"
-                placeholder="Your feedback helps brands improve..."
-              />
-            </div>
-            
-            <div style={{ textAlign: 'right' }}>
-              <button 
-                style={{ ...styles.btnSecondary, marginRight: '10px' }}
-                onClick={() => {
-                  setShowRatingModal(false);
-                  setRating(0);
-                }}
-              >
-                Skip
-              </button>
-              <button 
-                style={styles.btnPrimary}
-                onClick={submitRating}
-              >
-                Submit Rating
-              </button>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
-}
-
-const styles = {
-  container: {
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    background: '#f5f5f5',
-    minHeight: '100vh',
-  },
-  header: {
-    background: 'white',
-    padding: '15px 0',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-    position: 'fixed',
-    width: '100%',
-    top: 0,
-    zIndex: 100,
-  },
-  headerContainer: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '0 20px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  logo: {
-    fontSize: '24px',
-    fontWeight: '700',
-    color: '#3498db',
-  },
-  headerNav: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px',
-  },
-  notificationBell: {
-    position: 'relative',
-    cursor: 'pointer',
-    fontSize: '20px',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: '-5px',
-    right: '-5px',
-    background: '#e74c3c',
-    color: 'white',
-    fontSize: '10px',
-    padding: '2px 6px',
-    borderRadius: '10px',
-  },
-  userMenu: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  userName: {
-    fontWeight: '600',
-    color: '#2c3e50',
-    marginRight: '15px',
-    fontSize: '15px',
-  },
-  mainContent: {
-    marginTop: '80px',
-    padding: '20px',
-    maxWidth: '1200px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  welcomeSection: {
-    marginBottom: '30px',
-  },
-  actionButtons: {
-    display: 'flex',
-    gap: '15px',
-    marginBottom: '30px',
-  },
-  btnLarge: {
-    padding: '12px 24px',
-    fontSize: '16px',
-    background: '#3498db',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontWeight: '600',
-  },
-  statsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '20px',
-    marginBottom: '30px',
-  },
-  statCard: {
-    background: 'white',
-    padding: '25px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-    textAlign: 'center',
-  },
-  statValue: {
-    fontSize: '36px',
-    fontWeight: '700',
-    color: '#2c3e50',
-    marginBottom: '5px',
-  },
-  statLabel: {
-    color: '#7f8c8d',
-    fontSize: '14px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-  },
-  section: {
-    background: 'white',
-    padding: '25px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-    marginBottom: '20px',
-  },
-  sectionHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-  },
-  sectionTitle: {
-    fontSize: '20px',
-    fontWeight: '600',
-    color: '#2c3e50',
-  },
-  dataTable: {
-    width: '100%',
-    borderCollapse: 'collapse',
-  },
-  th: {
-    background: '#f8f9fa',
-    padding: '12px',
-    textAlign: 'left',
-    fontWeight: '600',
-    color: '#495057',
-    borderBottom: '2px solid #dee2e6',
-  },
-  td: {
-    padding: '12px',
-    borderBottom: '1px solid #dee2e6',
-  },
-  tr: {
-    transition: 'background 0.2s',
-  },
-  btnPrimary: {
-    padding: '8px 16px',
-    background: '#3498db',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    textDecoration: 'none',
-    display: 'inline-block',
-  },
-  btnSecondary: {
-    padding: '8px 16px',
-    background: '#95a5a6',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    textDecoration: 'none',
-  },
-  modal: {
-    display: 'flex',
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    background: 'rgba(0,0,0,0.5)',
-    zIndex: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    background: 'white',
-    padding: '30px',
-    borderRadius: '12px',
-    maxWidth: '500px',
-    width: '90%',
-    maxHeight: '90vh',
-    overflowY: 'auto',
-  },
-  modalHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-  },
-  modalTitle: {
-    fontSize: '24px',
-    fontWeight: '600',
-    color: '#2c3e50',
-  },
-  modalClose: {
-    background: 'none',
-    border: 'none',
-    fontSize: '24px',
-    color: '#6c757d',
-    cursor: 'pointer',
-  },
-  btnRecord: {
-    padding: '20px 40px',
-    fontSize: '18px',
-    background: '#e74c3c',
-    color: 'white',
-    border: 'none',
-    borderRadius: '50%',
-    width: '150px',
-    height: '150px',
-    margin: '20px auto',
-    display: 'block',
-    cursor: 'pointer',
-    transition: 'all 0.3s',
-    whiteSpace: 'pre-line',
-    textAlign: 'center',
-  },
-  btnRecordActive: {
-    padding: '20px 40px',
-    fontSize: '18px',
-    background: '#27ae60',
-    color: 'white',
-    border: 'none',
-    borderRadius: '50%',
-    width: '150px',
-    height: '150px',
-    margin: '20px auto',
-    display: 'block',
-    cursor: 'pointer',
-    animation: 'pulse 1.5s infinite',
-    whiteSpace: 'pre-line',
-    textAlign: 'center',
-  },
-  tollFreeSection: {
-    marginTop: '30px',
-    paddingTop: '20px',
-    borderTop: '1px solid #dee2e6',
-  },
-  tollFreeNumber: {
-    textAlign: 'center',
-    fontSize: '24px',
-    fontWeight: '700',
-    color: '#3498db',
-  },
-  starRating: {
-    textAlign: 'center',
-    margin: '30px 0',
-    fontSize: '36px',
-    cursor: 'pointer',
-  },
-  star: {
-    cursor: 'pointer',
-    transition: 'color 0.2s',
-  },
-  label: {
-    display: 'block',
-    marginBottom: '5px',
-    fontWeight: '600',
-  },
-  textarea: {
-    width: '100%',
-    padding: '10px',
-    border: '1px solid #ced4da',
-    borderRadius: '6px',
-  },
 };
+
+export default UserDashboard;
