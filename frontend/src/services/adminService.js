@@ -1,31 +1,23 @@
-// frontend/src/services/adminService.js
-
-import apiClient from './apiClient';
+// Mock admin service for demo
+const mockUsers = [
+  { id: 1, email: "john@example.com", full_name: "John Doe", role: "user", brand_id: null },
+  { id: 2, email: "jane@example.com", full_name: "Jane Smith", role: "user", brand_id: null },
+  { id: 3, email: "brand@ecommerce.com", full_name: "Brand Manager", role: "brand_user", brand_id: 1 },
+  { id: 4, email: "admin@system.com", full_name: "System Admin", role: "admin", brand_id: null },
+];
 
 const getAllUsers = async () => {
-    try {
-        const response = await apiClient.get('/admin/users');
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching users:', error.response?.data);
-        throw error;
-    }
+  await new Promise(resolve => setTimeout(resolve, 300));
+  return mockUsers;
 };
 
 const getAllBrands = async () => {
-    try {
-        const response = await apiClient.get('/admin/brands');
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching brands:', error.response?.data);
-        throw error;
-    }
+  // Reuse from brandService
+  const { default: brandService } = await import('./brandService');
+  return brandService.getBrands();
 };
 
-// We can use the existing brandService for creation
-// and the admin endpoint for updates
-
 export default {
-    getAllUsers,
-    getAllBrands,
+  getAllUsers,
+  getAllBrands,
 };

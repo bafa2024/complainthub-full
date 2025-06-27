@@ -33,21 +33,14 @@ import './App.css';
 
 // A wrapper for routes that require authentication and role checks
 const ProtectedRoute = ({ children, roles }) => {
-  const { isAuthenticated, user, loading } = useAuth();
-
-  if (loading) {
-    // You can return a loading spinner here if you have one
-    return <div>Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
-
+  const { user } = useAuth();
+  
+  // For demo: always allow access
+  // Just log what would happen in production
   if (roles && !roles.includes(user?.role)) {
-    return <Navigate to="/unauthorized" />;
+    console.log(`In production, user role '${user?.role}' would be blocked from accessing routes requiring: ${roles.join(', ')}`);
   }
-
+  
   return children;
 };
 

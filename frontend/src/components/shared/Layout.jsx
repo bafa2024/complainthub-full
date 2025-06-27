@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-// We no longer need the custom Layout.css for the header
-// import './Layout.css'; 
+import RoleSwitcher from './RoleSwitcher';
 
 const Layout = ({ children }) => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -62,6 +61,7 @@ const Layout = ({ children }) => {
       <main className="container mt-4">
         {children}
       </main>
+      <RoleSwitcher />
     </div>
   );
 };
