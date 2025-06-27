@@ -1,0 +1,37 @@
+.voice-recorder-box {
+    border: 1px solid #dee2e6;
+    border-radius: .375rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+.record-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.record-btn.is-recording {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.recording-status {
+    font-weight: bold;
+    color: #dc3545;
+}
