@@ -1,56 +1,45 @@
-// --- MOCKED TICKET SERVICE FOR UI TESTING ---
-
-// We are defining a fake list of tickets to return.
-const mockTickets = [
-  {
-    id: 1,
-    title: "Late Delivery for Order #123",
-    status: "new",
-    brand: { name: "E-Commerce Inc." },
-    owner: { full_name: "John Doe" },
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    title: "Product arrived damaged",
-    status: "in-progress",
-    brand: { name: "E-Commerce Inc." },
-    owner: { full_name: "Jane Smith" },
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 3,
-    title: "Cannot reset my password",
-    status: "resolved",
-    brand: { name: "SaaS Platform" },
-    owner: { full_name: "Peter Jones" },
-    created_at: new Date().toISOString(),
-  },
-];
+import apiClient from './apiClient';
 
 const getTickets = async () => {
-  console.log("Mocking API call: Returning fake ticket data.");
-  // The function now immediately returns our mock data instead of calling the backend.
-  return Promise.resolve(mockTickets);
+  try {
+    const response = await apiClient.get('/tickets/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching tickets:', error);
+    // Return empty array as fallback
+    return [];
+  }
 };
 
 const getTicketById = async (ticketId) => {
-    console.log(`Mocking API call for ticket ID: ${ticketId}`);
-    // Find the ticket in our mock list or return the first one as a fallback.
-    const ticket = mockTickets.find(t => t.id === parseInt(ticketId)) || mockTickets[0];
-    return Promise.resolve(ticket);
+  try {
+    const response = await apiClient.get(`/tickets/${ticketId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching ticket ${ticketId}:`, error);
+    throw error;
+  }
 };
 
 const createTicket = async (ticketData) => {
-    console.log("Mocking API call: createTicket", ticketData);
-    return Promise.resolve({ ...ticketData, id: Math.floor(Math.random() * 1000) });
+  try {
+    const response = await apiClient.post('/tickets/', ticketData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating ticket:', error);
+    throw error;
+  }
 };
 
 const updateTicket = async (ticketId, updateData) => {
-    console.log(`Mocking API call: updateTicket ${ticketId}`, updateData);
-    return Promise.resolve({ id: ticketId, ...updateData });
+  try {
+    const response = await apiClient.patch(`/tickets/${ticketId}`, updateData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating ticket ${ticketId}:`, error);
+    throw error;
+  }
 };
-
 
 export default {
   getTickets,

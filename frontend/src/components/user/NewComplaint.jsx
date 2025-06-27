@@ -17,14 +17,15 @@ const NewComplaint = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // ... (fetchBrands logic remains the same) ...
+    // This uses the mocked service for now
     const fetchBrands = async () => {
         try {
             setLoading(true);
             const brandsData = await brandService.getBrands();
-            setBrands(brandsData);
+            setBrands(brandsData || []); // Ensure brands is always an array
         } catch (err) {
             console.error(err);
+            setError('Could not load brand information.');
         } finally {
             setLoading(false);
         }
@@ -50,7 +51,7 @@ const NewComplaint = () => {
     alert("Complaint submitted successfully (Mocked)!");
     setSubmitting(false);
     navigate('/dashboard');
-    // The real backend logic would be here
+    // The real backend logic would be here in a real scenario
   };
 
   if (loading) return <LoadingSpinner />;
