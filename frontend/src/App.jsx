@@ -1,3 +1,4 @@
+// ==================================================================
 // File: frontend/src/App.jsx
 // Description: This is the main application file. It defines all the
 // page routes and protects them based on user roles.
