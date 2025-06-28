@@ -25,6 +25,7 @@ import AdminSettings from './components/admin/AdminSettings';
 import AdminBillingLogs from './components/admin/AdminBillingLogs';
 import BrandBilling from './components/brand/BrandBilling';
 import TopUpCredit from './components/brand/TopUpCredit';
+import BrandTickets from './components/brand/BrandTickets';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -63,6 +64,7 @@ function App() {
             {/* Brand Portal Routes */}
             <Route path="/brand/dashboard" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandDashboard /></ProtectedRoute>} />
             <Route path="/brand/tickets/:ticketId" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTicketDetail /></ProtectedRoute>} />
+            <Route path="/brand/tickets" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTickets /></ProtectedRoute>} />
             <Route path="/brand/billing" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandBilling /></ProtectedRoute>} />
             <Route path="/brand/topup" element={<ProtectedRoute roles={['brand_user', 'admin']}><TopUpCredit /></ProtectedRoute>} />
       

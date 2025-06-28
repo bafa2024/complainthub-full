@@ -68,6 +68,7 @@ const BrandDashboard = () => {
                   <h2 className="fw-bold mb-0">{statusCounts.new}</h2>
                 </div>
               </div>
+              <Link to="/brand/tickets?status=new" className="btn btn-sm btn-outline-primary w-100 mt-3">View</Link>
             </div>
           </div>
         </div>
@@ -81,6 +82,7 @@ const BrandDashboard = () => {
                   <h2 className="fw-bold mb-0">{statusCounts["in-progress"]}</h2>
                 </div>
               </div>
+              <Link to="/brand/tickets?status=in-progress" className="btn btn-sm btn-outline-primary w-100 mt-3">View</Link>
             </div>
           </div>
         </div>
@@ -94,6 +96,7 @@ const BrandDashboard = () => {
                   <h2 className="fw-bold mb-0">{statusCounts.resolved}</h2>
                 </div>
               </div>
+              <Link to="/brand/tickets?status=resolved" className="btn btn-sm btn-outline-primary w-100 mt-3">View</Link>
             </div>
           </div>
         </div>
