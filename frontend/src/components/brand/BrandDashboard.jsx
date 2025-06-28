@@ -1,8 +1,3 @@
-// ==================================================================
-// File: frontend/src/components/brand/BrandDashboard.jsx
-// Description: The main dashboard for a logged-in brand representative.
-// It displays key stats and a list of recent tickets for the brand.
-// ==================================================================
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ticketService from '../../services/ticketService';
@@ -63,6 +58,7 @@ const BrandDashboard = () => {
       {/* Stats Cards */}
       <div className="row g-4 mb-4">
         <div className="col-lg-3 col-md-6">
+          
           <div className="card stat-card-brand shadow-sm">
             <div className="card-body">
               <div className="d-flex align-items-center">
@@ -102,7 +98,7 @@ const BrandDashboard = () => {
           </div>
         </div>
          <div className="col-lg-3 col-md-6">
-          <div className="card stat-card-brand shadow-sm">
+          <div className="card stat-card-brand shadow-sm h-100">
             <div className="card-body">
               <div className="d-flex align-items-center">
                 <div className="stat-icon credits"><CreditIcon /></div>
@@ -111,6 +107,7 @@ const BrandDashboard = () => {
                   <h2 className="fw-bold mb-0">1,250</h2>
                 </div>
               </div>
+              <Link to="/brand/billing" className="btn btn-sm btn-outline-primary mt-3 w-100">Manage Billing</Link>
             </div>
           </div>
         </div>
