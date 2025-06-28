@@ -1,8 +1,10 @@
+// Create this file at: frontend/src/components/user/LodgeVoicePage.jsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './LodgeVoicePage.css'; // We will create this CSS file next
 
-// SVG Icons
+// SVG Icons for the option cards
 const PhoneIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" className="bi bi-telephone-outbound-fill mb-3" viewBox="0 0 16 16">
     <path fillRule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.28 1.465l-2.138 2.138a.64.64 0 0 0 .045.901l6.206 6.207a.64.64 0 0 0 .901.045l2.138-2.138c.49-.164 1.042-.048 1.465.28l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877zM11 .5a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V1.707l-4.146 4.147a.5.5 0 0 1-.708-.708L9.293 1H6.5a.5.5 0 0 1 0-1z"/>

@@ -1,8 +1,3 @@
-// ==================================================================
-// File: frontend/src/App.jsx
-// Description: This is the main application file. It defines all the
-// page routes and protects them based on user roles.
-// ==================================================================
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -20,7 +15,7 @@ import UserDashboard from './components/user/UserDashboard';
 import TicketDetail from './components/user/TicketDetail';
 import NewComplaint from './components/user/NewComplaint';
 import ChatPage from './components/chat/ChatPage';
-import LodgeVoicePage from './components/user/LodgeVoicePage';
+import LodgeVoicePage from './components/user/LodgeVoicePage'; // Import the new page
 import BrandDashboard from './components/brand/BrandDashboard';
 import BrandTicketDetail from './components/brand/BrandTicketDetail';
 import AdminDashboard from './components/admin/AdminDashboard';
@@ -36,20 +31,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 // A robust wrapper for routes that require authentication
 const ProtectedRoute = ({ children, roles }) => {
   const { isAuthenticated, user, loading } = useAuth();
-
-  if (loading) {
-    return <div>Loading...</div>; // Or a proper loading spinner
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // Safely check the user role
-  if (roles && !roles.includes(user?.role)) {
-    return <Navigate to="/unauthorized" replace />;
-  }
-
+  if (loading) { return <div>Loading...</div>; }
+  if (!isAuthenticated) { return <Navigate to="/login" replace />; }
+  if (roles && !roles.includes(user?.role)) { return <Navigate to="/unauthorized" replace />; }
   return children;
 };
 
