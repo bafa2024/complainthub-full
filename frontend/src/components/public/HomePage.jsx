@@ -130,6 +130,9 @@ const HomePage = () => {
             <Link to="/new-complaint" className="btn btn-primary btn-lg">
               Lodge a Complaint
             </Link>
+            <Link to="/track-complaint" className="btn btn-outline btn-lg">
+              Track Complaint
+            </Link>
             <Link to="/complaints" className="btn btn-outline btn-lg">
               View Public Complaints
             </Link>
@@ -331,6 +334,7 @@ const HomePage = () => {
             <h4>Support</h4>
             <ul>
               <li><Link to="/help">Help Center</Link></li>
+              <li><Link to="/track-complaint">Track Complaint</Link></li>
               <li><Link to="/docs">Documentation</Link></li>
               <li><Link to="/status">System Status</Link></li>
               <li><Link to="/contact">Contact Support</Link></li>

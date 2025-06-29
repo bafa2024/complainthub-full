@@ -116,6 +116,7 @@ const AdminDashboard = () => {
                 <div className="list-group list-group-flush">
                     <Link to="/admin/brands" className="list-group-item list-group-item-action">Manage Brands</Link>
                     <Link to="/admin/users" className="list-group-item list-group-item-action">Manage Users</Link>
+                    <Link to="/admin/reports" className="list-group-item list-group-item-action">System Reports</Link>
                     <Link to="/admin/settings" className="list-group-item list-group-item-action">System Settings</Link>
                     <Link to="/admin/billing" className="list-group-item list-group-item-action">View Billing Logs</Link>
                 </div>

@@ -6,6 +6,7 @@ import Layout from './components/shared/Layout';
 // Import all page components
 import HomePage from './components/public/HomePage';
 import PublicComplaints from './components/public/PublicComplaints';
+import ComplaintTracking from './components/public/ComplaintTracking';
 import UserLogin from './components/auth/UserLogin';
 import UserSignup from './components/auth/UserSignup';
 import BrandLogin from './components/auth/BrandLogin';
@@ -20,7 +21,9 @@ import LodgeVoicePage from './components/user/LodgeVoicePage';
 import BrandDashboard from './components/brand/BrandDashboard';
 import BrandTicketDetail from './components/brand/BrandTicketDetail';
 import BrandBilling from './components/brand/BrandBilling';
-import BrandTeam from './components/brand/BrandTeam'; // Import the new component
+import BrandTeam from './components/brand/BrandTeam';
+import BrandSettings from './components/brand/BrandSettings';
+import BrandAnalytics from './components/brand/BrandAnalytics';
 import TopUpCredit from './components/brand/TopUpCredit';
 import ProceedPayment from './components/brand/ProceedPayment';
 import AdminDashboard from './components/admin/AdminDashboard';
@@ -29,6 +32,7 @@ import AdminUsers from './components/admin/AdminUsers';
 import AdminSettings from './components/admin/AdminSettings';
 import AdminBillingLogs from './components/admin/AdminBillingLogs';
 import ResponsiveTest from './components/shared/ResponsiveTest';
+import AdminReports from './components/admin/AdminReports';
 
 import './App.css';
 import './utils/responsive.css';
@@ -61,6 +65,7 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/complaints" element={<PublicComplaints />} />
+            <Route path="/track-complaint" element={<ComplaintTracking />} />
             <Route path="/login" element={<UserLogin />} />
             <Route path="/signup" element={<UserSignup />} />
             <Route path="/brand/login" element={<BrandLogin />} />
@@ -80,6 +85,8 @@ function App() {
             <Route path="/brand/dashboard" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandDashboard /></ProtectedRoute>} />
             <Route path="/brand/tickets/:ticketId" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTicketDetail /></ProtectedRoute>} />
             <Route path="/brand/billing" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandBilling /></ProtectedRoute>} />
+            <Route path="/brand/settings" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandSettings /></ProtectedRoute>} />
+            <Route path="/brand/analytics" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandAnalytics /></ProtectedRoute>} />
             <Route path="/brand/topup" element={<ProtectedRoute roles={['brand_user', 'admin']}><TopUpCredit /></ProtectedRoute>} />
             <Route path="/brand/proceed-payment" element={<ProtectedRoute roles={['brand_user', 'admin']}><ProceedPayment /></ProtectedRoute>} />
             <Route path="/brand/team" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTeam /></ProtectedRoute>} />
@@ -88,6 +95,7 @@ function App() {
             <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="/admin/brands" element={<ProtectedRoute roles={['admin']}><AdminBrands /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute roles={['admin']}><AdminUsers /></ProtectedRoute>} />
+            <Route path="/admin/reports" element={<ProtectedRoute roles={['admin']}><AdminReports /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute roles={['admin']}><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/billing" element={<ProtectedRoute roles={['admin']}><AdminBillingLogs /></ProtectedRoute>} />
 

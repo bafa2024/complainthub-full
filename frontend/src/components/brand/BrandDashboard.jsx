@@ -150,8 +150,14 @@ const BrandDashboard = () => {
               <h4>Settings & Management</h4>
             </div>
             <div className="list-group list-group-flush">
+              <Link to="/brand/analytics" className="list-group-item list-group-item-action">
+                <span className="sidebar-link-icon me-2" role="img" aria-label="analytics">📊</span> Analytics Dashboard
+              </Link>
               <Link to="/brand/team" className="list-group-item list-group-item-action">
                 <span className="sidebar-link-icon me-2" role="img" aria-label="team">👥</span> Manage Team
+              </Link>
+              <Link to="/brand/settings" className="list-group-item list-group-item-action">
+                <span className="sidebar-link-icon me-2" role="img" aria-label="settings">⚙️</span> Brand Settings
               </Link>
               <Link to="/brand/billing" className="list-group-item list-group-item-action">
                 <span className="sidebar-link-icon me-2" role="img" aria-label="billing">💳</span> Manage Billing
