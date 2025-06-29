@@ -1,6 +1,7 @@
 import apiClient from './apiClient';
 
 const login = async (email, password) => {
+    try {
     const form = new URLSearchParams();
     form.append('username', email);
     form.append('password', password);
@@ -8,22 +9,35 @@ const login = async (email, password) => {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
     return response.data;
+    } catch (error) {
+        console.error('Login failed:', error.message || error);
+        throw error;
+    }
 };
 
 const signup = async (userData) => {
-    // This is the corrected line. We are now calling the '/users/' endpoint.
+    try {
     const response = await apiClient.post('/users/', userData);
     return response.data;
+    } catch (error) {
+        console.error('Signup failed:', error.message || error);
+        throw error;
+    }
 };
 
 const getCurrentUser = async () => {
+    try {
     const response = await apiClient.get('/users/me');
     return response.data;
+    } catch (error) {
+        console.error('Fetching current user failed:', error.message || error);
+        throw error;
+    }
 };
 
 const logout = () => {
-    // This is handled in the AuthContext by removing the token.
-    console.log("Logged out");
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
 };
 
 export default {

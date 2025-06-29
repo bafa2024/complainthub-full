@@ -114,7 +114,7 @@ const UserSignup = () => {
             <form onSubmit={handleSubmit} className="auth-form">
                 <h2>Create Account</h2>
                 <p>Join us to start managing your complaints effectively.</p>
-                
+
                 {error && <div className="error-message">{error}</div>}
                 
                 <div className="form-group">

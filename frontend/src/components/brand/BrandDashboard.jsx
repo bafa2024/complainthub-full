@@ -128,10 +128,10 @@ const BrandDashboard = () => {
                         <td>#{ticket.id}</td>
                         <td>{ticket.title}</td>
                         <td className="hide-mobile">{ticket.owner?.full_name || 'N/A'}</td>
-                        <td><span className="badge badge-primary">{ticket.status}</span></td>
+                        <td><span className={`badge badge-status badge-${ticket.status.replace(/[^a-z]/g, '-')}`}>{ticket.status}</span></td>
                         <td className="hide-mobile">{new Date(ticket.created_at).toLocaleDateString()}</td>
                         <td>
-                          <Link to={`/brand/tickets/${ticket.id}`} className="btn btn-sm btn-outline-primary">
+                          <Link to={`/brand/tickets/${ticket.id}`} className="btn btn-sm btn-primary view-btn">
                             View
                           </Link>
                         </td>
@@ -151,10 +151,10 @@ const BrandDashboard = () => {
             </div>
             <div className="list-group list-group-flush">
               <Link to="/brand/team" className="list-group-item list-group-item-action">
-                Manage Team
+                <span className="sidebar-link-icon me-2" role="img" aria-label="team">👥</span> Manage Team
               </Link>
               <Link to="/brand/billing" className="list-group-item list-group-item-action">
-                Manage Billing
+                <span className="sidebar-link-icon me-2" role="img" aria-label="billing">💳</span> Manage Billing
               </Link>
             </div>
           </div>

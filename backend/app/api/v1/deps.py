@@ -1,5 +1,5 @@
-from typing import Generator
-from fastapi import Depends, HTTPException, status
+from typing import Generator, Optional
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from pydantic import ValidationError
@@ -11,7 +11,8 @@ from app.config.settings import settings # Imports the 'settings' instance
 from app.database import get_db
 
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token",
+    auto_error=False  # Don't raise error if no token provided
 )
 
 def get_current_user(
@@ -31,6 +32,26 @@ def get_current_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+def get_current_user_optional(
+    db: Session = Depends(get_db), 
+    token: Optional[str] = Depends(reusable_oauth2)
+) -> Optional[models.User]:
+    """
+    Optional authentication - returns None if authentication fails instead of raising an exception.
+    Useful for endpoints that should work in mockup/demo mode.
+    """
+    try:
+        if not token:
+            return None
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
+        )
+        token_data = schemas.TokenPayload(**payload)
+        user = crud.get_user(db, user_id=token_data.sub)
+        return user
+    except (jwt.JWTError, ValidationError):
+        return None
 
 def get_current_active_user(
     current_user: models.User = Depends(get_current_user),

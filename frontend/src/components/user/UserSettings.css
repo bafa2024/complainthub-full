@@ -1,0 +1,479 @@
+/* User Settings Styles */
+
+/* Header */
+.settings-header {
+  background: white;
+  padding: 15px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #3498db;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.settings-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  margin-top: 80px;
+}
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+/* Sidebar Navigation */
+.settings-sidebar {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  height: fit-content;
+  position: sticky;
+  top: 120px;
+}
+
+.sidebar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 5px;
+}
+
+.sidebar-link {
+  display: block;
+  width: 100%;
+  padding: 12px 15px;
+  color: #7f8c8d;
+  text-decoration: none;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  transition: all 0.3s;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sidebar-link:hover {
+  background: #f8f9fa;
+  color: #2c3e50;
+}
+
+.sidebar-link.active {
+  background: #3498db;
+  color: white;
+}
+
+/* Settings Content */
+.settings-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.settings-section {
+  display: block;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #2c3e50;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s;
+  background: white;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.form-control-with-btn {
+  display: flex;
+  gap: 10px;
+}
+
+.form-control-with-btn .form-control {
+  flex: 1;
+}
+
+.form-help {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #3498db;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.btn-secondary {
+  background: #95a5a6;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #7f8c8d;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c0392b;
+}
+
+/* Checkboxes and Radio */
+.form-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.form-check input {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.form-check label {
+  cursor: pointer;
+  font-size: 14px;
+  color: #495057;
+  line-height: 1.4;
+}
+
+.form-check-group {
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.form-check-group h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Privacy Settings */
+.privacy-option {
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.privacy-option:hover {
+  border-color: #3498db;
+  background: #f8f9fa;
+}
+
+.privacy-option.selected {
+  border-color: #3498db;
+  background: #e3f2fd;
+}
+
+.privacy-option h5 {
+  margin-bottom: 5px;
+  color: #2c3e50;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.privacy-option p {
+  font-size: 13px;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Security Section */
+.password-strength {
+  margin-top: 10px;
+}
+
+.strength-bar {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.strength-fill {
+  height: 100%;
+  background: #e74c3c;
+  width: 0%;
+  transition: all 0.3s;
+}
+
+.strength-fill.weak {
+  width: 33%;
+  background: #e74c3c;
+}
+
+.strength-fill.medium {
+  width: 66%;
+  background: #f39c12;
+}
+
+.strength-fill.strong {
+  width: 100%;
+  background: #27ae60;
+}
+
+.two-factor-setup {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.session-item {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+.session-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session-details {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.session-status {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.session-status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+/* Alert Messages */
+.alert {
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.alert.show {
+  display: block;
+}
+
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+/* Delete Account Section */
+.danger-zone {
+  border: 2px solid #e74c3c;
+  padding: 20px;
+  border-radius: 6px;
+  margin-top: 30px;
+}
+
+.danger-zone h4 {
+  color: #e74c3c;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.whatsapp-number {
+  font-size: 14px;
+  color: #6c757d;
+  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .settings-sidebar {
+    position: static;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar-nav {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 10px;
+    padding-bottom: 10px;
+  }
+  
+  .sidebar-nav li {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  
+  .sidebar-link {
+    white-space: nowrap;
+    padding: 10px 15px;
+  }
+  
+  .settings-content {
+    padding: 20px;
+  }
+  
+  .form-control-with-btn {
+    flex-direction: column;
+  }
+  
+  .form-control-with-btn .btn {
+    width: 100%;
+  }
+  
+  .header-nav {
+    gap: 10px;
+  }
+  
+  .header-nav .btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-container {
+    padding: 10px;
+  }
+  
+  .settings-content {
+    padding: 15px;
+  }
+  
+  .section-title {
+    font-size: 20px;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .btn + .btn {
+    margin-left: 0;
+  }
+  
+  .header-container {
+    padding: 0 15px;
+  }
+  
+  .logo {
+    font-size: 20px;
+  }
+} 

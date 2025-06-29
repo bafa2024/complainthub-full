@@ -21,11 +21,28 @@
     color: #343a40;
 }
 
+.full-width-row {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    background: inherit;
+    z-index: 1;
+}
+
 .stats-container {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
     margin-bottom: 2rem;
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(-1 * (100vw - 100%) / 2);
+    margin-right: calc(-1 * (100vw - 100%) / 2);
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .stat-card {
@@ -90,11 +107,6 @@
         margin-bottom: 0;
     }
     
-    .stats-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-    }
-    
     .dashboard-actions {
         flex-direction: row;
         gap: 1rem;
@@ -107,11 +119,18 @@
     }
     
     .stats-container {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 2rem;
+        width: 100vw;
+        max-width: none;
+        margin-left: calc(-1 * (100vw - 100%) / 2);
+        margin-right: calc(-1 * (100vw - 100%) / 2);
+        padding-left: 0;
+        padding-right: 0;
     }
     
-    .stat-card h2 {
-        font-size: 2.5rem;
+    .stat-card {
+        padding: 2rem;
     }
 }
 
@@ -121,8 +140,14 @@
     }
     
     .stats-container {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 2.5rem;
+        width: 100vw;
+        max-width: none;
+        margin-left: calc(-1 * (100vw - 100%) / 2);
+        margin-right: calc(-1 * (100vw - 100%) / 2);
+        padding-left: 0;
+        padding-right: 0;
     }
     
     .stat-card {

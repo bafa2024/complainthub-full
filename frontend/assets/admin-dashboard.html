@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - ComplaintHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        /* Admin Header */
+        .admin-header {
+            background: #1a1a2e;
+            color: white;
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-badge {
+            background: #e74c3c;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .admin-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: #16213e;
+            width: 250px;
+            height: calc(100vh - 60px);
+            position: fixed;
+            top: 60px;
+            left: 0;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .menu-item {
+            display: block;
+            padding: 15px 25px;
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 15px;
+        }
+        
+        .menu-item:hover {
+            background: #0f3460;
+            color: white;
+            border-left: 3px solid #3498db;
+        }
+        
+        .menu-item.active {
+            background: #0f3460;
+            color: white;
+            border-left: 3px solid #3498db;
+        }
+        
+        .menu-icon {
+            font-size: 20px;
+            width: 25px;
+        }
+        
+        .menu-section {
+            padding: 10px 25px;
+            color: #7f8c8d;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            margin-top: 60px;
+            padding: 30px;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card.primary {
+            border-left-color: #3498db;
+        }
+        
+        .stat-card.success {
+            border-left-color: #27ae60;
+        }
+        
+        .stat-card.warning {
+            border-left-color: #f39c12;
+        }
+        
+        .stat-card.danger {
+            border-left-color: #e74c3c;
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stat-title {
+            color: #7f8c8d;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-icon {
+            font-size: 28px;
+            opacity: 0.3;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .stat-change {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .positive {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Chart Sections */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        
+        /* System Health */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .health-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .health-status {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .health-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .health-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        /* Data Tables */
+        .table-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 14px;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-suspended {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Action Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        /* Alert Box */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        /* Revenue Box */
+        .revenue-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .revenue-amount {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+        
+        .revenue-period {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        /* System Logs */
+        .log-item {
+            padding: 10px 15px;
+            border-left: 3px solid #e0e0e0;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .log-item.error {
+            border-left-color: #e74c3c;
+        }
+        
+        .log-item.warning {
+            border-left-color: #f39c12;
+        }
+        
+        .log-item.info {
+            border-left-color: #3498db;
+        }
+        
+        .log-time {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .quick-action-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .quick-action-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .quick-action-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .quick-action-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="header-container">
+            <div class="admin-logo">
+                ComplaintHub
+                <span class="admin-badge">ADMIN</span>
+            </div>
+            <div class="admin-nav">
+                <div class="notification-icon">
+                    🔔 <span class="notification-badge">5</span>
+                </div>
+                <div class="admin-user">
+                    <span>Super Admin</span>
+                    <div class="admin-avatar">SA</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <nav class="sidebar-menu">
+            <a href="#" class="menu-item active">
+                <span class="menu-icon">📊</span>
+                Dashboard
+            </a>
+            <a href="admin-brands.html" class="menu-item">
+                <span class="menu-icon">🏢</span>
+                Brands
+            </a>
+            <a href="admin-users.html" class="menu-item">
+                <span class="menu-icon">👥</span>
+                Users
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">📋</span>
+                All Complaints
+            </a>
+            <a href="admin-reports.html" class="menu-item">
+                <span class="menu-icon">📈</span>
+                Reports
+            </a>
+            
+            <div class="menu-section">System</div>
+            <a href="admin-config.html" class="menu-item">
+                <span class="menu-icon">⚙️</span>
+                Configuration
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">🔑</span>
+                API Keys
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">📧</span>
+                Email Templates
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">💾</span>
+                Backup
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">📝</span>
+                Audit Logs
+            </a>
+            
+            <div class="menu-section">Account</div>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">🔐</span>
+                Security
+            </a>
+            <a href="index.html" class="menu-item">
+                <span class="menu-icon">🚪</span>
+                Logout
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">System Overview</h1>
+            <p class="page-subtitle">Monitor and manage the ComplaintHub platform</p>
+        </div>
+
+        <!-- Alert -->
+        <div class="alert alert-warning">
+            <span>⚠️</span>
+            <span>System maintenance scheduled for Sunday, 2:00 AM - 4:00 AM IST. Please notify all brands.</span>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="quick-action-card" onclick="window.location.href='admin-brands.html'">
+                <div class="quick-action-icon">➕</div>
+                <div class="quick-action-title">Add New Brand</div>
+            </div>
+            <div class="quick-action-card" onclick="generateReport()">
+                <div class="quick-action-icon">📊</div>
+                <div class="quick-action-title">Generate Report</div>
+            </div>
+            <div class="quick-action-card" onclick="sendBroadcast()">
+                <div class="quick-action-icon">📢</div>
+                <div class="quick-action-title">Send Broadcast</div>
+            </div>
+            <div class="quick-action-card" onclick="systemBackup()">
+                <div class="quick-action-icon">💾</div>
+                <div class="quick-action-title">System Backup</div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <div class="stat-header">
+                    <div class="stat-title">Active Brands</div>
+                    <div class="stat-icon">🏢</div>
+                </div>
+                <div class="stat-value">127</div>
+                <span class="stat-change positive">+12 this month</span>
+            </div>
+            
+            <div class="stat-card success">
+                <div class="stat-header">
+                    <div class="stat-title">Total Users</div>
+                    <div class="stat-icon">👥</div>
+                </div>
+                <div class="stat-value">24,567</div>
+                <span class="stat-change positive">+1,234 new users</span>
+            </div>
+            
+            <div class="stat-card warning">
+                <div class="stat-header">
+                    <div class="stat-title">Total Complaints</div>
+                    <div class="stat-icon">📋</div>
+                </div>
+                <div class="stat-value">15,234</div>
+                <span class="stat-change positive">+18% growth</span>
+            </div>
+            
+            <div class="stat-card danger">
+                <div class="stat-header">
+                    <div class="stat-title">Resolution Rate</div>
+                    <div class="stat-icon">✅</div>
+                </div>
+                <div class="stat-value">87%</div>
+                <span class="stat-change positive">+5% improvement</span>
+            </div>
+        </div>
+
+        <!-- Chart Grid -->
+        <div class="chart-grid">
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3 class="chart-title">Platform Growth</h3>
+                    <select class="btn btn-sm btn-secondary">
+                        <option>Last 30 Days</option>
+                        <option>Last 90 Days</option>
+                        <option>Last Year</option>
+                    </select>
+                </div>
+                <div class="chart-placeholder">
+                    📈 Line Chart: Users, Brands, and Complaints Growth
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3 class="chart-title">Revenue This Month</h3>
+                </div>
+                <div class="revenue-box">
+                    <div class="revenue-period">December 2024</div>
+                    <div class="revenue-amount">₹45,600</div>
+                    <div>From complaint charges</div>
+                    <div style="margin-top: 20px;">
+                        <span class="stat-change" style="background: rgba(255,255,255,0.2); color: white;">
+                            +25% from last month
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <h3 class="chart-title">System Health</h3>
+                <button class="btn btn-sm btn-primary" onclick="refreshHealth()">Refresh</button>
+            </div>
+            <div class="health-grid">
+                <div class="health-item">
+                    <div class="health-status">✅</div>
+                    <div class="health-label">Bot API</div>
+                    <div class="health-value">99.9% Uptime</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-status">✅</div>
+                    <div class="health-label">Web Portal</div>
+                    <div class="health-value">100% Uptime</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-status">✅</div>
+                    <div class="health-label">Database</div>
+                    <div class="health-value">25% Load</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-status">⚠️</div>
+                    <div class="health-label">AI Services</div>
+                    <div class="health-value">High Latency</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-status">✅</div>
+                    <div class="health-label">Voice API</div>
+                    <div class="health-value">Operational</div>
+                </div>
+                <div class="health-item">
+                    <div class="health-status">✅</div>
+                    <div class="health-label">SMS Gateway</div>
+                    <div class="health-value">98% Success</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Tables -->
+        <div class="table-section">
+            <div class="table-header">
+                <h3 class="chart-title">Recent Brand Registrations</h3>
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search brands...">
+                </div>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Brand Name</th>
+                        <th>Industry</th>
+                        <th>Registration Date</th>
+                        <th>Total Complaints</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>TechVision Pro</strong></td>
+                        <td>Electronics</td>
+                        <td>Dec 15, 2024</td>
+                        <td>0</td>
+                        <td><span class="status-badge status-pending">Pending Verification</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-success">Approve</button>
+                                <button class="btn btn-sm btn-danger">Reject</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>GreenGrocery Express</strong></td>
+                        <td>Retail</td>
+                        <td>Dec 14, 2024</td>
+                        <td>2</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-primary">View</button>
+                                <button class="btn btn-sm btn-secondary">Edit</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>UrbanStyle Fashion</strong></td>
+                        <td>Fashion</td>
+                        <td>Dec 13, 2024</td>
+                        <td>5</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-primary">View</button>
+                                <button class="btn btn-sm btn-secondary">Edit</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- System Logs -->
+        <div class="table-section">
+            <div class="table-header">
+                <h3 class="chart-title">Recent System Events</h3>
+                <button class="btn btn-sm btn-secondary" onclick="viewAllLogs()">View All Logs</button>
+            </div>
+            <div style="max-height: 300px; overflow-y: auto;">
+                <div class="log-item info">
+                    <div><strong>New Brand Registration:</strong> TechVision Pro registered successfully</div>
+                    <div class="log-time">Dec 15, 2024, 3:45 PM</div>
+                </div>
+                <div class="log-item warning">
+                    <div><strong>High API Usage:</strong> OpenAI API usage at 85% of monthly limit</div>
+                    <div class="log-time">Dec 15, 2024, 2:30 PM</div>
+                </div>
+                <div class="log-item error">
+                    <div><strong>Failed Payment:</strong> Brand ID #45 payment failed for credit top-up</div>
+                    <div class="log-time">Dec 15, 2024, 1:15 PM</div>
+                </div>
+                <div class="log-item info">
+                    <div><strong>Backup Completed:</strong> Daily backup completed successfully</div>
+                    <div class="log-time">Dec 15, 2024, 12:00 AM</div>
+                </div>
+                <div class="log-item info">
+                    <div><strong>Email Campaign:</strong> Monthly newsletter sent to 24,567 users</div>
+                    <div class="log-time">Dec 14, 2024, 10:00 AM</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Issues -->
+        <div class="alert alert-info">
+            <span>ℹ️</span>
+            <span><strong>Active Issues:</strong> 3 brands have pending verification • 12 complaints awaiting manual review • 2 payment disputes to resolve</span>
+        </div>
+    </main>
+
+    <script>
+        // Quick Action Functions
+        function generateReport() {
+            if (confirm('Generate monthly system report?')) {
+                alert('Report generation started. You will receive an email when complete.');
+            }
+        }
+
+        function sendBroadcast() {
+            const message = prompt('Enter broadcast message for all brands:');
+            if (message) {
+                alert(`Broadcast sent to 127 brands: "${message}"`);
+            }
+        }
+
+        function systemBackup() {
+            if (confirm('Start system backup? This may take several minutes.')) {
+                alert('Backup process initiated. You will be notified upon completion.');
+            }
+        }
+
+        function refreshHealth() {
+            alert('System health check in progress...');
+            // In production, this would trigger actual health checks
+        }
+
+        function viewAllLogs() {
+            window.location.href = '#audit-logs';
+        }
+
+        // Real-time Updates Simulation
+        function updateStats() {
+            // Simulate real-time stat updates
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(value => {
+                const currentValue = parseInt(value.textContent.replace(/[^0-9]/g, ''));
+                if (!isNaN(currentValue)) {
+                    // Small random change
+                    const change = Math.floor(Math.random() * 5) - 2;
+                    if (change !== 0 && Math.random() > 0.7) {
+                        value.textContent = (currentValue + change).toLocaleString();
+                    }
+                }
+            });
+        }
+
+        // Update notification count
+        function updateNotifications() {
+            const badge = document.querySelector('.notification-badge');
+            const currentCount = parseInt(badge.textContent);
+            if (Math.random() > 0.8) {
+                badge.textContent = currentCount + 1;
+            }
+        }
+
+        // Chart Animation
+        function animateCharts() {
+            const charts = document.querySelectorAll('.chart-placeholder');
+            charts.forEach(chart => {
+                chart.style.opacity = '0.8';
+                setTimeout(() => {
+                    chart.style.opacity = '1';
+                }, 300);
+            });
+        }
+
+        // Initialize Dashboard
+        window.addEventListener('load', () => {
+            // Animate numbers on load
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(value => {
+                const finalValue = value.textContent;
+                const numericValue = parseFloat(finalValue.replace(/[^0-9.-]/g, ''));
+                if (!isNaN(numericValue)) {
+                    value.style.opacity = '0';
+                    value.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        value.style.transition = 'all 0.5s ease-out';
+                        value.style.opacity = '1';
+                        value.style.transform = 'translateY(0)';
+                    }, 100);
+                }
+            });
+
+            // Periodic updates
+            setInterval(updateStats, 5000);
+            setInterval(updateNotifications, 10000);
+            setInterval(animateCharts, 15000);
+        });
+
+        // Handle sidebar active state
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (!this.href.includes('#')) return;
+                e.preventDefault();
+                
+                document.querySelectorAll('.menu-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

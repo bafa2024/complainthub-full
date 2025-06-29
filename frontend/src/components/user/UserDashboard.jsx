@@ -59,7 +59,7 @@ const UserDashboard = () => {
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="stats-grid">
+      <div className="stats-container">
         <div className="stat-card">
           <h2>{tickets.length}</h2>
           <p>Total Tickets</p>

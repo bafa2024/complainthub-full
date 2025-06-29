@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - ComplaintHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #2c3e50;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            margin: 20px;
+        }
+        
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #3498db;
+            text-decoration: none;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h2 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .auth-header p {
+            color: #7f8c8d;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .phone-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .country-code {
+            width: 100px;
+        }
+        
+        .form-help {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .form-checkbox {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .form-checkbox input {
+            margin-top: 3px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .form-checkbox label {
+            font-size: 14px;
+            color: #495057;
+            cursor: pointer;
+        }
+        
+        .form-checkbox a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .form-checkbox a:hover {
+            text-decoration: underline;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-social {
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-social:hover {
+            background: #f8f9fa;
+            border-color: #c6cbd1;
+        }
+        
+        .form-divider {
+            text-align: center;
+            margin: 25px 0;
+            color: #6c757d;
+            position: relative;
+            font-size: 14px;
+        }
+        
+        .form-divider::before,
+        .form-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 42%;
+            height: 1px;
+            background: #dee2e6;
+        }
+        
+        .form-divider::before {
+            left: 0;
+        }
+        
+        .form-divider::after {
+            right: 0;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        .auth-footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .password-requirements {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .password-requirements ul {
+            margin: 5px 0 0 20px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 30px 20px;
+            }
+            
+            .auth-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <a href="index.html" class="back-link">
+                <span>←</span> Back to Home
+            </a>
+            
+            <div class="auth-header">
+                <h2>Create Your Account</h2>
+                <p>Start tracking your complaints</p>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <form id="signupForm">
+                <div class="form-group">
+                    <label class="form-label">Phone Number <span style="color: #e74c3c;">*</span></label>
+                    <div class="phone-input-group">
+                        <select class="form-control country-code" id="countryCode">
+                            <option value="+91">+91 (IN)</option>
+                            <option value="+1">+1 (US)</option>
+                            <option value="+44">+44 (UK)</option>
+                            <option value="+61">+61 (AU)</option>
+                            <option value="+971">+971 (AE)</option>
+                        </select>
+                        <input type="tel" class="form-control" id="phoneNumber" placeholder="98765 43210" required style="flex: 1;">
+                    </div>
+                    <p class="form-help">We'll use this to identify your complaints</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email (Optional)</label>
+                    <input type="email" class="form-control" id="email" placeholder="your.email@example.com">
+                    <p class="form-help">For important updates and notifications</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Create Password <span style="color: #e74c3c;">*</span></label>
+                    <input type="password" class="form-control" id="password" placeholder="Enter a strong password" required>
+                    <div class="password-requirements">
+                        <ul>
+                            <li>At least 8 characters</li>
+                            <li>Include uppercase and lowercase letters</li>
+                            <li>Include at least one number</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Confirm Password <span style="color: #e74c3c;">*</span></label>
+                    <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter password" required>
+                </div>
+                
+                <div class="form-checkbox">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <div class="form-checkbox">
+                    <input type="checkbox" id="whatsapp">
+                    <label for="whatsapp">
+                        Send me updates about my complaints via WhatsApp
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+                
+                <div class="form-divider">OR</div>
+                
+                <button type="button" class="btn btn-social" onclick="otpSignup()">
+                    <span>🔑</span> Continue with Phone OTP
+                </button>
+                
+                <button type="button" class="btn btn-social" onclick="googleSignup()">
+                    <span style="font-weight: bold; color: #4285f4;">G</span> Continue with Google
+                </button>
+                
+                <div class="auth-footer">
+                    Already have an account? <a href="user-login.html">Login</a>
+                </div>
+            </form>
+            
+            <div class="loading" id="loadingDiv">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px;">Creating your account...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Form validation and submission
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const countryCode = document.getElementById('countryCode').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const termsAccepted = document.getElementById('terms').checked;
+            
+            // Reset messages
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            
+            // Validation
+            if (phoneNumber.length < 10) {
+                showError('Please enter a valid phone number');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showError('Password must be at least 8 characters long');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+            
+            if (!termsAccepted) {
+                showError('Please accept the Terms of Service and Privacy Policy');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loadingDiv').style.display = 'block';
+            
+            // Simulate API call (replace with actual Bubble.io integration)
+            setTimeout(() => {
+                // Success - redirect to dashboard
+                window.location.href = 'user-dashboard.html';
+            }, 2000);
+        });
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function otpSignup() {
+            // Redirect to OTP signup page or show OTP modal
+            alert('OTP signup will be implemented in Bubble.io');
+        }
+        
+        function googleSignup() {
+            // Implement Google OAuth
+            alert('Google signup will be implemented in Bubble.io');
+        }
+    </script>
+</body>
+</html>

@@ -12,6 +12,7 @@ import BrandLogin from './components/auth/BrandLogin';
 import AdminLogin from './components/auth/AdminLogin';
 import BrandSignup from './components/auth/BrandSignup';
 import UserDashboard from './components/user/UserDashboard';
+import UserSettings from './components/user/UserSettings';
 import TicketDetail from './components/user/TicketDetail';
 import NewComplaint from './components/user/NewComplaint';
 import ChatPage from './components/chat/ChatPage';
@@ -69,6 +70,7 @@ function App() {
 
             {/* User Portal Routes */}
             <Route path="/dashboard" element={<ProtectedRoute roles={['user']}><UserDashboard /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute roles={['user']}><UserSettings /></ProtectedRoute>} />
             <Route path="/lodge-voice" element={<ProtectedRoute roles={['user']}><LodgeVoicePage /></ProtectedRoute>} />
             <Route path="/new-complaint" element={<ProtectedRoute roles={['user']}><NewComplaint /></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute roles={['user']}><ChatPage /></ProtectedRoute>} />

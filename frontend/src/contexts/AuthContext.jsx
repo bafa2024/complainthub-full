@@ -139,6 +139,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = (updatedUserData) => {
+    setUser(prevUser => ({ ...prevUser, ...updatedUserData }));
+  };
+
   const value = {
     isAuthenticated,
     user,
@@ -150,6 +154,7 @@ export const AuthProvider = ({ children }) => {
     mockupMode,
     switchMockRole,
     toggleMockupMode,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

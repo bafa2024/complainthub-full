@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Complaint - ComplaintHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        /* Main Container */
+        .main-container {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Chat Interface */
+        .chat-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Chat Header */
+        .chat-header {
+            background: #3498db;
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .bot-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .chat-info h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .chat-info p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* Chat Messages */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.user {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .message.bot .message-avatar {
+            background: #3498db;
+            color: white;
+        }
+        
+        .message.user .message-avatar {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .message-content {
+            max-width: 70%;
+        }
+        
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .message.bot .message-bubble {
+            background: white;
+            color: #2c3e50;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message.user .message-bubble {
+            background: #3498db;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            padding: 0 5px;
+        }
+        
+        .message.user .message-time {
+            text-align: right;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #3498db;
+            color: #3498db;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quick-action-btn:hover {
+            background: #3498db;
+            color: white;
+        }
+        
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .typing-indicator.show {
+            display: flex;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 15px;
+            background: white;
+            border-radius: 18px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #7f8c8d;
+            border-radius: 50%;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+        
+        /* Chat Input */
+        .chat-input-container {
+            border-top: 1px solid #e0e0e0;
+            padding: 20px;
+            background: white;
+        }
+        
+        .attachment-preview {
+            display: none;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .attachment-preview.show {
+            display: block;
+        }
+        
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+        
+        .attachment-icon {
+            width: 40px;
+            height: 40px;
+            background: #e3f2fd;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 20px;
+        }
+        
+        .attachment-info {
+            flex: 1;
+        }
+        
+        .attachment-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .attachment-size {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .remove-attachment {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 14px;
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .input-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .input-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: #f8f9fa;
+            color: #7f8c8d;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        .input-btn:hover {
+            background: #e0e0e0;
+            color: #2c3e50;
+        }
+        
+        .send-btn {
+            background: #3498db;
+            color: white;
+        }
+        
+        .send-btn:hover {
+            background: #2980b9;
+        }
+        
+        .send-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        /* File Input */
+        .file-input {
+            display: none;
+        }
+        
+        /* Brand Selection Card */
+        .brand-selection-card {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            margin-top: 10px;
+        }
+        
+        .brand-item {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .brand-item:hover {
+            background: #f8f9fa;
+            border-color: #3498db;
+        }
+        
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        /* Success State */
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .ticket-number {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        /* Loading */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0;
+            }
+            
+            .chat-container {
+                border-radius: 0;
+                height: calc(100vh - 80px);
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+            
+            .quick-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">ComplaintHub</div>
+            <div class="header-nav">
+                <a href="user-dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="index.html" class="btn btn-primary">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <div class="chat-container">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="bot-avatar">🤖</div>
+                <div class="chat-info">
+                    <h2>ComplaintHub Assistant</h2>
+                    <p>I'm here to help you file your complaint</p>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome Message -->
+                <div class="message bot">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            Hello! I'm here to help you file a complaint. Let's start by identifying which brand you'd like to complain about.
+                        </div>
+                        <div class="message-time">2:00 PM</div>
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" onclick="selectPopularBrand('TechGiant')">TechGiant Electronics</button>
+                            <button class="quick-action-btn" onclick="selectPopularBrand('FastFashion')">FastFashion Store</button>
+                            <button class="quick-action-btn" onclick="selectPopularBrand('FoodChain')">FoodChain Restaurant</button>
+                            <button class="quick-action-btn" onclick="searchBrand()">Search Other Brand</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="message-avatar">🤖</div>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <!-- Attachment Preview -->
+                <div class="attachment-preview" id="attachmentPreview">
+                    <div id="attachmentList"></div>
+                </div>
+
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        class="chat-input" 
+                        id="chatInput" 
+                        placeholder="Type your message..." 
+                        rows="1"
+                        onkeypress="handleKeyPress(event)"
+                        oninput="autoResize(this)"></textarea>
+                    
+                    <div class="input-actions">
+                        <input type="file" id="fileInput" class="file-input" multiple accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(event)">
+                        <button class="input-btn" onclick="document.getElementById('fileInput').click()">
+                            📎
+                        </button>
+                        <button class="input-btn send-btn" id="sendBtn" onclick="sendMessage()">
+                            ➤
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentStep = 'brand_selection';
+        let selectedBrand = null;
+        let complaintDetails = {};
+        let attachments = [];
+
+        // Auto-resize textarea
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        // Handle Enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Send Message
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message && attachments.length === 0) return;
+            
+            // Add user message
+            if (message) {
+                addMessage(message, 'user');
+                input.value = '';
+                input.style.height = 'auto';
+            }
+            
+            // Process attachments
+            if (attachments.length > 0) {
+                addAttachmentMessage();
+                clearAttachments();
+            }
+            
+            // Show typing indicator
+            showTyping();
+            
+            // Process message based on current step
+            setTimeout(() => {
+                processUserInput(message);
+            }, 1500);
+        }
+
+        // Add Message to Chat
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const time = new Date().toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                hour12: true 
+            });
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${sender === 'bot' ? '🤖' : '👤'}</div>
+                <div class="message-content">
+                    <div class="message-bubble">${text}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            messagesContainer.insertBefore(messageDiv, document.getElementById('typingIndicator'));
+            scrollToBottom();
+        }
+
+        // Add Message with Quick Actions
+        function addBotMessageWithActions(text, actions) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+            
+            const time = new Date().toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                hour12: true 
+            });
+            
+            let actionsHTML = '';
+            if (actions && actions.length > 0) {
+                actionsHTML = '<div class="quick-actions">';
+                actions.forEach(action => {
+                    actionsHTML += `<button class="quick-action-btn" onclick="${action.onclick}">${action.label}</button>`;
+                });
+                actionsHTML += '</div>';
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <div class="message-bubble">${text}</div>
+                    <div class="message-time">${time}</div>
+                    ${actionsHTML}
+                </div>
+            `;
+            
+            messagesContainer.insertBefore(messageDiv, document.getElementById('typingIndicator'));
+            scrollToBottom();
+        }
+
+        // Show Typing Indicator
+        function showTyping() {
+            document.getElementById('typingIndicator').classList.add('show');
+            scrollToBottom();
+        }
+
+        // Hide Typing Indicator
+        function hideTyping() {
+            document.getElementById('typingIndicator').classList.remove('show');
+        }
+
+        // Scroll to Bottom
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Process User Input
+        function processUserInput(message) {
+            hideTyping();
+            
+            switch(currentStep) {
+                case 'brand_selection':
+                    if (message.toLowerCase().includes('search')) {
+                        showBrandSearch();
+                    } else {
+                        selectedBrand = message;
+                        complaintDetails.brand = message;
+                        currentStep = 'complaint_type';
+                        addBotMessageWithActions(
+                            `I see you want to file a complaint about ${selectedBrand}. What type of issue are you facing?`,
+                            [
+                                { label: 'Product Quality', onclick: `selectComplaintType('Product Quality')` },
+                                { label: 'Delivery Issue', onclick: `selectComplaintType('Delivery Issue')` },
+                                { label: 'Customer Service', onclick: `selectComplaintType('Customer Service')` },
+                                { label: 'Billing/Payment', onclick: `selectComplaintType('Billing/Payment')` },
+                                { label: 'Other', onclick: `selectComplaintType('Other')` }
+                            ]
+                        );
+                    }
+                    break;
+                    
+                case 'complaint_type':
+                    complaintDetails.type = message;
+                    currentStep = 'complaint_details';
+                    addMessage('Please describe your issue in detail. What happened? When did it occur? What resolution are you seeking?', 'bot');
+                    break;
+                    
+                case 'complaint_details':
+                    complaintDetails.description = message;
+                    currentStep = 'order_info';
+                    addBotMessageWithActions(
+                        'Do you have an order number or reference number for this complaint?',
+                        [
+                            { label: 'Yes, I have it', onclick: `requestOrderNumber()` },
+                            { label: 'No order number', onclick: `skipOrderNumber()` }
+                        ]
+                    );
+                    break;
+                    
+                case 'order_number':
+                    complaintDetails.orderNumber = message;
+                    currentStep = 'contact_preference';
+                    addBotMessageWithActions(
+                        'How would you prefer the brand to contact you regarding this complaint?',
+                        [
+                            { label: 'Phone Call', onclick: `setContactPreference('phone')` },
+                            { label: 'Email', onclick: `setContactPreference('email')` },
+                            { label: 'WhatsApp', onclick: `setContactPreference('whatsapp')` },
+                            { label: 'Any Method', onclick: `setContactPreference('any')` }
+                        ]
+                    );
+                    break;
+                    
+                case 'review':
+                    if (message.toLowerCase().includes('yes') || message.toLowerCase().includes('submit')) {
+                        submitComplaint();
+                    } else {
+                        addMessage('What would you like to change?', 'bot');
+                    }
+                    break;
+            }
+        }
+
+        // Brand Selection Functions
+        function selectPopularBrand(brand) {
+            addMessage(brand, 'user');
+            selectedBrand = brand;
+            complaintDetails.brand = brand;
+            currentStep = 'complaint_type';
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addBotMessageWithActions(
+                    `I see you want to file a complaint about ${brand}. What type of issue are you facing?`,
+                    [
+                        { label: 'Product Quality', onclick: `selectComplaintType('Product Quality')` },
+                        { label: 'Delivery Issue', onclick: `selectComplaintType('Delivery Issue')` },
+                        { label: 'Customer Service', onclick: `selectComplaintType('Customer Service')` },
+                        { label: 'Billing/Payment', onclick: `selectComplaintType('Billing/Payment')` },
+                        { label: 'Other', onclick: `selectComplaintType('Other')` }
+                    ]
+                );
+            }, 1000);
+        }
+
+        function searchBrand() {
+            addMessage('Search for brand', 'user');
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addMessage('Please type the name of the brand you want to complain about:', 'bot');
+            }, 1000);
+        }
+
+        function selectComplaintType(type) {
+            addMessage(type, 'user');
+            complaintDetails.type = type;
+            currentStep = 'complaint_details';
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addMessage('Please describe your issue in detail. What happened? When did it occur? What resolution are you seeking?', 'bot');
+            }, 1000);
+        }
+
+        function requestOrderNumber() {
+            addMessage('Yes, I have it', 'user');
+            currentStep = 'order_number';
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addMessage('Please enter your order number or reference number:', 'bot');
+            }, 1000);
+        }
+
+        function skipOrderNumber() {
+            addMessage('No order number', 'user');
+            complaintDetails.orderNumber = 'Not provided';
+            currentStep = 'contact_preference';
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addBotMessageWithActions(
+                    'How would you prefer the brand to contact you regarding this complaint?',
+                    [
+                        { label: 'Phone Call', onclick: `setContactPreference('phone')` },
+                        { label: 'Email', onclick: `setContactPreference('email')` },
+                        { label: 'WhatsApp', onclick: `setContactPreference('whatsapp')` },
+                        { label: 'Any Method', onclick: `setContactPreference('any')` }
+                    ]
+                );
+            }, 1000);
+        }
+
+        function setContactPreference(preference) {
+            addMessage(preference, 'user');
+            complaintDetails.contactPreference = preference;
+            currentStep = 'review';
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                showComplaintSummary();
+            }, 1000);
+        }
+
+        function showComplaintSummary() {
+            const summary = `
+                <strong>Here's a summary of your complaint:</strong><br><br>
+                <strong>Brand:</strong> ${complaintDetails.brand}<br>
+                <strong>Issue Type:</strong> ${complaintDetails.type}<br>
+                <strong>Description:</strong> ${complaintDetails.description}<br>
+                <strong>Order Number:</strong> ${complaintDetails.orderNumber}<br>
+                <strong>Contact Preference:</strong> ${complaintDetails.contactPreference}<br><br>
+                Would you like to submit this complaint?
+            `;
+            
+            addBotMessageWithActions(
+                summary,
+                [
+                    { label: 'Yes, Submit', onclick: `submitComplaint()` },
+                    { label: 'Make Changes', onclick: `makeChanges()` }
+                ]
+            );
+        }
+
+        function submitComplaint() {
+            addMessage('Yes, Submit', 'user');
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                
+                // Success message with ticket number
+                const ticketNumber = 'CMP-2024-' + Math.floor(Math.random() * 9000 + 1000);
+                const successHTML = `
+                    <div class="success-message">
+                        <h3>✅ Complaint Submitted Successfully!</h3>
+                        <div class="ticket-number">${ticketNumber}</div>
+                        <p>Your complaint has been registered and sent to ${complaintDetails.brand}</p>
+                        <p style="margin-top: 10px;">You'll receive updates via SMS and email.</p>
+                    </div>
+                `;
+                
+                addBotMessageWithActions(
+                    'Great! I\'ve successfully submitted your complaint.' + successHTML,
+                    [
+                        { label: 'Track Complaint', onclick: `window.location.href='complaint-tracking.html'` },
+                        { label: 'File Another', onclick: `location.reload()` },
+                        { label: 'Go to Dashboard', onclick: `window.location.href='user-dashboard.html'` }
+                    ]
+                );
+            }, 2000);
+        }
+
+        function makeChanges() {
+            addMessage('Make Changes', 'user');
+            currentStep = 'brand_selection';
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addMessage('Let\'s start over. Which brand would you like to complain about?', 'bot');
+            }, 1000);
+        }
+
+        // File Handling
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const attachmentPreview = document.getElementById('attachmentPreview');
+            const attachmentList = document.getElementById('attachmentList');
+            
+            for (let file of files) {
+                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    alert('File size must be less than 10MB');
+                    continue;
+                }
+                
+                attachments.push(file);
+                
+                const attachmentItem = document.createElement('div');
+                attachmentItem.className = 'attachment-item';
+                attachmentItem.innerHTML = `
+                    <div class="attachment-icon">${getFileIcon(file.type)}</div>
+                    <div class="attachment-info">
+                        <div class="attachment-name">${file.name}</div>
+                        <div class="attachment-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <button class="remove-attachment" onclick="removeAttachment('${file.name}')">&times;</button>
+                `;
+                
+                attachmentList.appendChild(attachmentItem);
+            }
+            
+            if (attachments.length > 0) {
+                attachmentPreview.classList.add('show');
+            }
+            
+            event.target.value = '';
+        }
+
+        function getFileIcon(fileType) {
+            if (fileType.startsWith('image/')) return '🖼️';
+            if (fileType.includes('pdf')) return '📄';
+            if (fileType.includes('doc')) return '📝';
+            return '📎';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function removeAttachment(fileName) {
+            attachments = attachments.filter(file => file.name !== fileName);
+            
+            if (attachments.length === 0) {
+                document.getElementById('attachmentPreview').classList.remove('show');
+                document.getElementById('attachmentList').innerHTML = '';
+            } else {
+                // Refresh attachment list
+                const attachmentList = document.getElementById('attachmentList');
+                attachmentList.innerHTML = '';
+                attachments.forEach(file => {
+                    const attachmentItem = document.createElement('div');
+                    attachmentItem.className = 'attachment-item';
+                    attachmentItem.innerHTML = `
+                        <div class="attachment-icon">${getFileIcon(file.type)}</div>
+                        <div class="attachment-info">
+                            <div class="attachment-name">${file.name}</div>
+                            <div class="attachment-size">${formatFileSize(file.size)}</div>
+                        </div>
+                        <button class="remove-attachment" onclick="removeAttachment('${file.name}')">&times;</button>
+                    `;
+                    attachmentList.appendChild(attachmentItem);
+                });
+            }
+        }
+
+        function addAttachmentMessage() {
+            const fileNames = attachments.map(f => f.name).join(', ');
+            addMessage(`📎 Attached: ${fileNames}`, 'user');
+        }
+
+        function clearAttachments() {
+            attachments = [];
+            document.getElementById('attachmentPreview').classList.remove('show');
+            document.getElementById('attachmentList').innerHTML = '';
+        }
+
+        // Initialize
+        scrollToBottom();
+    </script>
+</body>
+</html>

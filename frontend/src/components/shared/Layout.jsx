@@ -31,6 +31,7 @@ const Layout = ({ children }) => {
                 </a>
                 <ul className="dropdown-menu">
                   <li><Link to="/dashboard" className="dropdown-item">Dashboard</Link></li>
+                  <li><Link to="/settings" className="dropdown-item">Settings</Link></li>
                   <li><Link to="/new-complaint" className="dropdown-item">New Complaint</Link></li>
                   <li><Link to="/lodge-voice" className="dropdown-item">Lodge Voice</Link></li>
                   <li><Link to="/chat" className="dropdown-item">Chat</Link></li>
@@ -64,9 +65,14 @@ const Layout = ({ children }) => {
           {/* Show role-specific links in normal mode */}
           {!mockupMode && (
             <>
-              {user?.role === 'admin' && <li className="nav-item"><Link to="/admin/dashboard" className="nav-link">Admin</Link></li>}
-              {user?.role === 'brand_user' && <li className="nav-item"><Link to="/brand/dashboard" className="nav-link">Brand Dashboard</Link></li>}
-              {user?.role === 'user' && <li className="nav-item"><Link to="/dashboard" className="nav-link">My Dashboard</Link></li>}
+          {user?.role === 'admin' && <li className="nav-item"><Link to="/admin/dashboard" className="nav-link">Admin</Link></li>}
+          {user?.role === 'brand_user' && <li className="nav-item"><Link to="/brand/dashboard" className="nav-link">Brand Dashboard</Link></li>}
+          {user?.role === 'user' && (
+            <>
+              <li className="nav-item"><Link to="/dashboard" className="nav-link">My Dashboard</Link></li>
+              <li className="nav-item"><Link to="/settings" className="nav-link">Settings</Link></li>
+            </>
+          )}
             </>
           )}
           
@@ -88,9 +94,9 @@ const Layout = ({ children }) => {
 
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm navbar-modern">
         <div className="container">
-          <Link to="/" className="navbar-brand">ComplaintHub</Link>
+          <Link to="/" className="navbar-brand"><span className="brand-highlight">ComplaintHub</span></Link>
           <button className="navbar-toggler btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav">
             <span className="navbar-toggler-icon">
               <span></span>

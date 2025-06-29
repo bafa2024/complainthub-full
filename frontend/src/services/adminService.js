@@ -5,7 +5,7 @@ const getAllUsers = async () => {
     const response = await apiClient.get('/users');
     return response.data;
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching users:', error.message || error);
     throw error;
   }
 };
@@ -15,7 +15,7 @@ const getAllBrands = async () => {
     const response = await apiClient.get('/brands');
     return response.data;
   } catch (error) {
-    console.error('Error fetching brands:', error);
+    console.error('Error fetching brands:', error.message || error);
     throw error;
   }
 };
@@ -25,7 +25,7 @@ const getSystemStats = async () => {
     const response = await apiClient.get('/admin/stats');
     return response.data;
   } catch (error) {
-    console.error('Error fetching system stats:', error);
+    console.error('Error fetching system stats:', error.message || error);
     throw error;
   }
 };
@@ -35,7 +35,7 @@ const updateSystemSettings = async (settings) => {
     const response = await apiClient.put('/admin/settings', settings);
     return response.data;
   } catch (error) {
-    console.error('Error updating system settings:', error);
+    console.error('Error updating system settings:', error.message || error);
     throw error;
   }
 };

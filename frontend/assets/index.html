@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComplaintHub - Voice Your Concerns</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3498db;
+            color: #3498db;
+        }
+        
+        .btn-outline:hover {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            padding: 150px 20px 100px;
+            text-align: center;
+            margin-top: 80px;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease-out 0.2s;
+            animation-fill-mode: both;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease-out 0.4s;
+            animation-fill-mode: both;
+        }
+        
+        .hero-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .hero-btn-primary {
+            background: white;
+            color: #3498db;
+        }
+        
+        .hero-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .hero-btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .hero-btn-secondary:hover {
+            background: white;
+            color: #3498db;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .feature-card p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+        
+        /* Complaints Section */
+        .complaints-section {
+            background: white;
+            padding: 80px 20px;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-header h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .section-header p {
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+        
+        .complaints-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .complaint-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            border: 1px solid #e9ecef;
+        }
+        
+        .complaint-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .brand-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .complaint-summary {
+            color: #495057;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .complaint-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        /* Stats Section */
+        .stats {
+            background: #f8f9fa;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .stats-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+        
+        .stat-item h3 {
+            font-size: 36px;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .stat-item p {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .hero-btn {
+                width: 100%;
+            }
+            
+            .complaint-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">ComplaintHub</div>
+            <div class="nav-buttons">
+                <a href="user-login.html" class="btn btn-outline">Login</a>
+                <a href="user-signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Voice Your Concerns</h1>
+        <p>Making Brands Accountable, One Voice at a Time</p>
+        <div class="hero-buttons">
+            <button class="hero-btn hero-btn-primary" onclick="window.location.href='user-signup.html'">Get Started</button>
+            <button class="hero-btn hero-btn-secondary" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">How It Works</button>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📞</div>
+                <h3>Voice Complaints</h3>
+                <p>Call our AI-powered system to voice your complaints in your preferred language. No more typing long emails or filling complex forms.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Multi-Channel Support</h3>
+                <p>Connect via WhatsApp, Telegram, Web Chat, or any platform you prefer. We're available wherever you are comfortable.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Real-Time Tracking</h3>
+                <p>Track your complaint status and get instant updates as brands respond. Never wonder about your complaint status again.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Complaints Section -->
+    <section class="complaints-section">
+        <div class="section-header">
+            <h2>Recent Unresolved Complaints</h2>
+            <p>See how brands are handling customer issues</p>
+        </div>
+        
+        <div class="complaints-container">
+            <div class="complaint-card">
+                <div class="brand-name">🏢 TechGiant Electronics</div>
+                <div class="complaint-summary">
+                    "Purchased a laptop 2 weeks ago and the screen is already showing dead pixels. This is unacceptable for a premium product. I need an immediate replacement or refund."
+                </div>
+                <div class="complaint-meta">
+                    <span>📅 Unresolved for 7 days</span>
+                    <span>👁 1,234 views</span>
+                    <span>📍 Mumbai, India</span>
+                </div>
+            </div>
+            
+            <div class="complaint-card">
+                <div class="brand-name">🏢 FastFashion Store</div>
+                <div class="complaint-summary">
+                    "Ordered 3 items but received completely different products. Customer service is not responding to my emails or calls. Very disappointed with the service."
+                </div>
+                <div class="complaint-meta">
+                    <span>📅 Unresolved for 12 days</span>
+                    <span>👁 2,456 views</span>
+                    <span>📍 Delhi, India</span>
+                </div>
+            </div>
+            
+            <div class="complaint-card">
+                <div class="brand-name">🏢 FoodChain Restaurant</div>
+                <div class="complaint-summary">
+                    "Found foreign object in my food order. This is a serious health hazard. No response from the restaurant management despite multiple attempts to contact."
+                </div>
+                <div class="complaint-meta">
+                    <span>📅 Unresolved for 3 days</span>
+                    <span>👁 567 views</span>
+                    <span>📍 Bangalore, India</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <h3>10,000+</h3>
+                <p>Active Users</p>
+            </div>
+            <div class="stat-item">
+                <h3>500+</h3>
+                <p>Brands Onboard</p>
+            </div>
+            <div class="stat-item">
+                <h3>87%</h3>
+                <p>Resolution Rate</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2>Ready to Make Your Voice Heard?</h2>
+        <p>Join thousands of consumers who are getting their complaints resolved faster</p>
+        <div class="cta-buttons">
+            <button class="hero-btn hero-btn-primary" onclick="window.location.href='user-signup.html'">Join Now - It's Free</button>
+            <button class="hero-btn hero-btn-secondary" onclick="window.location.href='brand-signup.html'">For Brands</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#">About Us</a>
+            <a href="#">How It Works</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact</a>
+        </div>
+        <p>&copy; 2024 ComplaintHub. All rights reserved.</p>
+    </footer>
+</body>
+</html>

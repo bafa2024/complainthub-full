@@ -5,7 +5,7 @@ const getBrands = async () => {
     const response = await apiClient.get('/brands');
     return response.data;
   } catch (error) {
-    console.error('Error fetching brands:', error);
+    console.error('Error fetching brands:', error.message || error);
     throw error;
   }
 };
@@ -15,7 +15,7 @@ const createBrand = async (brandData) => {
     const response = await apiClient.post('/brands', brandData);
     return response.data;
   } catch (error) {
-    console.error('Error creating brand:', error);
+    console.error('Error creating brand:', error.message || error);
     throw error;
   }
 };
@@ -25,7 +25,7 @@ const updateBrand = async (brandId, brandData) => {
     const response = await apiClient.put(`/brands/${brandId}`, brandData);
     return response.data;
   } catch (error) {
-    console.error('Error updating brand:', error);
+    console.error('Error updating brand:', error.message || error);
     throw error;
   }
 };
@@ -35,7 +35,7 @@ const getBrandById = async (brandId) => {
     const response = await apiClient.get(`/brands/${brandId}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching brand:', error);
+    console.error('Error fetching brand:', error.message || error);
     throw error;
   }
 };

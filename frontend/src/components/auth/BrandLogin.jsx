@@ -93,7 +93,7 @@ const BrandLogin = () => {
             <form onSubmit={handleSubmit} className="auth-form">
                 <h2>Brand Login</h2>
                 <p>Access your brand dashboard to manage customer complaints.</p>
-                
+
                 {error && <div className="error-message">{error}</div>}
                 
                 <div className="form-group">

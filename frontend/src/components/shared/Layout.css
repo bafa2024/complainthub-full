@@ -279,3 +279,77 @@
     padding: 3rem;
   }
 }
+
+/* Modern Navbar Enhancements */
+.navbar-modern {
+  background: linear-gradient(90deg, #f8fafc 0%, #e3eefe 100%);
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.07);
+  border-radius: 0 0 1.2rem 1.2rem;
+  min-height: 68px;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1.5px solid #e3eefe;
+}
+
+.brand-highlight {
+  font-weight: 800;
+  font-size: 1.45rem;
+  letter-spacing: 0.5px;
+  color: #2563eb;
+  background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navbar-nav .nav-link {
+  padding: 0.75rem 1.2rem;
+  border-radius: 0.5rem;
+  margin: 0 0.2rem;
+  color: #222;
+  font-weight: 500;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+}
+
+.navbar-nav .nav-link:hover, .navbar-nav .nav-link:focus {
+  background: #e3eefe;
+  color: #2563eb;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.08);
+  text-decoration: none;
+}
+
+.navbar-nav .nav-link.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.navbar-toggler {
+  border: none;
+  background: #e3eefe;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  margin-left: 0.5rem;
+  transition: background 0.2s;
+}
+
+.navbar-toggler:focus {
+  outline: none;
+  background: #c7d2fe;
+}
+
+.navbar-toggler-icon, .navbar-toggler-icon::before, .navbar-toggler-icon::after {
+  background-color: #2563eb;
+}
+
+@media (max-width: 991px) {
+  .navbar-modern {
+    border-radius: 0 0 0.7rem 0.7rem;
+    min-height: 56px;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+  }
+  .navbar-nav .nav-link {
+    padding: 0.7rem 1rem;
+    margin: 0.1rem 0;
+  }
+}

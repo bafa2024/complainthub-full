@@ -36,7 +36,7 @@ const getTickets = async () => {
     const response = await apiClient.get('/tickets/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching tickets:', error.response?.data);
+    console.error('Error fetching tickets:', error.message || error);
     // Return mockup data as fallback
     return MOCK_TICKETS;
   }
@@ -47,11 +47,9 @@ const getTicketById = async (ticketId) => {
     const response = await apiClient.get(`/tickets/${ticketId}`);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching ticket ${ticketId}:`, error.response?.data);
-    // Return a mock ticket if not found
-    return (
-      MOCK_TICKETS.find(t => t.id === Number(ticketId)) || MOCK_TICKETS[0]
-    );
+    console.error('Error fetching ticket:', error.message || error);
+    // Optionally return a mock ticket or error
+    return MOCK_TICKETS.find(t => t.id === ticketId) || null;
   }
 };
 
@@ -59,39 +57,32 @@ const createTicket = async (ticketData) => {
     try {
         const response = await apiClient.post('/tickets/', ticketData);
         return response.data;
-    } catch (error)
-        {
-        console.error('Error creating ticket:', error.response?.data);
+    } catch (error) {
+        console.error('Error creating ticket:', error.message || error);
         // Optionally return a mock ticket or error
         return { ...ticketData, id: Date.now(), status: 'new', created_at: new Date().toISOString() };
     }
 };
 
-const updateTicket = async (ticketId, updateData) => {
+const updateTicket = async (ticketId, ticketData) => {
     try {
-        const response = await apiClient.patch(`/tickets/${ticketId}`, updateData);
+        const response = await apiClient.put(`/tickets/${ticketId}`, ticketData);
         return response.data;
     } catch (error) {
-        console.error(`Error updating ticket ${ticketId}:`, error.response?.data);
-        // Optionally return mock updated ticket
-        return { ...updateData, id: ticketId };
+        console.error('Error updating ticket:', error.message || error);
+        throw error;
     }
 };
 
-const uploadVoiceNote = async (ticketId, audioBlob) => {
-    const formData = new FormData();
-    formData.append("voice_note", audioBlob, `voice_note_${ticketId}.wav`);
+const uploadVoiceNote = async (ticketId, formData) => {
     try {
-        const response = await apiClient.post(
-            `/tickets/${ticketId}/upload-voice-note`, 
-            formData,
-            { headers: { 'Content-Type': 'multipart/form-data' } }
-        );
+        const response = await apiClient.post(`/tickets/${ticketId}/voice`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
         return response.data;
     } catch (error) {
-        console.error('Error uploading voice note:', error.response?.data);
-        // Optionally return a mock response
-        return { success: true, message: 'Mock voice note uploaded.' };
+        console.error('Error uploading voice note:', error.message || error);
+        throw error;
     }
 };
 

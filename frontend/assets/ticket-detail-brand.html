@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket #CMP-2024-001 - ComplaintHub Business</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .brand-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #7f8c8d;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+        
+        /* Breadcrumb */
+        .breadcrumb {
+            grid-column: 1 / -1;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Ticket Header */
+        .ticket-header {
+            grid-column: 1 / -1;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .ticket-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+        
+        .ticket-id {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .ticket-meta {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .urgency-alert {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .urgency-timer {
+            color: #e74c3c;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-urgent {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-resolved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        /* Customer Card */
+        .customer-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .customer-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .customer-details h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .customer-details p {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        /* Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .detail-item {
+            border-left: 3px solid #3498db;
+            padding-left: 15px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        /* Audio Player */
+        .audio-player {
+            background: #2c3e50;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .play-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3498db;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        .play-btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        .play-btn.playing {
+            background: #e74c3c;
+        }
+        
+        .audio-progress {
+            flex: 1;
+            height: 6px;
+            background: #495057;
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .progress-filled {
+            position: absolute;
+            height: 100%;
+            background: #3498db;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .audio-time {
+            color: white;
+            font-size: 14px;
+            font-family: monospace;
+        }
+        
+        /* Timeline */
+        .timeline {
+            margin-top: 20px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .timeline-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .timeline-marker {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .timeline-marker.user {
+            background: #3498db;
+            color: white;
+        }
+        
+        .timeline-marker.bot {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .timeline-marker.brand {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .timeline-marker.internal {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-author {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .timeline-message {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            color: #495057;
+        }
+        
+        .timeline-message.internal {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+        
+        /* Response Form */
+        .response-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .form-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .form-tab {
+            padding: 10px 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #7f8c8d;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .form-tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .template-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .template-btn {
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .template-btn:hover {
+            background: #e3f2fd;
+            border-color: #3498db;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sidebar-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .history-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .history-item strong {
+            color: #2c3e50;
+        }
+        
+        .history-item small {
+            color: #7f8c8d;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e3f2fd;
+            color: #3498db;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        /* Actions */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .quick-actions .btn {
+            width: 100%;
+            text-align: center;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .ticket-header-top {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .template-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
+            
+            .audio-player {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="brand-info">
+                <span class="brand-logo">🏢 TechGiant Electronics</span>
+            </div>
+            <div class="user-info">
+                <span>John Doe | Support Manager</span>
+                <a href="brand-dashboard.html" class="btn btn-secondary">← Dashboard</a>
+                <a href="brand-login.html" class="btn btn-primary">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="brand-dashboard.html">Dashboard</a> / <a href="#">Tickets</a> / #CMP-2024-001
+        </div>
+
+        <!-- Ticket Header -->
+        <div class="ticket-header">
+            <div class="ticket-header-top">
+                <div>
+                    <h1 class="ticket-id">#CMP-2024-001</h1>
+                    <div class="ticket-meta">
+                        Product Complaint • Created on December 15, 2024, 2:30 PM • via Voice Call
+                    </div>
+                </div>
+                <div>
+                    <span class="status-badge status-urgent">URGENT - HIGH PRIORITY</span>
+                </div>
+            </div>
+            
+            <div class="urgency-alert">
+                <span>⚠️</span>
+                <div>
+                    <strong>Time Remaining: <span class="urgency-timer">2h 15m</span></strong>
+                    <p style="margin: 0; font-size: 14px;">₹50 charge will be applied if not resolved in time</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <!-- Customer Information -->
+            <div class="content-section">
+                <h2 class="section-title">Customer Information</h2>
+                
+                <div class="customer-card">
+                    <div class="customer-avatar">U2</div>
+                    <div class="customer-details">
+                        <h3>User****234</h3>
+                        <p>Member since: January 2023 • Total Complaints: 4</p>
+                    </div>
+                </div>
+                
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Phone Number</div>
+                        <div class="detail-value">+91 *****43210</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value">u***4@email.com</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Sentiment Score</div>
+                        <div class="detail-value" style="color: #e74c3c;">Negative (-0.8)</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Resolution Rate</div>
+                        <div class="detail-value">75% (3/4 resolved)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Issue Details -->
+            <div class="content-section">
+                <h2 class="section-title">Issue Details</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <strong>Product:</strong> Laptop Model XPS-2024<br>
+                    <strong>Order Number:</strong> ORD-2024-8976543<br>
+                    <strong>Purchase Date:</strong> December 1, 2024
+                </div>
+                
+                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                    Customer reports that their laptop screen is showing dead pixels after only 2 weeks of purchase. 
+                    The issue appears to be spreading across the screen. Customer is very frustrated as this is a 
+                    premium product and expects immediate replacement or full refund.
+                </p>
+                
+                <!-- Audio Player -->
+                <div class="audio-player">
+                    <button class="play-btn" id="playBtn" onclick="toggleAudio()">
+                        <span id="playIcon">▶️</span>
+                    </button>
+                    <div class="audio-progress" onclick="seekAudio(event)">
+                        <div class="progress-filled" id="progressBar"></div>
+                    </div>
+                    <div class="audio-time">
+                        <span id="currentTime">0:00</span> / <span id="duration">3:45</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" onclick="downloadAudio()">📥 Download Audio</button>
+                    <button class="btn btn-secondary" onclick="viewTranscript()">📄 View Transcript</button>
+                </div>
+            </div>
+
+            <!-- Conversation Timeline -->
+            <div class="content-section">
+                <h2 class="section-title">Conversation Timeline</h2>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker user">👤</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-author">Customer</span>
+                                <span class="timeline-time">Dec 15, 2:30 PM</span>
+                            </div>
+                            <div class="timeline-message">
+                                I bought this laptop just 2 weeks ago and the screen is already showing dead pixels. 
+                                This is unacceptable for such an expensive product!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker bot">🤖</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-author">AI Assistant</span>
+                                <span class="timeline-time">Dec 15, 2:31 PM</span>
+                            </div>
+                            <div class="timeline-message">
+                                I understand your frustration. Can you please provide your order number so I can 
+                                look up your purchase details?
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker user">👤</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-author">Customer</span>
+                                <span class="timeline-time">Dec 15, 2:32 PM</span>
+                            </div>
+                            <div class="timeline-message">
+                                Order number is ORD-2024-8976543. I need this resolved immediately!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker internal">📝</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-author">Internal Note</span>
+                                <span class="timeline-time">Dec 15, 3:45 PM</span>
+                            </div>
+                            <div class="timeline-message internal">
+                                <strong>Note by Jane Smith:</strong> Customer seems very upset. Priority escalation recommended. 
+                                Checked order history - premium customer with 3 previous purchases.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Response Form -->
+                <div class="response-form">
+                    <div class="form-tabs">
+                        <button class="form-tab active" onclick="switchTab('customer')">Customer Response</button>
+                        <button class="form-tab" onclick="switchTab('internal')">Internal Note</button>
+                    </div>
+                    
+                    <div id="customer-response" class="tab-content">
+                        <div class="template-options">
+                            <button class="template-btn" onclick="useTemplate('replacement')">
+                                🔄 Replacement
+                            </button>
+                            <button class="template-btn" onclick="useTemplate('refund')">
+                                💰 Refund
+                            </button>
+                            <button class="template-btn" onclick="useTemplate('repair')">
+                                🔧 Repair
+                            </button>
+                            <button class="template-btn" onclick="useTemplate('escalate')">
+                                ⬆️ Escalate
+                            </button>
+                            <button class="template-btn" onclick="useTemplate('info')">
+                                ℹ️ Request Info
+                            </button>
+                            <button class="template-btn" onclick="useTemplate('custom')">
+                                ✍️ Custom
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Response Message</label>
+                            <textarea class="form-control" rows="6" id="responseText" placeholder="Type your response to the customer..."></textarea>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button class="btn btn-primary" onclick="sendResponse()">Send Response</button>
+                            <button class="btn btn-secondary" onclick="saveDraft()">Save Draft</button>
+                            <label style="margin-left: auto; display: flex; align-items: center; gap: 5px;">
+                                <input type="checkbox" id="resolveTicket">
+                                <span>Mark as Resolved</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="internal-note" class="tab-content" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Internal Note</label>
+                            <textarea class="form-control" rows="4" id="internalNote" placeholder="Add internal notes (not visible to customer)..."></textarea>
+                        </div>
+                        
+                        <button class="btn btn-warning" onclick="addInternalNote()">Add Internal Note</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Quick Actions -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Quick Actions</h3>
+                <div class="quick-actions">
+                    <button class="btn btn-success" onclick="resolveTicket()">✓ Mark Resolved</button>
+                    <button class="btn btn-warning" onclick="assignTicket()">👤 Assign to Team</button>
+                    <button class="btn btn-danger" onclick="escalateTicket()">⬆️ Escalate to Manager</button>
+                    <button class="btn btn-secondary" onclick="mergeTicket()">🔗 Merge with Another</button>
+                </div>
+            </div>
+            
+            <!-- Customer History -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Previous Complaints</h3>
+                <div class="history-item">
+                    <strong>#CMP-2023-456</strong><br>
+                    <small>Delivery delay issue</small><br>
+                    <small style="color: #27ae60;">Resolved in 12h</small>
+                </div>
+                <div class="history-item">
+                    <strong>#CMP-2023-234</strong><br>
+                    <small>Wrong product delivered</small><br>
+                    <small style="color: #27ae60;">Resolved in 8h</small>
+                </div>
+                <div class="history-item">
+                    <strong>#CMP-2023-123</strong><br>
+                    <small>Payment issue</small><br>
+                    <small style="color: #27ae60;">Resolved in 4h</small>
+                </div>
+            </div>
+            
+            <!-- Tags & Labels -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Tags & Labels</h3>
+                <div style="margin-bottom: 10px;">
+                    <span class="tag">Premium Customer</span>
+                    <span class="tag">Hardware Issue</span>
+                    <span class="tag">Warranty</span>
+                    <span class="tag">High Priority</span>
+                </div>
+                <button class="btn btn-secondary" onclick="addTag()" style="width: 100%;">+ Add Tag</button>
+            </div>
+            
+            <!-- Related Information -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Related Information</h3>
+                <p style="font-size: 14px; margin-bottom: 10px;">
+                    <strong>Order Value:</strong> ₹89,999<br>
+                    <strong>Warranty Status:</strong> Active (11.5 months left)<br>
+                    <strong>Customer Lifetime Value:</strong> ₹2,45,000
+                </p>
+                <button class="btn btn-secondary" onclick="viewOrder()" style="width: 100%;">View Full Order</button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Assign Modal -->
+    <div id="assignModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Assign Ticket</h3>
+                <button class="modal-close" onclick="closeModal('assignModal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Select Team Member</label>
+                <select class="form-control" id="assignee">
+                    <option value="">Choose team member...</option>
+                    <option value="john">John Doe (5 active tickets)</option>
+                    <option value="jane">Jane Smith (3 active tickets)</option>
+                    <option value="mike">Mike Johnson (7 active tickets)</option>
+                    <option value="sarah">Sarah Williams (2 active tickets)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Priority Level</label>
+                <select class="form-control">
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Assignment Note</label>
+                <textarea class="form-control" rows="3" placeholder="Add a note for the assignee..."></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeModal('assignModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmAssign()">Assign Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <h3 style="color: #27ae60; margin-bottom: 20px;">✓ Success!</h3>
+            <p id="successMessage">Action completed successfully.</p>
+            <button class="btn btn-primary" onclick="closeModal('successModal')" style="margin-top: 20px;">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Audio Player Functionality
+        let isPlaying = false;
+        let currentTimeSeconds = 0;
+        let durationSeconds = 225; // 3:45 in seconds
+        let audioInterval;
+
+        function toggleAudio() {
+            const playBtn = document.getElementById('playBtn');
+            const playIcon = document.getElementById('playIcon');
+            
+            isPlaying = !isPlaying;
+            
+            if (isPlaying) {
+                playBtn.classList.add('playing');
+                playIcon.textContent = '⏸️';
+                startAudioSimulation();
+            } else {
+                playBtn.classList.remove('playing');
+                playIcon.textContent = '▶️';
+                stopAudioSimulation();
+            }
+        }
+
+        function startAudioSimulation() {
+            audioInterval = setInterval(() => {
+                if (currentTimeSeconds < durationSeconds) {
+                    currentTimeSeconds++;
+                    updateAudioProgress();
+                } else {
+                    toggleAudio();
+                }
+            }, 1000);
+        }
+
+        function stopAudioSimulation() {
+            clearInterval(audioInterval);
+        }
+
+        function updateAudioProgress() {
+            const progress = (currentTimeSeconds / durationSeconds) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentTime').textContent = formatTime(currentTimeSeconds);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function seekAudio(event) {
+            const progressBar = event.currentTarget;
+            const clickX = event.offsetX;
+            const width = progressBar.offsetWidth;
+            const percentage = clickX / width;
+            currentTimeSeconds = Math.floor(durationSeconds * percentage);
+            updateAudioProgress();
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            
+            event.target.classList.add('active');
+            if (tab === 'customer') {
+                document.getElementById('customer-response').style.display = 'block';
+            } else {
+                document.getElementById('internal-note').style.display = 'block';
+            }
+        }
+
+        // Template Usage
+        function useTemplate(type) {
+            const responseText = document.getElementById('responseText');
+            const templates = {
+                replacement: "Dear Customer,\n\nWe sincerely apologize for the inconvenience caused by the defective screen. We understand how frustrating this must be, especially for a premium product.\n\nWe will arrange for an immediate replacement of your laptop. A new unit will be dispatched within 24 hours, and we'll also arrange for the pickup of the defective unit at your convenience.\n\nAs a gesture of goodwill, we're also extending your warranty by an additional 6 months.\n\nThank you for your patience and understanding.\n\nBest regards,\nTechGiant Support Team",
+                refund: "Dear Customer,\n\nWe apologize for the defective product you received. We understand your frustration and will process a full refund immediately.\n\nThe refund of ₹89,999 will be credited to your original payment method within 5-7 business days. We'll also arrange for a free pickup of the defective laptop.\n\nWe value your business and hope to serve you better in the future.\n\nBest regards,\nTechGiant Support Team",
+                repair: "Dear Customer,\n\nWe apologize for the screen issue you're experiencing. We'll arrange for a priority repair service.\n\nOur technician will visit your location within 24 hours to assess and repair the screen. If on-site repair isn't possible, we'll provide a temporary replacement laptop while yours is being repaired.\n\nAll repairs are covered under warranty at no cost to you.\n\nBest regards,\nTechGiant Support Team",
+                escalate: "Dear Customer,\n\nThank you for bringing this issue to our attention. Given the nature of your complaint, I've escalated this matter to our senior management team.\n\nYou will receive a call from our escalation team within the next 2 hours to discuss the best resolution for your issue.\n\nWe appreciate your patience and assure you of our best service.\n\nBest regards,\nTechGiant Support Team",
+                info: "Dear Customer,\n\nThank you for reporting this issue. To better assist you, we need some additional information:\n\n1. When did you first notice the dead pixels?\n2. Are the pixels spreading or stable?\n3. Has the laptop been dropped or exposed to extreme temperatures?\n4. Can you share a photo of the affected screen?\n\nThis information will help us provide the most appropriate solution.\n\nBest regards,\nTechGiant Support Team",
+                custom: ""
+            };
+            
+            responseText.value = templates[type];
+        }
+
+        // Action Functions
+        function sendResponse() {
+            const responseText = document.getElementById('responseText').value;
+            const resolveTicket = document.getElementById('resolveTicket').checked;
+            
+            if (!responseText) {
+                alert('Please enter a response message');
+                return;
+            }
+            
+            showSuccess(resolveTicket ? 'Response sent and ticket resolved!' : 'Response sent to customer!');
+            
+            if (resolveTicket) {
+                setTimeout(() => {
+                    window.location.href = 'brand-dashboard.html';
+                }, 2000);
+            }
+        }
+
+        function saveDraft() {
+            showSuccess('Draft saved successfully!');
+        }
+
+        function addInternalNote() {
+            const note = document.getElementById('internalNote').value;
+            if (!note) {
+                alert('Please enter a note');
+                return;
+            }
+            showSuccess('Internal note added successfully!');
+            document.getElementById('internalNote').value = '';
+        }
+
+        function resolveTicket() {
+            if (confirm('Are you sure you want to mark this ticket as resolved?')) {
+                showSuccess('Ticket marked as resolved!');
+                setTimeout(() => {
+                    window.location.href = 'brand-dashboard.html';
+                }, 2000);
+            }
+        }
+
+        function assignTicket() {
+            document.getElementById('assignModal').classList.add('active');
+        }
+
+        function confirmAssign() {
+            const assignee = document.getElementById('assignee').value;
+            if (!assignee) {
+                alert('Please select a team member');
+                return;
+            }
+            closeModal('assignModal');
+            showSuccess('Ticket assigned successfully!');
+        }
+
+        function escalateTicket() {
+            if (confirm('Are you sure you want to escalate this ticket to senior management?')) {
+                showSuccess('Ticket escalated to senior management!');
+            }
+        }
+
+        function mergeTicket() {
+            const ticketId = prompt('Enter the ticket ID to merge with:');
+            if (ticketId) {
+                showSuccess(`Ticket merged with ${ticketId}`);
+            }
+        }
+
+        function addTag() {
+            const tag = prompt('Enter new tag:');
+            if (tag) {
+                showSuccess('Tag added successfully!');
+            }
+        }
+
+        function downloadAudio() {
+            showSuccess('Audio file downloading...');
+        }
+
+        function viewTranscript() {
+            showSuccess('Opening transcript...');
+        }
+
+        function viewOrder() {
+            showSuccess('Loading order details...');
+        }
+
+        // Modal Functions
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('successModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Update timer
+        setInterval(() => {
+            // In production, this would be connected to actual backend
+            console.log('Timer updated');
+        }, 60000);
+    </script>
+</body>
+</html>
