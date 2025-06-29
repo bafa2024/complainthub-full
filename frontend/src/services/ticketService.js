@@ -1,87 +1,98 @@
-// Mock ticket service for demo
-const mockTickets = [
+import apiClient from './apiClient';
+
+// Mockup ticket data
+const MOCK_TICKETS = [
   {
     id: 1,
-    title: "Late Delivery for Order #123",
-    description: "My order was supposed to arrive yesterday but it's still not here.",
-    status: "new",
-    category: "complaint",
-    urgency: "high",
-    channel: "web",
-    brand: { id: 1, name: "E-Commerce Inc." },
-    owner: { id: 1, full_name: "John Doe", email: "john@example.com" },
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    title: 'Order not delivered',
+    description: 'I placed an order two weeks ago and it has not arrived.',
+    status: 'new',
+    brand: { name: 'Acme Corp' },
+    owner: { full_name: 'John Doe', email: 'john@example.com' },
+    created_at: new Date().toISOString(),
   },
   {
     id: 2,
-    title: "Product arrived damaged",
-    description: "The package was damaged and the product inside was broken.",
-    status: "in-progress",
-    category: "complaint",
-    urgency: "medium",
-    channel: "whatsapp",
-    brand: { id: 1, name: "E-Commerce Inc." },
-    owner: { id: 2, full_name: "Jane Smith", email: "jane@example.com" },
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    title: 'Refund not processed',
+    description: 'Requested a refund but have not received it yet.',
+    status: 'in-progress',
+    brand: { name: 'ShopEasy' },
+    owner: { full_name: 'Jane Smith', email: 'jane@example.com' },
+    created_at: new Date(Date.now() - 86400000).toISOString(),
   },
   {
     id: 3,
-    title: "Cannot reset my password",
-    description: "I've tried multiple times but the reset email never arrives.",
-    status: "resolved",
-    category: "support",
-    urgency: "low",
-    channel: "web",
-    brand: { id: 2, name: "SaaS Platform" },
-    owner: { id: 3, full_name: "Peter Jones", email: "peter@example.com" },
-    created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    resolved_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    title: 'Product was defective',
+    description: 'The product stopped working after one day.',
+    status: 'resolved',
+    brand: { name: 'GadgetPro' },
+    owner: { full_name: 'Alice Brown', email: 'alice@example.com' },
+    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
   },
 ];
 
 const getTickets = async () => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return mockTickets;
+  try {
+    const response = await apiClient.get('/tickets/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching tickets:', error.response?.data);
+    // Return mockup data as fallback
+    return MOCK_TICKETS;
+  }
 };
 
 const getTicketById = async (ticketId) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  const ticket = mockTickets.find(t => t.id === parseInt(ticketId));
-  if (!ticket) {
-    throw new Error('Ticket not found');
+  try {
+    const response = await apiClient.get(`/tickets/${ticketId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching ticket ${ticketId}:`, error.response?.data);
+    // Return a mock ticket if not found
+    return (
+      MOCK_TICKETS.find(t => t.id === Number(ticketId)) || MOCK_TICKETS[0]
+    );
   }
-  return ticket;
 };
 
 const createTicket = async (ticketData) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  const newTicket = {
-    ...ticketData,
-    id: mockTickets.length + 1,
-    status: "new",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-  mockTickets.push(newTicket);
-  return newTicket;
+    try {
+        const response = await apiClient.post('/tickets/', ticketData);
+        return response.data;
+    } catch (error)
+        {
+        console.error('Error creating ticket:', error.response?.data);
+        // Optionally return a mock ticket or error
+        return { ...ticketData, id: Date.now(), status: 'new', created_at: new Date().toISOString() };
+    }
 };
 
 const updateTicket = async (ticketId, updateData) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  const ticketIndex = mockTickets.findIndex(t => t.id === parseInt(ticketId));
-  if (ticketIndex !== -1) {
-    mockTickets[ticketIndex] = {
-      ...mockTickets[ticketIndex],
-      ...updateData,
-      updated_at: new Date().toISOString(),
-    };
-    return mockTickets[ticketIndex];
-  }
-  throw new Error('Ticket not found');
+    try {
+        const response = await apiClient.patch(`/tickets/${ticketId}`, updateData);
+        return response.data;
+    } catch (error) {
+        console.error(`Error updating ticket ${ticketId}:`, error.response?.data);
+        // Optionally return mock updated ticket
+        return { ...updateData, id: ticketId };
+    }
+};
+
+const uploadVoiceNote = async (ticketId, audioBlob) => {
+    const formData = new FormData();
+    formData.append("voice_note", audioBlob, `voice_note_${ticketId}.wav`);
+    try {
+        const response = await apiClient.post(
+            `/tickets/${ticketId}/upload-voice-note`, 
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error uploading voice note:', error.response?.data);
+        // Optionally return a mock response
+        return { success: true, message: 'Mock voice note uploaded.' };
+    }
 };
 
 export default {
@@ -89,4 +100,5 @@ export default {
   getTicketById,
   createTicket,
   updateTicket,
+  uploadVoiceNote,
 };

@@ -15,25 +15,35 @@ import UserDashboard from './components/user/UserDashboard';
 import TicketDetail from './components/user/TicketDetail';
 import NewComplaint from './components/user/NewComplaint';
 import ChatPage from './components/chat/ChatPage';
-import LodgeVoicePage from './components/user/LodgeVoicePage'; // Import the new page
+import LodgeVoicePage from './components/user/LodgeVoicePage';
 import BrandDashboard from './components/brand/BrandDashboard';
 import BrandTicketDetail from './components/brand/BrandTicketDetail';
+import BrandBilling from './components/brand/BrandBilling';
+import BrandTeam from './components/brand/BrandTeam'; // Import the new component
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminBrands from './components/admin/AdminBrands';
 import AdminUsers from './components/admin/AdminUsers';
 import AdminSettings from './components/admin/AdminSettings';
 import AdminBillingLogs from './components/admin/AdminBillingLogs';
-import BrandBilling from './components/brand/BrandBilling';
-import TopUpCredit from './components/brand/TopUpCredit';
-import BrandTickets from './components/brand/BrandTickets';
+import ResponsiveTest from './components/shared/ResponsiveTest';
+
 import './App.css';
+import './utils/responsive.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 // A robust wrapper for routes that require authentication
 const ProtectedRoute = ({ children, roles }) => {
-  const { isAuthenticated, user, loading } = useAuth();
+  const { isAuthenticated, user, loading, mockupMode } = useAuth();
+  
   if (loading) { return <div>Loading...</div>; }
+  
+  // In mockup mode, allow access to all routes
+  if (mockupMode) {
+    return children;
+  }
+  
+  // Normal authentication flow
   if (!isAuthenticated) { return <Navigate to="/login" replace />; }
   if (roles && !roles.includes(user?.role)) { return <Navigate to="/unauthorized" replace />; }
   return children;
@@ -53,6 +63,7 @@ function App() {
             <Route path="/brand/login" element={<BrandLogin />} />
             <Route path="/brand/signup" element={<BrandSignup />} />
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/responsive-test" element={<ResponsiveTest />} />
 
             {/* User Portal Routes */}
             <Route path="/dashboard" element={<ProtectedRoute roles={['user']}><UserDashboard /></ProtectedRoute>} />
@@ -64,10 +75,9 @@ function App() {
             {/* Brand Portal Routes */}
             <Route path="/brand/dashboard" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandDashboard /></ProtectedRoute>} />
             <Route path="/brand/tickets/:ticketId" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTicketDetail /></ProtectedRoute>} />
-            <Route path="/brand/tickets" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTickets /></ProtectedRoute>} />
             <Route path="/brand/billing" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandBilling /></ProtectedRoute>} />
-            <Route path="/brand/topup" element={<ProtectedRoute roles={['brand_user', 'admin']}><TopUpCredit /></ProtectedRoute>} />
-      
+            <Route path="/brand/team" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTeam /></ProtectedRoute>} />
+
             {/* Admin Portal Routes */}
             <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="/admin/brands" element={<ProtectedRoute roles={['admin']}><AdminBrands /></ProtectedRoute>} />

@@ -1,30 +1,34 @@
-import axios from 'axios';
+// frontend/src/services/authService.js
+import apiClient from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://complaint-hub-backend.onrender.com/api/v1';
+const login = async (email, password) => {
+    const form = new URLSearchParams();
+    form.append('username', email);
+    form.append('password', password);
+    const response = await apiClient.post('/login/access-token', form, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+    return response.data;
+};
 
-const apiClient = axios.create({ 
-  baseURL: API_BASE_URL,
-  timeout: 30000, // 30 second timeout
-});
+const signup = async (userData) => {
+    const response = await apiClient.post('/auth/signup', userData);
+    return response.data;
+};
 
-apiClient.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if(token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+const getCurrentUser = async () => {
+    const response = await apiClient.get('/auth/me');
+    return response.data;
+};
 
-apiClient.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
+const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+};
 
-export default apiClient;
+export default {
+    login,
+    signup,
+    getCurrentUser,
+    logout,
+};

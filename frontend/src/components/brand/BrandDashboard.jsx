@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ticketService from '../../services/ticketService';
-import { useAuth } from '../../contexts/AuthContext';
 import LoadingSpinner from '../shared/LoadingSpinner';
+import { useAuth } from '../../contexts/AuthContext';
 import './BrandDashboard.css';
 
 // SVG Icons for cards
@@ -11,7 +11,6 @@ const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" heigh
 const CheckIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-patch-check-fill" viewBox="0 0 16 16"><path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708"/></svg>;
 const CreditIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-wallet-fill" viewBox="0 0 16 16"><path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v2h6a.5.5 0 0 1 .5.5c0 .253.08.644.306.958.207.288.557.542 1.194.542s.987-.254 1.194-.542C9.42 6.644 9.5 6.253 9.5 6a.5.5 0 0 1 .5-.5h6v-2A1.5 1.5 0 0 0 14.5 2z"/><path d="M16 6.5h-5.551a2.7 2.7 0 0 1-.443 1.042C9.613 8.088 8.963 8.5 8 8.5s-1.613-.412-2.006-.958A2.7 2.7 0 0 1 5.551 6.5H0v6A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5z"/></svg>;
 
-
 const BrandDashboard = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,11 +18,9 @@ const BrandDashboard = () => {
   const { user } = useAuth(); // Get brand user info
 
   useEffect(() => {
-    // This uses the mocked service for UI testing.
     const fetchBrandTickets = async () => {
       try {
         setLoading(true);
-        // In a real app, the backend would filter tickets by the user's brand_id
         const allTickets = await ticketService.getTickets(); 
         setTickets(allTickets);
       } catch (err) {
@@ -51,107 +48,116 @@ const BrandDashboard = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="container-fluid brand-dashboard-container">
+    <div className="brand-dashboard-container">
       <h1 className="mb-4">Brand Dashboard</h1>
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {/* Stats Cards */}
-      <div className="row g-4 mb-4">
-        <div className="col-lg-3 col-md-6">
-          
-          <div className="card stat-card-brand shadow-sm">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div className="stat-icon new-complaints"><TicketIcon /></div>
-                <div className="ms-3">
-                  <h6 className="text-muted mb-1">New Complaints</h6>
-                  <h2 className="fw-bold mb-0">{statusCounts.new}</h2>
-                </div>
-              </div>
-              <Link to="/brand/tickets?status=new" className="btn btn-sm btn-outline-primary w-100 mt-3">View</Link>
+      <div className="stats-grid">
+        <div className="stat-card-brand">
+          <div className="stat-content">
+            <div className="stat-icon new-complaints">
+              <TicketIcon />
+            </div>
+            <div className="stat-info">
+              <h6>New Complaints</h6>
+              <h2>{statusCounts.new}</h2>
             </div>
           </div>
         </div>
-        <div className="col-lg-3 col-md-6">
-          <div className="card stat-card-brand shadow-sm">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div className="stat-icon in-progress"><ClockIcon /></div>
-                <div className="ms-3">
-                  <h6 className="text-muted mb-1">In Progress</h6>
-                  <h2 className="fw-bold mb-0">{statusCounts["in-progress"]}</h2>
-                </div>
-              </div>
-              <Link to="/brand/tickets?status=in-progress" className="btn btn-sm btn-outline-primary w-100 mt-3">View</Link>
+        
+        <div className="stat-card-brand">
+          <div className="stat-content">
+            <div className="stat-icon in-progress">
+              <ClockIcon />
+            </div>
+            <div className="stat-info">
+              <h6>In Progress</h6>
+              <h2>{statusCounts["in-progress"]}</h2>
             </div>
           </div>
         </div>
-        <div className="col-lg-3 col-md-6">
-          <div className="card stat-card-brand shadow-sm">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div className="stat-icon resolved"><CheckIcon /></div>
-                <div className="ms-3">
-                  <h6 className="text-muted mb-1">Resolved</h6>
-                  <h2 className="fw-bold mb-0">{statusCounts.resolved}</h2>
-                </div>
-              </div>
-              <Link to="/brand/tickets?status=resolved" className="btn btn-sm btn-outline-primary w-100 mt-3">View</Link>
+        
+        <div className="stat-card-brand">
+          <div className="stat-content">
+            <div className="stat-icon resolved">
+              <CheckIcon />
+            </div>
+            <div className="stat-info">
+              <h6>Resolved</h6>
+              <h2>{statusCounts.resolved}</h2>
             </div>
           </div>
         </div>
-         <div className="col-lg-3 col-md-6">
-          <div className="card stat-card-brand shadow-sm h-100">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div className="stat-icon credits"><CreditIcon /></div>
-                <div className="ms-3">
-                  <h6 className="text-muted mb-1">Credit Balance</h6>
-                  <h2 className="fw-bold mb-0">1,250</h2>
-                </div>
-              </div>
-              <Link to="/brand/billing" className="btn btn-sm btn-outline-primary mt-3 w-100">Manage Billing</Link>
+        
+        <div className="stat-card-brand">
+          <div className="stat-content">
+            <div className="stat-icon credits">
+              <CreditIcon />
+            </div>
+            <div className="stat-info">
+              <h6>Credit Balance</h6>
+              <h2>1,250</h2>
             </div>
           </div>
+          <Link to="/brand/billing" className="stretched-link"></Link>
         </div>
       </div>
 
-      {/* Recent Tickets Table */}
-      <div className="card shadow-sm">
-        <div className="card-header">
-            <h4>Recent Tickets</h4>
-        </div>
-        <div className="card-body">
-             <div className="table-responsive">
-                <table className="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Customer</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {tickets.map(ticket => (
-                            <tr key={ticket.id}>
-                                <td>#{ticket.id}</td>
-                                <td>{ticket.title}</td>
-                                <td>{ticket.owner?.full_name || 'N/A'}</td>
-                                <td><span className="badge bg-primary">{ticket.status}</span></td>
-                                <td>{new Date(ticket.created_at).toLocaleDateString()}</td>
-                                <td>
-                                    <Link to={`/brand/tickets/${ticket.id}`} className="btn btn-sm btn-outline-primary">
-                                        View
-                                    </Link>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+      <div className="dashboard-content">
+        <div className="main-content">
+          <div className="card">
+            <div className="card-header">
+              <h4>Recent Tickets</h4>
             </div>
+            <div className="card-body">
+              <div className="table-responsive">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Title</th>
+                      <th className="hide-mobile">Customer</th>
+                      <th>Status</th>
+                      <th className="hide-mobile">Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tickets.map(ticket => (
+                      <tr key={ticket.id}>
+                        <td>#{ticket.id}</td>
+                        <td>{ticket.title}</td>
+                        <td className="hide-mobile">{ticket.owner?.full_name || 'N/A'}</td>
+                        <td><span className="badge badge-primary">{ticket.status}</span></td>
+                        <td className="hide-mobile">{new Date(ticket.created_at).toLocaleDateString()}</td>
+                        <td>
+                          <Link to={`/brand/tickets/${ticket.id}`} className="btn btn-sm btn-outline-primary">
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="sidebar">
+          <div className="card">
+            <div className="card-header">
+              <h4>Settings & Management</h4>
+            </div>
+            <div className="list-group list-group-flush">
+              <Link to="/brand/team" className="list-group-item list-group-item-action">
+                Manage Team
+              </Link>
+              <Link to="/brand/billing" className="list-group-item list-group-item-action">
+                Manage Billing
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -159,4 +165,3 @@ const BrandDashboard = () => {
 };
 
 export default BrandDashboard;
-

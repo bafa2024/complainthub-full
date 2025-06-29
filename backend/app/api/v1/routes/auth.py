@@ -7,7 +7,6 @@ import logging
 from app import crud, schemas
 from app.database import get_db
 from app.utils import (
-    get_password_hash,
     verify_password,
     create_access_token,
     get_current_user
@@ -21,10 +20,10 @@ router = APIRouter(tags=["auth"])
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-@router.post("/signup", response_model=schemas.UserRead, status_code=201)
+@router.post("/signup", response_model=schemas.User, status_code=201)
 def signup(data: schemas.UserCreate, db: Session = Depends(get_db)):
     logger.info(f"=== SIGNUP REQUEST ===")
-    logger.info(f"Received signup data: name={data.name}, email={data.email}, phone={data.phone}")
+    logger.info(f"Received signup data: full_name={data.full_name}, email={data.email}, phone={data.phone_number}")
     
     # Log database connection info
     logger.info(f"Database connection: {db.bind.url}")
@@ -69,6 +68,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     )
     return {"access_token": token, "token_type": "bearer"}
 
-@router.get("/me", response_model=schemas.UserRead)
+@router.get("/me", response_model=schemas.User)
 def read_me(current_user = Depends(get_current_user)):
     return current_user

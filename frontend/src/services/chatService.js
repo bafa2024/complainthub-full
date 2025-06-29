@@ -1,27 +1,39 @@
 // This is a mocked service for the chat functionality.
 
+import apiClient from './apiClient';
+
 const sendMessage = async (message) => {
-    console.log("Sending message to mock backend:", message);
-    
-    // Simulate a bot response after a short delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+        const response = await apiClient.post('/chat/send', { message });
+        return response.data;
+    } catch (error) {
+        console.error('Error sending message:', error);
+        throw error;
+    }
+};
 
-    const botResponses = [
-        "I see. Could you please provide the order number related to your issue?",
-        "Thank you. Can you confirm the date this occurred?",
-        "I understand. I am creating a ticket for you now. An agent will review it shortly."
-    ];
-    
-    // Return a random response for demonstration purposes
-    const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
+const getChatHistory = async (ticketId) => {
+    try {
+        const response = await apiClient.get(`/chat/history/${ticketId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching chat history:', error);
+        throw error;
+    }
+};
 
-    return {
-        sender: 'bot',
-        text: randomResponse,
-        timestamp: new Date().toISOString()
-    };
+const startChat = async (ticketId) => {
+    try {
+        const response = await apiClient.post(`/chat/start/${ticketId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error starting chat:', error);
+        throw error;
+    }
 };
 
 export default {
-    sendMessage
+    sendMessage,
+    getChatHistory,
+    startChat
 };

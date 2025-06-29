@@ -43,15 +43,29 @@ const NewComplaint = () => {
     setSubmitting(true);
     setError('');
 
-    // --- MOCKED SUBMISSION FOR UI TESTING ---
-    console.log("Submitting Complaint:", { title, brandId, description });
-    if (audioBlob) {
-        console.log("Attaching voice note:", audioBlob);
+    try {
+      // Create the ticket
+      const ticketData = {
+        title,
+        description: description || '',
+        brand_id: parseInt(brandId),
+        status: 'new'
+      };
+
+      const newTicket = await ticketService.createTicket(ticketData);
+
+      // Upload voice note if provided
+      if (audioBlob) {
+        await ticketService.uploadVoiceNote(newTicket.id, audioBlob);
+      }
+
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Error submitting complaint:', err);
+      setError('Failed to submit complaint. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
-    alert("Complaint submitted successfully (Mocked)!");
-    setSubmitting(false);
-    navigate('/dashboard');
-    // The real backend logic would be here in a real scenario
   };
 
   if (loading) return <LoadingSpinner />;

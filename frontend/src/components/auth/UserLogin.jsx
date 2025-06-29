@@ -8,7 +8,7 @@ const UserLogin = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, mockupMode } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -32,6 +32,62 @@ const UserLogin = () => {
             setLoading(false);
         }
     };
+
+    if (mockupMode) {
+        return (
+            <div className="auth-container">
+                <div className="auth-form">
+                    <h2>🎭 Mockup Mode Active</h2>
+                    <div style={{ 
+                        background: '#e3f2fd', 
+                        padding: '15px', 
+                        borderRadius: '8px', 
+                        marginBottom: '20px',
+                        border: '1px solid #2196f3'
+                    }}>
+                        <p style={{ margin: 0, color: '#1976d2' }}>
+                            <strong>Authentication is disabled.</strong> You can access all sections directly.
+                        </p>
+                    </div>
+                    
+                    <div style={{ marginBottom: '20px' }}>
+                        <h4>Quick Access:</h4>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '15px' }}>
+                            <button 
+                                onClick={() => navigate('/dashboard')} 
+                                className="btn btn-primary"
+                            >
+                                User Dashboard
+                            </button>
+                            <button 
+                                onClick={() => navigate('/brand/dashboard')} 
+                                className="btn btn-success"
+                            >
+                                Brand Dashboard
+                            </button>
+                            <button 
+                                onClick={() => navigate('/admin/dashboard')} 
+                                className="btn btn-warning"
+                            >
+                                Admin Dashboard
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style={{ 
+                        background: '#f5f5f5', 
+                        padding: '15px', 
+                        borderRadius: '8px',
+                        fontSize: '14px'
+                    }}>
+                        <p style={{ margin: 0, color: '#666' }}>
+                            Use the role switcher in the bottom-right corner to change your role and see different views.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="auth-container">

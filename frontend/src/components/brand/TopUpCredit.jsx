@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './BrandDashboard.css';
 
 const packages = [
@@ -11,14 +11,40 @@ const packages = [
 export default function TopUpCredit() {
   const [selected, setSelected] = useState(packages[1]);
   const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setProcessing(true);
-    setTimeout(() => {
-      alert(`Payment for ${selected.credits} credits ($${selected.price}) successful! (Mocked)`);
+    setError('');
+
+    try {
+      // In a real implementation, this would integrate with a payment gateway
+      // For now, we'll simulate the API call
+      const response = await fetch('/api/v1/billing/topup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          credits: selected.credits,
+          amount: selected.price
+        })
+      });
+
+      if (response.ok) {
+        navigate('/brand/billing');
+      } else {
+        throw new Error('Payment failed');
+      }
+    } catch (err) {
+      console.error('Payment error:', err);
+      setError('Payment processing failed. Please try again.');
+    } finally {
       setProcessing(false);
-    }, 1200);
+    }
   };
 
   return (

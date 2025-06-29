@@ -1,83 +1,36 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ticketService from '../../services/ticketService';
 import LoadingSpinner from '../shared/LoadingSpinner';
-import './TicketDetail.css';
+import SatisfactionRating from './SatisfactionRating'; // Import the new component
 
 const TicketDetail = () => {
   const { ticketId } = useParams();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
-  // State for voice recording
-  const [isRecording, setIsRecording] = useState(false);
-  const [audioURL, setAudioURL] = useState('');
-  const [audioBlob, setAudioBlob] = useState(null);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
-
-  const fetchTicketDetails = async () => {
-    try {
-      setLoading(true);
-      const ticketData = await ticketService.getTicketById(ticketId);
-      setTicket(ticketData);
-      setError('');
-    } catch (err) {
-      setError('Failed to load ticket details.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isRated, setIsRated] = useState(false); // To hide the form after submission
 
   useEffect(() => {
-    fetchTicketDetails();
+    const fetchTicket = async () => {
+      try {
+        setLoading(true);
+        // This uses the mocked service for now
+        const ticketData = await ticketService.getTicketById(ticketId);
+        setTicket(ticketData);
+      } catch (err) {
+        setError('Failed to load ticket details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTicket();
   }, [ticketId]);
-
-  const handleStartRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      audioChunksRef.current = [];
-      
-      mediaRecorderRef.current.ondataavailable = event => {
-        audioChunksRef.current.push(event.data);
-      };
-      
-      mediaRecorderRef.current.onstop = () => {
-        const newAudioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(newAudioBlob);
-        setAudioBlob(newAudioBlob);
-        setAudioURL(audioUrl);
-      };
-      
-      mediaRecorderRef.current.start();
-      setIsRecording(true);
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
-      setError("Could not access microphone. Please check permissions.");
-    }
-  };
-
-  const handleStopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
   
-  const handleSendVoiceNote = async () => {
-    if (!audioBlob) return;
-    
-    try {
-      // In demo mode, just show a success message
-      alert("Your voice note has been successfully added to the ticket!");
-      setAudioURL('');
-      setAudioBlob(null);
-    } catch (err) {
-      setError("Failed to upload voice note. Please try again.");
-    }
+  const handleRatingSubmit = (rating, comment) => {
+      console.log("Submitting rating:", { rating, comment });
+      alert(`Thank you for your feedback! You gave a rating of ${rating} stars. (Mocked)`);
+      setIsRated(true); // Hide the form after submission
   };
 
   if (loading) return <LoadingSpinner />;
@@ -85,53 +38,38 @@ const TicketDetail = () => {
   if (!ticket) return <div>Ticket not found.</div>;
 
   return (
-    <div className="ticket-detail-container">
+    <div className="container mt-4">
       <Link to="/dashboard">&larr; Back to Dashboard</Link>
+      <div className="card mt-2">
+        <div className="card-header d-flex justify-content-between align-items-center">
+            <h2 className="mb-0">{ticket.title}</h2>
+            <span className={`badge bg-primary p-2`}>{ticket.status}</span>
+        </div>
+        <div className="card-body">
+            <p><strong>Brand:</strong> {ticket.brand?.name}</p>
+            <p><strong>Description:</strong> {ticket.description || 'No description provided.'}</p>
+        </div>
+      </div>
       
-      <div className="ticket-detail-header">
-        <h1>{ticket.title}</h1>
-        <span className={`status-badge status-${ticket.status}`}>{ticket.status}</span>
-      </div>
-
-      <div className="ticket-info">
-        <p><strong>Brand:</strong> {ticket.brand?.name || 'N/A'}</p>
-        <p><strong>Created:</strong> {new Date(ticket.created_at).toLocaleString()}</p>
-        <p><strong>Channel:</strong> {ticket.channel}</p>
-      </div>
-
-      <div className="ticket-body">
-        <h3>Description</h3>
-        <p>{ticket.description}</p>
-      </div>
-
-      <div className="card mt-4">
-        <div className="card-header">
-          <h5>Add Voice Update</h5>
-        </div>
-        <div className="card-body text-center">
-          {!isRecording ? (
-            <button className="btn btn-primary" onClick={handleStartRecording}>
-              Start Recording
-            </button>
-          ) : (
-            <button className="btn btn-danger" onClick={handleStopRecording}>
-              Stop Recording
-            </button>
-          )}
-          
-          {isRecording && <p className="text-danger mt-2">Recording...</p>}
-
-          {audioURL && (
-            <div className="mt-3">
-              <p>Your recorded message:</p>
-              <audio src={audioURL} controls />
-              <button onClick={handleSendVoiceNote} className="btn btn-success ms-3">
-                Send Voice Note
-              </button>
+      {/* Conditionally render the rating section */}
+      {ticket.status === 'resolved' && !isRated && (
+           <div className="card mt-4">
+                <div className="card-header">
+                    <h5>How was our service?</h5>
+                </div>
+                <div className="card-body text-center">
+                    <p>Please rate your satisfaction with the resolution of this ticket.</p>
+                    <SatisfactionRating onSubmit={handleRatingSubmit} />
+                </div>
             </div>
-          )}
-        </div>
-      </div>
+      )}
+
+      {ticket.status === 'resolved' && isRated && (
+          <div className="alert alert-success mt-4">
+              Thank you for your feedback!
+          </div>
+      )}
+
     </div>
   );
 };

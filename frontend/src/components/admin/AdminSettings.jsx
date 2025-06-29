@@ -1,29 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import adminService from '../../services/adminService';
 
 const AdminSettings = () => {
-    // Mock state for form fields
     const [settings, setSettings] = useState({
-        openAiKey: 'sk-...........................',
-        twilioSid: 'AC..........................',
-        deepgramKey: 'key-.........................',
+        openAiKey: '',
+        twilioSid: '',
+        deepgramKey: '',
         feeAmount: '50',
         resolutionWindow: '24'
     });
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
+    useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                // In a real implementation, you'd fetch current settings
+                // For now, we'll use default values
+                setLoading(false);
+            } catch (err) {
+                console.error('Error loading settings:', err);
+                setError('Failed to load settings');
+                setLoading(false);
+            }
+        };
+        loadSettings();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setSettings(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert('System settings saved successfully! (Mocked)');
+        setSaving(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            await adminService.updateSystemSettings(settings);
+            setSuccess('System settings saved successfully!');
+        } catch (err) {
+            console.error('Error saving settings:', err);
+            setError('Failed to save settings. Please try again.');
+        } finally {
+            setSaving(false);
+        }
     };
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="container mt-4">
             <h1 className="mb-4">System Settings</h1>
+            {error && <div className="alert alert-danger">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
             <div className="card">
                 <div className="card-header">
                     <h4>API Credentials & Rules</h4>
@@ -57,7 +92,9 @@ const AdminSettings = () => {
                             </div>
                         </fieldset>
                         <div className="mt-4">
-                            <button type="submit" className="btn btn-primary">Save Settings</button>
+                            <button type="submit" className="btn btn-primary" disabled={saving}>
+                                {saving ? 'Saving...' : 'Save Settings'}
+                            </button>
                             <Link to="/admin/dashboard" className="btn btn-secondary ms-2">Cancel</Link>
                         </div>
                     </form>

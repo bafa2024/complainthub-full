@@ -1,23 +1,48 @@
-// Mock admin service for demo
-const mockUsers = [
-  { id: 1, email: "john@example.com", full_name: "John Doe", role: "user", brand_id: null },
-  { id: 2, email: "jane@example.com", full_name: "Jane Smith", role: "user", brand_id: null },
-  { id: 3, email: "brand@ecommerce.com", full_name: "Brand Manager", role: "brand_user", brand_id: 1 },
-  { id: 4, email: "admin@system.com", full_name: "System Admin", role: "admin", brand_id: null },
-];
+import apiClient from './apiClient';
 
 const getAllUsers = async () => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockUsers;
+  try {
+    const response = await apiClient.get('/users');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
 };
 
 const getAllBrands = async () => {
-  // Reuse from brandService
-  const { default: brandService } = await import('./brandService');
-  return brandService.getBrands();
+  try {
+    const response = await apiClient.get('/brands');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching brands:', error);
+    throw error;
+  }
+};
+
+const getSystemStats = async () => {
+  try {
+    const response = await apiClient.get('/admin/stats');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching system stats:', error);
+    throw error;
+  }
+};
+
+const updateSystemSettings = async (settings) => {
+  try {
+    const response = await apiClient.put('/admin/settings', settings);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating system settings:', error);
+    throw error;
+  }
 };
 
 export default {
   getAllUsers,
   getAllBrands,
+  getSystemStats,
+  updateSystemSettings,
 };

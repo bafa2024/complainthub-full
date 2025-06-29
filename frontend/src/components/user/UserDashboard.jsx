@@ -42,16 +42,16 @@ const UserDashboard = () => {
 
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-        <h1 className="mb-0">My Dashboard</h1>
-        <div className="btn-group shadow-sm" role="group" aria-label="Lodge Complaint Actions">
-          <Link to="/new-complaint" className="btn btn-outline-secondary d-flex align-items-center gap-2">
+      <div className="dashboard-header mb-4">
+        <h1 className="mb-3">My Dashboard</h1>
+        <div className="btn-group dashboard-actions" role="group" aria-label="Lodge Complaint Actions">
+          <Link to="/new-complaint" className="btn btn-outline-secondary dashboard-action-btn">
             Lodge via Form
           </Link>
-          <Link to="/lodge-voice" className="btn btn-outline-secondary d-flex align-items-center gap-2">
+          <Link to="/lodge-voice" className="btn btn-outline-secondary dashboard-action-btn">
             Lodge via Voice
           </Link>
-          <Link to="/chat" className="btn btn-primary d-flex align-items-center gap-2">
+          <Link to="/chat" className="btn btn-primary dashboard-action-btn">
             Start a Chat
           </Link>
         </div>
@@ -59,45 +59,37 @@ const UserDashboard = () => {
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="row text-center mb-4 g-3">
-        <div className="col-md-4">
-          <div className="card h-100">
-            <div className="card-body d-flex flex-column justify-content-center">
-              <h2 className="display-4 fw-bold">{tickets.length}</h2>
-              <p className="text-muted mb-0">Total Tickets</p>
-            </div>
-          </div>
+      <div className="stats-grid">
+        <div className="stat-card">
+          <h2>{tickets.length}</h2>
+          <p>Total Tickets</p>
         </div>
-        <div className="col-md-4">
-          <div className="card h-100">
-            <div className="card-body d-flex flex-column justify-content-center">
-              <h2 className="display-4 fw-bold">{statusCounts.new + statusCounts['in-progress']}</h2>
-              <p className="text-muted mb-0">Active Tickets</p>
-            </div>
-          </div>
+        <div className="stat-card">
+          <h2>{statusCounts.new + statusCounts['in-progress']}</h2>
+          <p>Active Tickets</p>
         </div>
-        <div className="col-md-4">
-          <div className="card h-100">
-            <div className="card-body d-flex flex-column justify-content-center">
-              <h2 className="display-4 fw-bold">{statusCounts.resolved}</h2>
-              <p className="text-muted mb-0">Resolved Tickets</p>
-            </div>
-          </div>
+        <div className="stat-card">
+          <h2>{statusCounts.resolved}</h2>
+          <p>Resolved Tickets</p>
         </div>
       </div>
 
-      <h2>My Tickets</h2>
-      {tickets.length > 0 ? (
-        <div className="list-group">
-          {tickets.map((ticket) => (
-            <TicketCard key={ticket.id} ticket={ticket} linkPrefix="/tickets" />
-          ))}
-        </div>
-      ) : (
-        <div className="card card-body text-center">
-          <p className="mb-0">You haven't submitted any tickets yet.</p>
-        </div>
-      )}
+      <div className="tickets-section">
+        <h2 className="mb-3">My Tickets</h2>
+        {tickets.length > 0 ? (
+          <div className="tickets-list">
+            {tickets.map((ticket) => (
+              <TicketCard key={ticket.id} ticket={ticket} linkPrefix="/tickets" />
+            ))}
+          </div>
+        ) : (
+          <div className="card">
+            <div className="card-body text-center">
+              <p className="mb-0">You haven't submitted any tickets yet.</p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

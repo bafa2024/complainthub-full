@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import authService from '../services/authService';
 
 export const AuthContext = createContext(null);
 
@@ -10,43 +11,145 @@ export const useAuth = () => {
   return context;
 };
 
+// Mockup mode configuration
+const MOCKUP_MODE = true; // Set to true to enable mockup mode
+const MOCK_USER = {
+  id: 1,
+  email: 'demo@example.com',
+  full_name: 'Demo User',
+  role: 'user', // Can be 'user', 'brand_user', or 'admin'
+  phone_number: '+1234567890'
+};
+
 export const AuthProvider = ({ children }) => {
-  // Always authenticated for demo
-  const [isAuthenticated] = useState(true);
-  const [loading] = useState(false);
-  
-  // Mock user - change role to test different dashboards
-  // Options: "user", "brand_user", "admin"
-  const [user] = useState({
-    id: 1,
-    full_name: "Demo User",
-    email: "demo@example.com",
-    role: localStorage.getItem('demoRole') || "user", // Read from localStorage
-    brand_id: 1, // For brand_user role
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [mockupMode, setMockupMode] = useState(MOCKUP_MODE);
 
-  // Mock functions
+  useEffect(() => {
+    // Check if user is logged in on mount
+    const initAuth = async () => {
+      if (mockupMode) {
+        // Mockup mode: Set mock user data
+        setUser(MOCK_USER);
+        setIsAuthenticated(true);
+        setToken('mock-token');
+        setLoading(false);
+        return;
+      }
+
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        try {
+          const userData = await authService.getCurrentUser();
+          setUser(userData);
+          setIsAuthenticated(true);
+          setToken(storedToken);
+        } catch (error) {
+          console.error('Failed to get current user:', error);
+          localStorage.removeItem('token');
+          setToken(null);
+        }
+      }
+      setLoading(false);
+    };
+    initAuth();
+  }, [mockupMode]);
+
   const login = async (email, password) => {
-    console.log("Mock login:", email);
-    return user;
-  };
+    if (mockupMode) {
+      // Mockup mode: Return mock user data
+      const mockUser = { ...MOCK_USER };
+      setUser(mockUser);
+      setIsAuthenticated(true);
+      setToken('mock-token');
+      return mockUser;
+    }
 
-  const logout = () => {
-    console.log("Mock logout");
+    try {
+      const response = await authService.login(email, password);
+      const { access_token } = response;
+      
+      localStorage.setItem('token', access_token);
+      setToken(access_token);
+      
+      // Get user data after login
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
+      setIsAuthenticated(true);
+      
+      return userData;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
   const signup = async (userData) => {
-    console.log("Mock signup:", userData);
-    return { ...user, ...userData };
+    if (mockupMode) {
+      // Mockup mode: Return success response
+      return { message: 'Mock signup successful' };
+    }
+
+    try {
+      const response = await authService.signup(userData);
+      return response;
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error;
+    }
+  };
+
+  const logout = () => {
+    if (mockupMode) {
+      // Mockup mode: Reset to mock user
+      setUser(MOCK_USER);
+      setIsAuthenticated(true);
+      setToken('mock-token');
+      return;
+    }
+
+    authService.logout();
+    setUser(null);
+    setIsAuthenticated(false);
+    setToken(null);
+  };
+
+  const switchMockRole = (newRole) => {
+    if (mockupMode) {
+      const updatedUser = { ...MOCK_USER, role: newRole };
+      setUser(updatedUser);
+    }
+  };
+
+  const toggleMockupMode = () => {
+    setMockupMode(!mockupMode);
+    if (!mockupMode) {
+      // Enable mockup mode
+      setUser(MOCK_USER);
+      setIsAuthenticated(true);
+      setToken('mock-token');
+    } else {
+      // Disable mockup mode
+      setUser(null);
+      setIsAuthenticated(false);
+      setToken(null);
+    }
   };
 
   const value = {
     isAuthenticated,
     user,
     loading,
+    token,
     login,
     logout,
     signup,
+    mockupMode,
+    switchMockRole,
+    toggleMockupMode,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

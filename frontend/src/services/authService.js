@@ -1,4 +1,3 @@
-// frontend/src/services/authService.js
 import apiClient from './apiClient';
 
 const login = async (email, password) => {
@@ -12,6 +11,7 @@ const login = async (email, password) => {
 };
 
 const signup = async (userData) => {
+    // This is the corrected line. We are now calling the '/users/' endpoint.
     const response = await apiClient.post('/users/', userData);
     return response.data;
 };
@@ -22,7 +22,7 @@ const getCurrentUser = async () => {
 };
 
 const logout = () => {
-    // Handled in AuthContext by removing the token
+    // This is handled in the AuthContext by removing the token.
     console.log("Logged out");
 };
 

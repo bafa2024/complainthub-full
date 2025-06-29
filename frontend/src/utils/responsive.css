@@ -1,0 +1,256 @@
+/* frontend/src/utils/responsive.css */
+
+/* Mobile-first responsive utilities */
+
+/* Container utilities */
+.container-fluid {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin: 0 auto;
+}
+
+.container-sm {
+  max-width: 540px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.container-md {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.container-lg {
+  max-width: 960px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.container-xl {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Grid utilities */
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid-1 { grid-template-columns: 1fr; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Flex utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.items-center { align-items: center; }
+.items-stretch { align-items: stretch; }
+
+/* Spacing utilities */
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+.gap-4 { gap: 1.5rem; }
+.gap-5 { gap: 3rem; }
+
+/* Text utilities */
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.text-base { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
+.text-4xl { font-size: 2.25rem; }
+
+/* Responsive breakpoints */
+@media (min-width: 576px) {
+  .container-sm {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  .grid-sm-1 { grid-template-columns: 1fr; }
+  .grid-sm-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-sm-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-sm-4 { grid-template-columns: repeat(4, 1fr); }
+  
+  .flex-sm-col { flex-direction: column; }
+  .flex-sm-row { flex-direction: row; }
+  
+  .text-sm-xs { font-size: 0.75rem; }
+  .text-sm-sm { font-size: 0.875rem; }
+  .text-sm-base { font-size: 1rem; }
+  .text-sm-lg { font-size: 1.125rem; }
+  .text-sm-xl { font-size: 1.25rem; }
+  .text-sm-2xl { font-size: 1.5rem; }
+}
+
+@media (min-width: 768px) {
+  .container-md {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  
+  .grid-md-1 { grid-template-columns: 1fr; }
+  .grid-md-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-md-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-md-4 { grid-template-columns: repeat(4, 1fr); }
+  
+  .flex-md-col { flex-direction: column; }
+  .flex-md-row { flex-direction: row; }
+  
+  .text-md-xs { font-size: 0.75rem; }
+  .text-md-sm { font-size: 0.875rem; }
+  .text-md-base { font-size: 1rem; }
+  .text-md-lg { font-size: 1.125rem; }
+  .text-md-xl { font-size: 1.25rem; }
+  .text-md-2xl { font-size: 1.5rem; }
+  .text-md-3xl { font-size: 1.875rem; }
+}
+
+@media (min-width: 992px) {
+  .container-lg {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+  
+  .grid-lg-1 { grid-template-columns: 1fr; }
+  .grid-lg-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-lg-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-lg-4 { grid-template-columns: repeat(4, 1fr); }
+  
+  .flex-lg-col { flex-direction: column; }
+  .flex-lg-row { flex-direction: row; }
+  
+  .text-lg-xs { font-size: 0.75rem; }
+  .text-lg-sm { font-size: 0.875rem; }
+  .text-lg-base { font-size: 1rem; }
+  .text-lg-lg { font-size: 1.125rem; }
+  .text-lg-xl { font-size: 1.25rem; }
+  .text-lg-2xl { font-size: 1.5rem; }
+  .text-lg-3xl { font-size: 1.875rem; }
+  .text-lg-4xl { font-size: 2.25rem; }
+}
+
+@media (min-width: 1200px) {
+  .container-xl {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+  
+  .grid-xl-1 { grid-template-columns: 1fr; }
+  .grid-xl-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-xl-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-xl-4 { grid-template-columns: repeat(4, 1fr); }
+  
+  .flex-xl-col { flex-direction: column; }
+  .flex-xl-row { flex-direction: row; }
+}
+
+/* Hide/show utilities */
+.hidden { display: none; }
+.block { display: block; }
+.inline { display: inline; }
+.inline-block { display: inline-block; }
+
+@media (min-width: 576px) {
+  .hidden-sm { display: none; }
+  .block-sm { display: block; }
+  .inline-sm { display: inline; }
+  .inline-block-sm { display: inline-block; }
+}
+
+@media (min-width: 768px) {
+  .hidden-md { display: none; }
+  .block-md { display: block; }
+  .inline-md { display: inline; }
+  .inline-block-md { display: inline-block; }
+}
+
+@media (min-width: 992px) {
+  .hidden-lg { display: none; }
+  .block-lg { display: block; }
+  .inline-lg { display: inline; }
+  .inline-block-lg { display: inline-block; }
+}
+
+@media (min-width: 1200px) {
+  .hidden-xl { display: none; }
+  .block-xl { display: block; }
+  .inline-xl { display: inline; }
+  .inline-block-xl { display: inline-block; }
+}
+
+/* Touch-friendly utilities */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.touch-target-sm {
+  min-height: 36px;
+  min-width: 36px;
+}
+
+.touch-target-lg {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* Mobile-specific utilities */
+.mobile-only {
+  display: block;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Safe area utilities for mobile devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+} 

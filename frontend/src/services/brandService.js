@@ -1,38 +1,48 @@
-// Mock brand service for demo
-const mockBrands = [
-  { id: 1, name: "E-Commerce Inc.", support_email: "support@ecommerce.com", credit_balance: 2500 },
-  { id: 2, name: "SaaS Platform", support_email: "help@saasplatform.com", credit_balance: 1800 },
-  { id: 3, name: "Tech Corp", support_email: "support@techcorp.com", credit_balance: 3200 },
-];
+import apiClient from './apiClient';
 
 const getBrands = async () => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockBrands;
+  try {
+    const response = await apiClient.get('/brands');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching brands:', error);
+    throw error;
+  }
 };
 
 const createBrand = async (brandData) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  const newBrand = {
-    ...brandData,
-    id: mockBrands.length + 1,
-    credit_balance: 0,
-  };
-  mockBrands.push(newBrand);
-  return newBrand;
+  try {
+    const response = await apiClient.post('/brands', brandData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating brand:', error);
+    throw error;
+  }
 };
 
 const updateBrand = async (brandId, brandData) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  const brandIndex = mockBrands.findIndex(b => b.id === parseInt(brandId));
-  if (brandIndex !== -1) {
-    mockBrands[brandIndex] = { ...mockBrands[brandIndex], ...brandData };
-    return mockBrands[brandIndex];
+  try {
+    const response = await apiClient.put(`/brands/${brandId}`, brandData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating brand:', error);
+    throw error;
   }
-  throw new Error('Brand not found');
+};
+
+const getBrandById = async (brandId) => {
+  try {
+    const response = await apiClient.get(`/brands/${brandId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching brand:', error);
+    throw error;
+  }
 };
 
 export default {
   getBrands,
   createBrand,
   updateBrand,
+  getBrandById,
 };

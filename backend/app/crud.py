@@ -20,10 +20,16 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 def create_user(db: Session, user: schemas.UserCreate):
-    logger.info(f"Creating user with email: {user.email}")
+    logger.info(f"Attempting to create user with email: {user.email}")
+    
+    # First, check if user already exists to provide a clean error
     db_user_check = get_user_by_email(db, email=user.email)
     if db_user_check:
-        raise HTTPException(status_code=400, detail="A user with this email already exists.")
+        raise HTTPException(
+            status_code=400,
+            detail="A user with this email already exists.",
+        )
+        
     hashed_password = get_password_hash(user.password)
     db_user = models.User(
         email=user.email,
@@ -38,11 +44,19 @@ def create_user(db: Session, user: schemas.UserCreate):
         db.refresh(db_user)
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="A user with this email already exists.")
+        # This is a fallback in case of a race condition
+        raise HTTPException(
+            status_code=400,
+            detail="A user with this email already exists.",
+        )
     except Exception as e:
         db.rollback()
         logger.error(f"An unexpected error occurred creating user: {e}")
-        raise HTTPException(status_code=500, detail="An internal error occurred while creating the user.")
+        raise HTTPException(
+            status_code=500,
+            detail="An internal error occurred while creating the user."
+        )
+
     logger.info(f"User created successfully with ID: {db_user.id}")
     return db_user
 #endregion
@@ -89,7 +103,6 @@ def get_ticket(db: Session, ticket_id: int):
     return db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
 
 def get_public_tickets(db: Session, skip: int = 0, limit: int = 100):
-    # Fetch tickets that are marked as public and are not yet resolved or closed
     return db.query(models.Ticket).filter(
         models.Ticket.is_public == True,
         models.Ticket.status.notin_([models.TicketStatusEnum.resolved, models.TicketStatusEnum.closed])
@@ -110,7 +123,7 @@ def create_ticket(db: Session, ticket: schemas.TicketCreate, owner_id: int):
         db_ticket = models.Ticket(
             **ticket.dict(),
             owner_id=owner_id,
-            status=models.TicketStatusEnum.new # Explicitly set status on creation
+            status=models.TicketStatusEnum.new
         )
         db.add(db_ticket)
         db.commit()

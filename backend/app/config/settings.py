@@ -4,7 +4,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "AI Complaint Management"
     API_V1_STR: str = "/api/v1"
 
-    DATABASE_URL: str = "postgresql+psycopg2://postgres:postgres@localhost/complaintdb"
+    DATABASE_URL: str = "sqlite:///./voicebot.db"
 
     SECRET_KEY: str = "a_very_secret_key_that_you_should_change"
     ALGORITHM: str = "HS256"

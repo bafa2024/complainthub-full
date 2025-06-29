@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app import crud
 from app.api.v1 import deps # CORRECTED IMPORT PATH
 from app.core import security
-from app.config import settings
+from app.config.settings import settings
 from app.database import get_db # CORRECT IMPORT
 
 router = APIRouter()

@@ -13,20 +13,26 @@ const TicketCard = ({ ticket, linkPrefix = '/tickets' }) => {
   return (
     <Link to={ticketDetailPath} className="ticket-card">
       <div className="ticket-card-header">
-        {/* Correctly accesses the nested owner's name, provides a fallback */}
-        <h3>{ticket.title || 'No Title'}</h3>
-        <span className={`status-badge status-${ticket.status}`}>{ticket.status.replace('_', ' ')}</span>
+        <h3 className="ticket-title">{ticket.title || 'No Title'}</h3>
+        <span className={`status-badge status-${ticket.status}`}>
+          {ticket.status.replace('_', ' ')}
+        </span>
       </div>
       <div className="ticket-card-body">
-        <p>
-          Brand: {ticket.brand?.name || 'N/A'}
-        </p>
-        <p>
-          User: {ticket.owner?.full_name || ticket.owner?.email || 'Anonymous'}
-        </p>
-        <p>
-          Date: {new Date(ticket.created_at).toLocaleDateString()}
-        </p>
+        <div className="ticket-info">
+          <div className="info-item">
+            <span className="info-label">Brand:</span>
+            <span className="info-value">{ticket.brand?.name || 'N/A'}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">User:</span>
+            <span className="info-value">{ticket.owner?.full_name || ticket.owner?.email || 'Anonymous'}</span>
+          </div>
+          <div className="info-item">
+            <span className="info-label">Date:</span>
+            <span className="info-value">{new Date(ticket.created_at).toLocaleDateString()}</span>
+          </div>
+        </div>
       </div>
     </Link>
   );
