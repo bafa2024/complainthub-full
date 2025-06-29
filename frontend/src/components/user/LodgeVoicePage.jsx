@@ -1,13 +1,14 @@
 // Create this file at: frontend/src/components/user/LodgeVoicePage.jsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import VoiceRecorder from '../shared/VoiceRecorder';
 import './LodgeVoicePage.css'; // We will create this CSS file next
 
 // SVG Icons for the option cards
 const PhoneIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" className="bi bi-telephone-outbound-fill mb-3" viewBox="0 0 16 16">
-    <path fillRule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.28 1.465l-2.138 2.138a.64.64 0 0 0 .045.901l6.206 6.207a.64.64 0 0 0 .901.045l2.138-2.138c.49-.164 1.042-.048 1.465.28l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877zM11 .5a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V1.707l-4.146 4.147a.5.5 0 0 1-.708-.708L9.293 1H6.5a.5.5 0 0 1 0-1z"/>
+    <path fillRule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.28 1.465l-2.138 2.138a.64.64 0 0 0 .045.901l6.206 6.207a.64.64 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
   </svg>
 );
 const WebchatIcon = () => (
@@ -16,11 +17,203 @@ const WebchatIcon = () => (
     </svg>
 );
 
-
 const LodgeVoicePage = () => {
+  const [isVoiceChatActive, setIsVoiceChatActive] = useState(false);
+  const [complaintData, setComplaintData] = useState({
+    title: '',
+    description: '',
+    category: '',
+    priority: 'medium'
+  });
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleStartWebVoiceChat = () => {
-    alert("Real-time web voice chat functionality is coming soon!");
+    setIsVoiceChatActive(true);
   };
+
+  const handleBackToOptions = () => {
+    setIsVoiceChatActive(false);
+    setComplaintData({
+      title: '',
+      description: '',
+      category: '',
+      priority: 'medium'
+    });
+    setAudioBlob(null);
+  };
+
+  const handleRecordingComplete = (blob) => {
+    setAudioBlob(blob);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setComplaintData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmitComplaint = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Create FormData to send both audio and form data
+      const formData = new FormData();
+      formData.append('title', complaintData.title);
+      formData.append('description', complaintData.description);
+      formData.append('category', complaintData.category);
+      formData.append('priority', complaintData.priority);
+      
+      if (audioBlob) {
+        formData.append('audio', audioBlob, 'complaint-recording.wav');
+      }
+
+      // Simulate API call (replace with actual API endpoint)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      alert('Voice complaint submitted successfully! You will receive a confirmation shortly.');
+      handleBackToOptions();
+    } catch (error) {
+      console.error('Error submitting complaint:', error);
+      alert('Failed to submit complaint. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isVoiceChatActive) {
+    return (
+      <div className="container lodge-voice-container">
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <div className="card shadow">
+              <div className="card-header bg-primary text-white">
+                <h3 className="mb-0">
+                  <button 
+                    className="btn btn-link text-white p-0 me-3" 
+                    onClick={handleBackToOptions}
+                  >
+                    ←
+                  </button>
+                  Record Your Voice Complaint
+                </h3>
+              </div>
+              <div className="card-body p-4">
+                <form onSubmit={handleSubmitComplaint}>
+                  {/* Voice Recorder */}
+                  <div className="mb-4">
+                    <h5 className="mb-3">Step 1: Record Your Complaint</h5>
+                    <VoiceRecorder onRecordingComplete={handleRecordingComplete} />
+                    {audioBlob && (
+                      <div className="alert alert-success mt-2">
+                        ✓ Audio recording completed! You can now fill in the details below.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Complaint Details Form */}
+                  <div className="mb-4">
+                    <h5 className="mb-3">Step 2: Add Complaint Details</h5>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="title" className="form-label">Complaint Title *</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="title"
+                        name="title"
+                        value={complaintData.title}
+                        onChange={handleInputChange}
+                        placeholder="Brief title for your complaint"
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="category" className="form-label">Category *</label>
+                      <select
+                        className="form-select"
+                        id="category"
+                        name="category"
+                        value={complaintData.category}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="">Select a category</option>
+                        <option value="technical">Technical Issue</option>
+                        <option value="billing">Billing Problem</option>
+                        <option value="service">Service Quality</option>
+                        <option value="delivery">Delivery Issue</option>
+                        <option value="refund">Refund Request</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="priority" className="form-label">Priority Level</label>
+                      <select
+                        className="form-select"
+                        id="priority"
+                        name="priority"
+                        value={complaintData.priority}
+                        onChange={handleInputChange}
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                      </select>
+                    </div>
+
+                    <div className="mb-4">
+                      <label htmlFor="description" className="form-label">Additional Details</label>
+                      <textarea
+                        className="form-control"
+                        id="description"
+                        name="description"
+                        value={complaintData.description}
+                        onChange={handleInputChange}
+                        rows="4"
+                        placeholder="Provide any additional context or details about your complaint..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="d-grid">
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-lg"
+                      disabled={isSubmitting || !audioBlob}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Submitting Complaint...
+                        </>
+                      ) : (
+                        'Submit Voice Complaint'
+                      )}
+                    </button>
+                  </div>
+
+                  {!audioBlob && (
+                    <div className="alert alert-info mt-3">
+                      <i className="bi bi-info-circle me-2"></i>
+                      Please record your voice complaint first before submitting.
+                    </div>
+                  )}
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container lodge-voice-container text-center">
