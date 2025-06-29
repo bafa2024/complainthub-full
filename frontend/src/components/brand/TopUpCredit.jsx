@@ -47,6 +47,11 @@ export default function TopUpCredit() {
     }
   };
 
+  const handleProceed = (e) => {
+    e.preventDefault();
+    navigate('/brand/proceed-payment', { state: { selectedPackage: selected } });
+  };
+
   return (
     <div className="container-fluid brand-dashboard-container">
       <Link to="/brand/billing" className="btn btn-link mb-3">&larr; Back to Billing</Link>
@@ -55,7 +60,7 @@ export default function TopUpCredit() {
         <div className="col-md-6 col-lg-5">
           <div className="card shadow-sm">
             <div className="card-body">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleProceed}>
                 <h4 className="mb-4">Select a Credit Package</h4>
                 <div className="list-group mb-4">
                   {packages.map(pkg => (
@@ -86,7 +91,7 @@ export default function TopUpCredit() {
                   </div>
                 </div>
                 <button type="submit" className="btn btn-primary w-100" disabled={processing}>
-                  {processing ? 'Processing...' : 'Proceed to Payment'}
+                  Proceed to Payment
                 </button>
               </form>
             </div>

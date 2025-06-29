@@ -20,6 +20,8 @@ import BrandDashboard from './components/brand/BrandDashboard';
 import BrandTicketDetail from './components/brand/BrandTicketDetail';
 import BrandBilling from './components/brand/BrandBilling';
 import BrandTeam from './components/brand/BrandTeam'; // Import the new component
+import TopUpCredit from './components/brand/TopUpCredit';
+import ProceedPayment from './components/brand/ProceedPayment';
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminBrands from './components/admin/AdminBrands';
 import AdminUsers from './components/admin/AdminUsers';
@@ -76,6 +78,8 @@ function App() {
             <Route path="/brand/dashboard" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandDashboard /></ProtectedRoute>} />
             <Route path="/brand/tickets/:ticketId" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTicketDetail /></ProtectedRoute>} />
             <Route path="/brand/billing" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandBilling /></ProtectedRoute>} />
+            <Route path="/brand/topup" element={<ProtectedRoute roles={['brand_user', 'admin']}><TopUpCredit /></ProtectedRoute>} />
+            <Route path="/brand/proceed-payment" element={<ProtectedRoute roles={['brand_user', 'admin']}><ProceedPayment /></ProtectedRoute>} />
             <Route path="/brand/team" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTeam /></ProtectedRoute>} />
 
             {/* Admin Portal Routes */}

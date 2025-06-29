@@ -17,7 +17,7 @@ export default function BrandBilling() {
 
       {/* Credit Balance Card */}
       <div className="row mb-4">
-        <div className="col-md-6 col-lg-4">
+        <div className="col-12">
           <div className="card stat-card-brand shadow-sm">
             <div className="card-body text-center">
               <div className="stat-icon credits mb-2" style={{ fontSize: 40 }}>&#128179;</div>
