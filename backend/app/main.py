@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from .api.v1.endpoints import users, login, tickets, brands, webhook, admin, chat, testing
+from .api.v1.endpoints import users, login, tickets, brands, webhook, admin, chat, testing, tickets_extended
 from .api.v1.routes import auth
 from .database import engine, Base
 from .config import settings
@@ -138,6 +138,7 @@ try:
     api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
     api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
     api_router.include_router(testing.router, prefix="/testing", tags=["testing"])
+    api_router.include_router(tickets_extended.router, prefix="/tickets_extended", tags=["tickets_extended"])
 
     app.include_router(api_router, prefix="/api/v1")
     logger.info("API routers configured successfully")

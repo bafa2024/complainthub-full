@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import json
+from app.api.v1 import deps
+from app.models import User, Ticket
 
 router = APIRouter()
 
@@ -130,10 +132,11 @@ async def upload_voice_complaint(
         brand_id=meta.get("brand_id"),
         channel="voice",
         description=transcript,
+        transcript=transcript,
+        voice_recording_url=file_path,
         category=analysis.get("category", "complaint"),
         urgency=analysis.get("urgency", 1),
         sentiment_score=analysis.get("sentiment", 0),
-        audio_file_path=file_path,
         created_at=datetime.utcnow()
     )
     db.add(ticket)

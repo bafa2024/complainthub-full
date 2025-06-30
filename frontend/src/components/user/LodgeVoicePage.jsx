@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import VoiceRecorder from '../shared/VoiceRecorder';
 import './LodgeVoicePage.css'; // We will create this CSS file next
+import apiClient from '../../services/apiClient';
 
 // SVG Icons for the option cards
 const PhoneIcon = () => (
@@ -27,6 +28,9 @@ const LodgeVoicePage = () => {
   });
   const [audioBlob, setAudioBlob] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [submittedAudioURL, setSubmittedAudioURL] = useState(null);
 
   const handleStartWebVoiceChat = () => {
     setIsVoiceChatActive(true);
@@ -58,31 +62,81 @@ const LodgeVoicePage = () => {
   const handleSubmitComplaint = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMsg('');
+    setSubmissionResult(null);
+    setSubmittedAudioURL(null);
 
     try {
       // Create FormData to send both audio and form data
       const formData = new FormData();
-      formData.append('title', complaintData.title);
-      formData.append('description', complaintData.description);
-      formData.append('category', complaintData.category);
-      formData.append('priority', complaintData.priority);
-      
+      formData.append('metadata', JSON.stringify(complaintData));
       if (audioBlob) {
         formData.append('audio', audioBlob, 'complaint-recording.wav');
+        setSubmittedAudioURL(URL.createObjectURL(audioBlob));
+      } else {
+        setErrorMsg('Please record your complaint before submitting.');
+        setIsSubmitting(false);
+        return;
       }
 
-      // Simulate API call (replace with actual API endpoint)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      alert('Voice complaint submitted successfully! You will receive a confirmation shortly.');
+      // Real API call
+      const response = await apiClient.post('/tickets_extended/voice', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (!response.data.transcript || response.data.transcript.trim() === "") {
+        setErrorMsg('Transcription failed or was empty. Please try again or speak more clearly.');
+        setIsSubmitting(false);
+        return;
+      }
+      setSubmissionResult(response.data);
       handleBackToOptions();
     } catch (error) {
-      console.error('Error submitting complaint:', error);
-      alert('Failed to submit complaint. Please try again.');
+      setErrorMsg(error?.message || 'Failed to submit complaint. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (submissionResult) {
+    return (
+      <div className="container lodge-voice-container">
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <div className="card shadow mt-5">
+              <div className="card-header bg-success text-white">
+                <h3 className="mb-0">Voice Complaint Submitted!</h3>
+              </div>
+              <div className="card-body p-4">
+                <p><strong>Ticket ID:</strong> {submissionResult.ticket_id}</p>
+                <p><strong>Transcript:</strong> {submissionResult.transcript}</p>
+                <p><strong>Category:</strong> {submissionResult.category}</p>
+                {typeof submissionResult.sentiment !== 'undefined' && (
+                  <p><strong>Sentiment Score:</strong> {submissionResult.sentiment}</p>
+                )}
+                {typeof submissionResult.urgency !== 'undefined' && (
+                  <p><strong>Urgency Level:</strong> {submissionResult.urgency}</p>
+                )}
+                {submittedAudioURL && (
+                  <div className="mb-3">
+                    <strong>Your Submitted Audio:</strong>
+                    <audio src={submittedAudioURL} controls className="w-100 mt-2" />
+                    <a href={submittedAudioURL} download="complaint-recording.wav" className="btn btn-outline-secondary btn-sm mt-2">Download Audio</a>
+                  </div>
+                )}
+                <div className="mt-3">
+                  <Link to="/dashboard" className="btn btn-primary me-2">Go to Dashboard</Link>
+                  <Link to={`/tickets/${submissionResult.ticket_id}`} className="btn btn-outline-primary">View Ticket</Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isVoiceChatActive) {
     return (
@@ -181,6 +235,14 @@ const LodgeVoicePage = () => {
                       />
                     </div>
                   </div>
+
+                  {errorMsg && <div className="alert alert-danger">{errorMsg}</div>}
+                  {isSubmitting && (
+                    <div className="text-center my-3">
+                      <span className="spinner-border text-primary" role="status" aria-hidden="true"></span>
+                      <div>Uploading and transcribing your complaint, please wait...</div>
+                    </div>
+                  )}
 
                   {/* Submit Button */}
                   <div className="d-grid">

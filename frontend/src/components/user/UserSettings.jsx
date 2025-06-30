@@ -180,8 +180,8 @@ export default function UserSettings() {
 
   return (
     <div>
-      {/* Header */}
-      <header className="settings-header">
+      {/* REMOVE the header section below to avoid duplicated navbar */}
+      {/* <header className="settings-header">
         <div className="header-container">
           <div className="logo">ComplaintHub</div>
           <div className="header-nav">
@@ -189,7 +189,7 @@ export default function UserSettings() {
             <Link to="/" className="btn btn-primary">Logout</Link>
           </div>
         </div>
-      </header>
+      </header> */}
 
       <div className="settings-container">
         {/* Alert Messages */}

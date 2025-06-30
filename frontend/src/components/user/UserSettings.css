@@ -36,7 +36,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  margin-top: 80px;
+  margin-top: 0;
 }
 
 .settings-layout {
@@ -206,16 +206,17 @@
 /* Checkboxes and Radio */
 .form-check {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   margin-bottom: 15px;
 }
 
-.form-check input {
-  margin-top: 3px;
-  width: 16px;
-  height: 16px;
+.form-check input[type="checkbox"] {
+  margin-top: 0;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .form-check label {
@@ -223,6 +224,8 @@
   font-size: 14px;
   color: #495057;
   line-height: 1.4;
+  margin: 0;
+  display: block;
 }
 
 .form-check-group {
