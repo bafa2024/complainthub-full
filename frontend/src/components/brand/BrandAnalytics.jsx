@@ -1,31 +1,131 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import ticketService from '../../services/ticketService';
+import LoadingSpinner from '../shared/LoadingSpinner';
 import './BrandAnalytics.css';
 
 export default function BrandAnalytics() {
   const [dateRange, setDateRange] = useState('7d');
   const [startDate, setStartDate] = useState('2024-01-01');
   const [endDate, setEndDate] = useState('2024-01-31');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { user } = useAuth();
 
-  // Mock analytics data
+  // Real analytics data
   const [analyticsData, setAnalyticsData] = useState({
-    totalComplaints: 1247,
-    resolvedComplaints: 1189,
-    pendingComplaints: 58,
-    avgResponseTime: '2.3h',
-    satisfactionScore: 4.2,
-    complaintsThisWeek: 89,
-    complaintsLastWeek: 76,
-    responseTimeTrend: '+12%',
-    satisfactionTrend: '+5%'
+    totalComplaints: 0,
+    resolvedComplaints: 0,
+    pendingComplaints: 0,
+    avgResponseTime: '0h',
+    satisfactionScore: 0,
+    complaintsThisWeek: 0,
+    complaintsLastWeek: 0,
+    responseTimeTrend: '0%',
+    satisfactionTrend: '0%'
   });
+
+  const [tickets, setTickets] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, [dateRange, startDate, endDate]);
+
+  const fetchAnalyticsData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Fetch all tickets for the brand
+      const allTickets = await ticketService.getTickets();
+      
+      // Filter tickets for this brand
+      const brandTickets = allTickets.filter(ticket => ticket.brand_id === user?.brand_id);
+      setTickets(brandTickets);
+
+      // Calculate date ranges
+      const now = new Date();
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+      // Calculate analytics
+      const totalComplaints = brandTickets.length;
+      const resolvedComplaints = brandTickets.filter(t => t.status === 'resolved').length;
+      const pendingComplaints = brandTickets.filter(t => t.status !== 'resolved').length;
+      
+      // Calculate average response time (mock calculation for now)
+      const avgResponseTime = totalComplaints > 0 ? '2.3h' : '0h';
+      
+      // Calculate satisfaction score
+      const ratedTickets = brandTickets.filter(t => t.satisfaction_rating);
+      const satisfactionScore = ratedTickets.length > 0 
+        ? (ratedTickets.reduce((sum, t) => sum + (t.satisfaction_rating || 0), 0) / ratedTickets.length).toFixed(1)
+        : 0;
+
+      // Calculate weekly trends
+      const complaintsThisWeek = brandTickets.filter(t => new Date(t.created_at) >= weekAgo).length;
+      const complaintsLastWeek = brandTickets.filter(t => {
+        const ticketDate = new Date(t.created_at);
+        return ticketDate >= twoWeeksAgo && ticketDate < weekAgo;
+      }).length;
+
+      // Calculate trends
+      const responseTimeTrend = '+12%'; // Mock trend
+      const satisfactionTrend = '+5%'; // Mock trend
+
+      // Generate recent activity
+      const recentTickets = brandTickets
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 5);
+
+      const activity = recentTickets.map(ticket => ({
+        id: ticket.id,
+        type: ticket.status === 'resolved' ? 'resolved' : ticket.status === 'new' ? 'new' : 'urgent',
+        title: `Complaint #${ticket.id} ${ticket.status === 'resolved' ? 'resolved' : ticket.status === 'new' ? 'received' : 'updated'}`,
+        details: ticket.description?.substring(0, 50) + '...' || 'No description',
+        time: getTimeAgo(ticket.created_at),
+        icon: ticket.status === 'resolved' ? '✅' : ticket.status === 'new' ? '📝' : '🚨'
+      }));
+
+      setAnalyticsData({
+        totalComplaints,
+        resolvedComplaints,
+        pendingComplaints,
+        avgResponseTime,
+        satisfactionScore: parseFloat(satisfactionScore),
+        complaintsThisWeek,
+        complaintsLastWeek,
+        responseTimeTrend,
+        satisfactionTrend
+      });
+
+      setRecentActivity(activity);
+
+    } catch (err) {
+      console.error('Error fetching analytics data:', err);
+      setError('Failed to load analytics data: ' + (err.message || 'Unknown error'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTimeAgo = (dateString) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays} days ago`;
+  };
 
   const handleDateRangeChange = (range) => {
     setDateRange(range);
     // In a real app, this would fetch new data based on the date range
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
+    fetchAnalyticsData();
   };
 
   const handleExport = (type) => {
@@ -43,6 +143,84 @@ export default function BrandAnalytics() {
     }
   };
 
+  // Calculate chart data for complaints over time
+  const getChartData = () => {
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dayStart = new Date(date.setHours(0, 0, 0, 0));
+      const dayEnd = new Date(date.setHours(23, 59, 59, 999));
+      
+      const dayTickets = tickets.filter(t => {
+        const ticketDate = new Date(t.created_at);
+        return ticketDate >= dayStart && ticketDate <= dayEnd;
+      }).length;
+      
+      last7Days.push(dayTickets);
+    }
+    return last7Days;
+  };
+
+  // Calculate category distribution
+  const getCategoryData = () => {
+    const categories = {};
+    tickets.forEach(ticket => {
+      const category = ticket.category || 'other';
+      categories[category] = (categories[category] || 0) + 1;
+    });
+    return categories;
+  };
+
+  const chartData = getChartData();
+  const categoryData = getCategoryData();
+
+  if (loading) {
+    return (
+      <div className="brand-analytics">
+        <div className="analytics-header">
+          <div className="header-container">
+            <div className="brand-info">
+              <div className="brand-logo">Analytics Dashboard</div>
+              <div className="user-info">
+                <span>Welcome back, {user?.full_name || 'User'}</span>
+                <Link to="/brand/dashboard" className="btn btn-secondary">← Back to Dashboard</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="main-content">
+          <LoadingSpinner />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="brand-analytics">
+        <div className="analytics-header">
+          <div className="header-container">
+            <div className="brand-info">
+              <div className="brand-logo">Analytics Dashboard</div>
+              <div className="user-info">
+                <span>Welcome back, {user?.full_name || 'User'}</span>
+                <Link to="/brand/dashboard" className="btn btn-secondary">← Back to Dashboard</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="main-content">
+          <div className="alert alert-danger">
+            <h5>Error Loading Analytics</h5>
+            <p>{error}</p>
+            <button className="btn btn-primary" onClick={fetchAnalyticsData}>Retry</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="brand-analytics">
       {/* Header */}
@@ -51,7 +229,7 @@ export default function BrandAnalytics() {
           <div className="brand-info">
             <div className="brand-logo">Analytics Dashboard</div>
             <div className="user-info">
-              <span>Welcome back, Admin</span>
+              <span>Welcome back, {user?.full_name || 'User'}</span>
               <Link to="/brand/dashboard" className="btn btn-secondary">← Back to Dashboard</Link>
             </div>
           </div>
@@ -131,7 +309,7 @@ export default function BrandAnalytics() {
             </div>
             <div className="stat-value">{analyticsData.resolvedComplaints}</div>
             <div className="stat-change positive">
-              {((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1)}% resolution rate
+              {analyticsData.totalComplaints > 0 ? ((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1) : 0}% resolution rate
             </div>
           </div>
 
@@ -174,7 +352,9 @@ export default function BrandAnalytics() {
               <span className="stat-icon">📈</span>
             </div>
             <div className="stat-value">
-              {((analyticsData.complaintsThisWeek - analyticsData.complaintsLastWeek) / analyticsData.complaintsLastWeek * 100).toFixed(1)}%
+              {analyticsData.complaintsLastWeek > 0 
+                ? ((analyticsData.complaintsThisWeek - analyticsData.complaintsLastWeek) / analyticsData.complaintsLastWeek * 100).toFixed(1)
+                : 0}%
             </div>
             <div className="stat-change positive">
               {analyticsData.complaintsThisWeek} vs {analyticsData.complaintsLastWeek} last week
@@ -188,11 +368,11 @@ export default function BrandAnalytics() {
             <h3>Complaints Over Time</h3>
             <div className="chart-placeholder">
               <div className="chart-bars">
-                {[65, 78, 90, 85, 92, 88, 95].map((height, index) => (
+                {chartData.map((height, index) => (
                   <div 
                     key={index} 
                     className="chart-bar" 
-                    style={{ height: `${height}%` }}
+                    style={{ height: `${Math.max(height * 10, 5)}%` }}
                   >
                     <span className="bar-value">{height}</span>
                   </div>
@@ -219,22 +399,12 @@ export default function BrandAnalytics() {
                 }}></div>
               </div>
               <div className="pie-legend">
-                <div className="legend-item">
-                  <span className="legend-color" style={{ background: '#3498db' }}></span>
-                  <span>Technical Issues (33%)</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color" style={{ background: '#e74c3c' }}></span>
-                  <span>Billing (22%)</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color" style={{ background: '#f39c12' }}></span>
-                  <span>Service Quality (22%)</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color" style={{ background: '#27ae60' }}></span>
-                  <span>Other (23%)</span>
-                </div>
+                {Object.entries(categoryData).map(([category, count]) => (
+                  <div key={category} className="legend-item">
+                    <span className="legend-color" style={{ background: '#3498db' }}></span>
+                    <span>{category.charAt(0).toUpperCase() + category.slice(1)} ({count})</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -244,41 +414,20 @@ export default function BrandAnalytics() {
         <div className="recent-activity">
           <h3>Recent Activity</h3>
           <div className="activity-list">
-            <div className="activity-item">
-              <div className="activity-icon resolved">✅</div>
-              <div className="activity-content">
-                <div className="activity-title">Complaint #1247 resolved</div>
-                <div className="activity-details">Technical issue with mobile app - resolved in 1.5 hours</div>
-                <div className="activity-time">2 hours ago</div>
-              </div>
-            </div>
-
-            <div className="activity-item">
-              <div className="activity-icon new">📝</div>
-              <div className="activity-content">
-                <div className="activity-title">New complaint received</div>
-                <div className="activity-details">Billing dispute from customer #45678</div>
-                <div className="activity-time">4 hours ago</div>
-              </div>
-            </div>
-
-            <div className="activity-item">
-              <div className="activity-icon urgent">🚨</div>
-              <div className="activity-content">
-                <div className="activity-title">Urgent complaint escalated</div>
-                <div className="activity-details">Service outage affecting multiple customers</div>
-                <div className="activity-time">6 hours ago</div>
-              </div>
-            </div>
-
-            <div className="activity-item">
-              <div className="activity-icon resolved">✅</div>
-              <div className="activity-content">
-                <div className="activity-title">Complaint #1245 resolved</div>
-                <div className="activity-details">Account access issue - resolved in 45 minutes</div>
-                <div className="activity-time">8 hours ago</div>
-              </div>
-            </div>
+            {recentActivity.length === 0 ? (
+              <div className="text-center text-muted py-4">No recent activity</div>
+            ) : (
+              recentActivity.map((activity, index) => (
+                <div key={index} className="activity-item">
+                  <div className="activity-icon">{activity.icon}</div>
+                  <div className="activity-content">
+                    <div className="activity-title">{activity.title}</div>
+                    <div className="activity-details">{activity.details}</div>
+                    <div className="activity-time">{activity.time}</div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -296,7 +445,7 @@ export default function BrandAnalytics() {
             <div className="metric-card">
               <h4>Resolution Rate</h4>
               <div className="metric-value">
-                {((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1)}%
+                {analyticsData.totalComplaints > 0 ? ((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1) : 0}%
               </div>
               <div className="metric-target">Target: &gt; 90%</div>
               <div className="metric-status good">Exceeding Target</div>
