@@ -2,11 +2,12 @@
 
 import openai
 import os
-from app.config import settings
-from app.schemas import TicketCategoryEnum, TicketUrgencyEnum
+from ..config import settings
+from ..schemas import TicketCategoryEnum, TicketUrgencyEnum
 import logging
 import json
 import traceback
+from typing import Dict, Any, Optional, List
 
 logger = logging.getLogger(__name__)
 

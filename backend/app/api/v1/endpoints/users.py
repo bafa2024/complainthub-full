@@ -28,4 +28,12 @@ def create_user(
         )
     user = crud.create_user(db=db, user=user_in)
     return user
+
+@router.get("/me", response_model=schemas.User)
+def read_users_me(current_user: models.User = Depends(deps.get_current_active_user)):
+    """
+    Get current user.
+    """
+    return current_user
+
 # ... rest of the file

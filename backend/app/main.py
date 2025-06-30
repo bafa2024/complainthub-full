@@ -9,10 +9,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from app.api.v1.endpoints import users, login, tickets, brands, webhook, admin, chat, testing
-from app.api.v1.routes import auth
-from app.database import engine, Base
-from app.config import settings
+from .api.v1.endpoints import users, login, tickets, brands, webhook, admin, chat, testing
+from .api.v1.routes import auth
+from .database import engine, Base
+from .config import settings
 import os
 
 # Configure logging

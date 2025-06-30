@@ -1,14 +1,16 @@
+import logging
+import traceback
 from typing import Generator, Optional
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
+from jose import jwt, JWTError
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from app import crud, models, schemas
-from app.core import security
-from app.config.settings import settings # Imports the 'settings' instance
-from app.database import get_db
+from ... import crud, models, schemas
+from ...core import security
+from ...config.settings import settings # Imports the 'settings' instance
+from ...database import get_db
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token",

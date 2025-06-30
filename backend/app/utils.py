@@ -1,3 +1,5 @@
+import logging
+import traceback
 import os
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
@@ -6,7 +8,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from app.database import get_db
+from .database import get_db
 from app import crud, models
 
 SECRET_KEY = os.getenv("SECRET_KEY", "your-super-secret-key-change-this-in-production")

@@ -3,8 +3,8 @@ import traceback
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
-from app.config.settings import settings
-from app.db.base_class import Base
+from .config.settings import settings
+from .db.base_class import Base
 from typing import Generator
 
 logger = logging.getLogger(__name__)

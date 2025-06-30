@@ -1,11 +1,13 @@
 # backend/app/core/security.py
 
+import logging
+import traceback
 from datetime import datetime, timedelta
 from typing import Any, Union
 from jose import jwt
 from passlib.context import CryptContext
 
-from app.config import settings
+from ..config.settings import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

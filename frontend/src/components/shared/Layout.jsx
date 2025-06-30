@@ -119,7 +119,6 @@ const Layout = ({ children }) => {
         {children}
       </main>
       <MockupIndicator />
-      <RoleSwitcher />
     </div>
   );
 };

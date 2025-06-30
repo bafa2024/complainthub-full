@@ -1,9 +1,9 @@
 # backend/app/core/conversation_manager.py
 
-from app.core.ai_engine import AIEngine
+import logging
+from .ai_engine import AIEngine
 from app import crud, schemas
 from sqlalchemy.orm import Session
-import logging
 
 logger = logging.getLogger(__name__)
 

@@ -1,11 +1,17 @@
 # backend/app/api/v1/deps.py
 
-from typing import Generator
+import logging
+import traceback
+from typing import Generator, Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
-from pydantic import ValidationError
 from sqlalchemy.orm import Session
+from jose import JWTError, jwt
+from pydantic import ValidationError
+
+from ..core import security
+from ..config.settings import settings # CORRECT IMPORT: imports the 'settings' instance
+from ..database import get_db
 
 from app import crud, models, schemas
 from app.core import security
