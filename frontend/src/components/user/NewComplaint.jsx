@@ -14,6 +14,7 @@ const NewComplaint = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +43,7 @@ const NewComplaint = () => {
 
     setSubmitting(true);
     setError('');
+    setSuccess(false);
 
     try {
       // Create the ticket
@@ -49,6 +51,7 @@ const NewComplaint = () => {
         title,
         description: description || '',
         brand_id: parseInt(brandId),
+        channel: 'webchat',
         status: 'new'
       };
 
@@ -59,10 +62,14 @@ const NewComplaint = () => {
         await ticketService.uploadVoiceNote(newTicket.id, audioBlob);
       }
 
-      navigate('/dashboard');
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
     } catch (err) {
       console.error('Error submitting complaint:', err);
-      setError('Failed to submit complaint. Please try again.');
+      setError(err.message || 'Failed to submit complaint. Please try again.');
+      setSuccess(false);
     } finally {
       setSubmitting(false);
     }
@@ -74,9 +81,15 @@ const NewComplaint = () => {
     <div className="container mt-4">
       <div className="row justify-content-center">
         <div className="col-lg-8">
-          <form onSubmit={handleSubmit} className="card p-4">
+          {/* Show messages above the form */}
+          {success && (
+            <div className="alert alert-success text-center">Complaint registered successfully! Redirecting to dashboard...</div>
+          )}
+          {error && (
+            <div className="alert alert-danger text-center">{error}</div>
+          )}
+          <form onSubmit={handleSubmit} className="card p-4" style={success ? { pointerEvents: 'none', opacity: 0.6 } : {}}>
             <h2 className="text-center mb-4">Lodge a New Complaint</h2>
-            {error && <p className="alert alert-danger">{error}</p>}
 
             <div className="mb-3">
               <label htmlFor="brand" className="form-label">Brand</label>

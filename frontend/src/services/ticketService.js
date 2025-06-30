@@ -59,8 +59,19 @@ const createTicket = async (ticketData) => {
         return response.data;
     } catch (error) {
         console.error('Error creating ticket:', error.message || error);
-        // Optionally return a mock ticket or error
-        return { ...ticketData, id: Date.now(), status: 'new', created_at: new Date().toISOString() };
+        
+        // Extract specific error message from backend
+        let errorMessage = 'Failed to create ticket. Please try again.';
+        if (error.response && error.response.data) {
+            if (error.response.data.detail) {
+                errorMessage = error.response.data.detail;
+            } else if (error.response.data.message) {
+                errorMessage = error.response.data.message;
+            }
+        }
+        
+        // Throw error with specific message
+        throw new Error(errorMessage);
     }
 };
 
