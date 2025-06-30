@@ -29,6 +29,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    brand_name: Optional[str] = None
 
 
 class User(UserBase):

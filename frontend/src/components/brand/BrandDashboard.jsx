@@ -22,6 +22,7 @@ const BrandDashboard = () => {
       try {
         setLoading(true);
         const allTickets = await ticketService.getTickets(); 
+        // Backend already filters tickets by brand for brand users
         setTickets(allTickets);
       } catch (err) {
         setError('Failed to load tickets for your brand.');
@@ -51,6 +52,10 @@ const BrandDashboard = () => {
     <div className="brand-dashboard-container">
       <h1 className="mb-4">Brand Dashboard</h1>
       {error && <div className="alert alert-danger">{error}</div>}
+
+      <div className="alert alert-info text-center mb-4">
+        <strong>Total Complaints for Your Brand: {tickets.length}</strong>
+      </div>
 
       <div className="stats-grid">
         <div className="stat-card-brand">

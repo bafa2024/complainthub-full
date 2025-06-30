@@ -79,7 +79,8 @@ def create_user(db: Session, user: schemas.UserCreate):
             hashed_password=hashed_password,
             full_name=user.full_name,
             phone_number=user.phone_number,
-            role=user.role
+            role=user.role,
+            brand_id=getattr(user, 'brand_id', None)
         )
         db.add(db_user)
         db.commit()

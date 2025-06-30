@@ -110,15 +110,6 @@ const NewComplaint = () => {
               </label>
               <textarea id="description" className="form-control" value={description} onChange={(e) => setDescription(e.target.value)} rows="5"></textarea>
             </div>
-            
-            <div className="text-center my-2 fw-bold">OR</div>
-
-            <div className="mb-3">
-              <label className="form-label">
-                Option 2: Record Voice Complaint
-              </label>
-              <VoiceRecorder onRecordingComplete={(blob) => setAudioBlob(blob)} />
-            </div>
 
             <button type="submit" className="btn btn-primary w-100" disabled={submitting}>
               {submitting ? 'Submitting...' : 'Submit Complaint'}

@@ -34,9 +34,32 @@ def signup(data: schemas.UserCreate, db: Session = Depends(get_db)):
         logger.warning(f"User already exists: {data.email}")
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Handle brand creation for brand users
+    brand_id = None
+    if data.brand_name and data.role == schemas.RoleEnum.brand_user:
+        logger.info(f"Creating brand for brand user: {data.brand_name}")
+        # Check if brand already exists
+        existing_brand = crud.get_brand_by_name(db, data.brand_name)
+        if existing_brand:
+            logger.warning(f"Brand already exists: {data.brand_name}")
+            raise HTTPException(status_code=400, detail="Brand name already exists")
+        
+        # Create brand
+        brand_data = schemas.BrandCreate(
+            name=data.brand_name,
+            support_email=data.email
+        )
+        brand = crud.create_brand(db, brand_data)
+        brand_id = brand.id
+        logger.info(f"Brand created with ID: {brand_id}")
+    
     # Create new user
     logger.info(f"Creating new user: {data.email}")
-    user = crud.create_user(db, data)
+    # Set brand_id for brand users
+    user_data = data.dict()
+    if brand_id:
+        user_data['brand_id'] = brand_id
+    user = crud.create_user(db, schemas.UserCreate(**user_data))
     logger.info(f"User created successfully with ID: {user.id}, Email: {user.email}")
     
     # Verify user was saved
