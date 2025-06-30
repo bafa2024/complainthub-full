@@ -41,6 +41,12 @@ class User(UserBase):
         orm_mode = True
 
 
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    tts_voice_id: Optional[str] = None
+
+
 # -- Brand Schemas --
 class BrandBase(BaseModel):
     name: str

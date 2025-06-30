@@ -113,6 +113,42 @@ def create_user(db: Session, user: schemas.UserCreate):
             status_code=500,
             detail="An internal error occurred while creating the user."
         )
+
+def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
+    """Update user profile fields with error handling"""
+    user = get_user(db, user_id)
+    if not user:
+        logger.warning(f"User update failed - user not found: {user_id}")
+        raise HTTPException(status_code=404, detail="User not found.")
+    update_data = user_update.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(user, key, value)
+    try:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        logger.info(f"User updated successfully: {user_id}")
+        return user
+    except Exception as e:
+        db.rollback()
+        logger.error(f"User update failed: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update user profile.")
+
+def delete_user(db: Session, user_id: int):
+    """Delete a user by ID with error handling."""
+    user = get_user(db, user_id)
+    if not user:
+        logger.warning(f"User delete failed - user not found: {user_id}")
+        raise HTTPException(status_code=404, detail="User not found.")
+    try:
+        db.delete(user)
+        db.commit()
+        logger.info(f"User deleted successfully: {user_id}")
+        return {"msg": "User deleted successfully."}
+    except Exception as e:
+        db.rollback()
+        logger.error(f"User delete failed: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete user.")
 #endregion
 
 #region Brand CRUD

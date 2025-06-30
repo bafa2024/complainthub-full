@@ -1,7 +1,7 @@
 # backend/app/api/v1/endpoints/users.py
 
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
 
 from app import crud, schemas, models
@@ -35,5 +35,28 @@ def read_users_me(current_user: models.User = Depends(deps.get_current_active_us
     Get current user.
     """
     return current_user
+
+@router.put("/me", response_model=schemas.User)
+def update_users_me(
+    *,
+    db: Session = Depends(get_db),
+    user_update: schemas.UserUpdate = Body(...),
+    current_user: models.User = Depends(deps.get_current_active_user)
+):
+    """
+    Update current user's profile.
+    """
+    return crud.update_user(db, user_id=current_user.id, user_update=user_update)
+
+@router.delete("/me", response_model=dict)
+def delete_users_me(
+    *,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(deps.get_current_active_user)
+):
+    """
+    Delete current user's account.
+    """
+    return crud.delete_user(db, user_id=current_user.id)
 
 # ... rest of the file

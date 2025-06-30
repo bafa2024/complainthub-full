@@ -64,7 +64,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         )
     expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     token = create_access_token(
-        {"sub": user.email}, expires_delta=expires
+        {"sub": str(user.id)}, expires_delta=expires
     )
     return {"access_token": token, "token_type": "bearer"}
 
