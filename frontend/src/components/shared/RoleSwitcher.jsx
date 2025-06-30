@@ -2,14 +2,12 @@ import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const RoleSwitcher = () => {
-  const { user } = useAuth();
+  const { user, switchMockRole, mockupMode } = useAuth();
   
-  const switchRole = (newRole) => {
-    // In the real implementation, you'd update the context
-    // For now, just reload the page after updating localStorage
-    localStorage.setItem('demoRole', newRole);
-    window.location.reload();
-  };
+  // Only show in mockup mode
+  if (!mockupMode) {
+    return null;
+  }
 
   return (
     <div style={{
@@ -23,24 +21,24 @@ const RoleSwitcher = () => {
       zIndex: 1000
     }}>
       <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-        Demo Mode - Current Role: {user.role}
+        Demo Mode - Current Role: {user?.role || 'user'}
       </div>
       <div style={{ display: 'flex', gap: '10px' }}>
         <button 
-          onClick={() => switchRole('user')} 
-          className={`btn btn-sm ${user.role === 'user' ? 'btn-primary' : 'btn-outline-primary'}`}
+          onClick={() => switchMockRole('user')} 
+          className={`btn btn-sm ${user?.role === 'user' ? 'btn-primary' : 'btn-outline-primary'}`}
         >
           User
         </button>
         <button 
-          onClick={() => switchRole('brand_user')} 
-          className={`btn btn-sm ${user.role === 'brand_user' ? 'btn-primary' : 'btn-outline-primary'}`}
+          onClick={() => switchMockRole('brand_user')} 
+          className={`btn btn-sm ${user?.role === 'brand_user' ? 'btn-primary' : 'btn-outline-primary'}`}
         >
           Brand
         </button>
         <button 
-          onClick={() => switchRole('admin')} 
-          className={`btn btn-sm ${user.role === 'admin' ? 'btn-primary' : 'btn-outline-primary'}`}
+          onClick={() => switchMockRole('admin')} 
+          className={`btn btn-sm ${user?.role === 'admin' ? 'btn-primary' : 'btn-outline-primary'}`}
         >
           Admin
         </button>

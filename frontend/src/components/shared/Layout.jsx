@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import MockupIndicator from './MockupIndicator';
+import RoleSwitcher from './RoleSwitcher';
 
 const Layout = ({ children }) => {
   const { isAuthenticated, user, logout, mockupMode } = useAuth();
@@ -118,6 +119,7 @@ const Layout = ({ children }) => {
         {children}
       </main>
       <MockupIndicator />
+      <RoleSwitcher />
     </div>
   );
 };

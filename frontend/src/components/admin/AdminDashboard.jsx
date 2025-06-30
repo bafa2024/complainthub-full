@@ -15,46 +15,93 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      console.log('Fetching admin dashboard data...');
+      
+      // Fetch all data streams concurrently
+      const [usersData, brandsData, ticketsData] = await Promise.all([
+        adminService.getAllUsers(),
+        adminService.getAllBrands(),
+        ticketService.getTickets(), // The mock service will return all tickets
+      ]);
+
+      console.log('Data fetched:', { usersData, brandsData, ticketsData });
+
+      // Calculate stats
+      const resolvedTickets = ticketsData.filter(t => t.status === 'resolved').length;
+      
+      const newStats = {
+        users: usersData.length,
+        brands: brandsData.length,
+        tickets: ticketsData.length,
+        resolved: resolvedTickets,
+      };
+
+      console.log('Calculated stats:', newStats);
+      setStats(newStats);
+
+    } catch (err) {
+      console.error('Admin dashboard error:', err);
+      setError('Failed to load dashboard data: ' + (err.message || 'Unknown error'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        setLoading(true);
-        // Fetch all data streams concurrently
-        const [usersData, brandsData, ticketsData] = await Promise.all([
-          adminService.getAllUsers(),
-          adminService.getAllBrands(),
-          ticketService.getTickets(), // The mock service will return all tickets
-        ]);
-
-        // Calculate stats
-        const resolvedTickets = ticketsData.filter(t => t.status === 'resolved').length;
-        
-        setStats({
-          users: usersData.length,
-          brands: brandsData.length,
-          tickets: ticketsData.length,
-          resolved: resolvedTickets,
-        });
-
-      } catch (err) {
-        setError('Failed to load dashboard data.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAllData();
   }, []);
 
-  if (loading) return <LoadingSpinner />;
-  if (error) return <div className="alert alert-danger">{error}</div>;
+  if (loading) {
+    return (
+      <div className="admin-container">
+        <h1 className="mb-4">Admin Dashboard</h1>
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin-container">
+        <h1 className="mb-4">Admin Dashboard</h1>
+        <div className="alert alert-danger">
+          <h5>Error Loading Dashboard</h5>
+          <p>{error}</p>
+          <button 
+            className="btn btn-primary me-2" 
+            onClick={fetchAllData}
+          >
+            Retry
+          </button>
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => window.location.reload()}
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const resolutionRate = stats.tickets > 0 ? ((stats.resolved / stats.tickets) * 100).toFixed(1) : 0;
 
   return (
     <div className="admin-container">
-      <h1 className="mb-4">Admin Dashboard</h1>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1>Admin Dashboard</h1>
+        <button 
+          className="btn btn-outline-primary btn-sm" 
+          onClick={fetchAllData}
+          disabled={loading}
+        >
+          {loading ? 'Refreshing...' : 'Refresh Data'}
+        </button>
+      </div>
 
       {/* Stats Cards */}
       <div className="row g-4 mb-4">

@@ -1,4 +1,4 @@
-// frontend/src/services/authService.js
+// frontend/src/services/apiClient.js
 import axios from 'axios';
 
 // Set your API base URL here - use Vite's import.meta.env instead of process.env
@@ -59,6 +59,7 @@ apiClient.interceptors.response.use(
   }
 );
 
+// Auth functions
 const login = async (email, password) => {
     const form = new URLSearchParams();
     form.append('username', email);
@@ -84,7 +85,11 @@ const logout = () => {
     localStorage.removeItem('user');
 };
 
-export default {
+// Export the axios instance as default
+export default apiClient;
+
+// Export auth functions separately
+export const authService = {
     login,
     signup,
     getCurrentUser,
