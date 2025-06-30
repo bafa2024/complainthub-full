@@ -8,6 +8,7 @@ from app import crud, schemas, models
 from app.api import deps
 # Change this line in all endpoint files
 from app.database import get_db
+from app.utils import verify_password, get_password_hash
 
 router = APIRouter()
 
@@ -58,5 +59,26 @@ def delete_users_me(
     Delete current user's account.
     """
     return crud.delete_user(db, user_id=current_user.id)
+
+@router.put("/me/password", response_model=dict)
+def update_user_password(
+    *,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(deps.get_current_active_user),
+    body: dict = Body(...)
+):
+    """
+    Update current user's password. Requires current and new password.
+    """
+    current_password = body.get("current_password")
+    new_password = body.get("new_password")
+    if not current_password or not new_password:
+        raise HTTPException(status_code=400, detail="Both current_password and new_password are required.")
+    if not verify_password(current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Current password is incorrect.")
+    current_user.hashed_password = get_password_hash(new_password)
+    db.add(current_user)
+    db.commit()
+    return {"msg": "Password updated successfully."}
 
 # ... rest of the file
