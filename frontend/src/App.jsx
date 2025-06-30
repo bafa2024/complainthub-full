@@ -7,6 +7,7 @@ import Layout from './components/shared/Layout';
 import HomePage from './components/public/HomePage';
 import PublicComplaints from './components/public/PublicComplaints';
 import ComplaintTracking from './components/public/ComplaintTracking';
+import ContactPage from './components/public/ContactPage';
 import UserLogin from './components/auth/UserLogin';
 import UserSignup from './components/auth/UserSignup';
 import BrandLogin from './components/auth/BrandLogin';
@@ -21,11 +22,11 @@ import LodgeVoicePage from './components/user/LodgeVoicePage';
 import BrandDashboard from './components/brand/BrandDashboard';
 import BrandTicketDetail from './components/brand/BrandTicketDetail';
 import BrandBilling from './components/brand/BrandBilling';
-import BrandTeam from './components/brand/BrandTeam';
 import BrandSettings from './components/brand/BrandSettings';
 import BrandAnalytics from './components/brand/BrandAnalytics';
 import TopUpCredit from './components/brand/TopUpCredit';
 import ProceedPayment from './components/brand/ProceedPayment';
+import BrandTeam from './components/brand/BrandTeam';
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminBrands from './components/admin/AdminBrands';
 import AdminUsers from './components/admin/AdminUsers';
@@ -66,13 +67,14 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/complaints" element={<PublicComplaints />} />
             <Route path="/track-complaint" element={<ComplaintTracking />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/login" element={<UserLogin />} />
             <Route path="/signup" element={<UserSignup />} />
             <Route path="/brand/login" element={<BrandLogin />} />
             <Route path="/brand/signup" element={<BrandSignup />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/responsive-test" element={<ResponsiveTest />} />
-
+            
             {/* User Portal Routes */}
             <Route path="/dashboard" element={<ProtectedRoute roles={['user']}><UserDashboard /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute roles={['user']}><UserSettings /></ProtectedRoute>} />
@@ -90,7 +92,7 @@ function App() {
             <Route path="/brand/topup" element={<ProtectedRoute roles={['brand_user', 'admin']}><TopUpCredit /></ProtectedRoute>} />
             <Route path="/brand/proceed-payment" element={<ProtectedRoute roles={['brand_user', 'admin']}><ProceedPayment /></ProtectedRoute>} />
             <Route path="/brand/team" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTeam /></ProtectedRoute>} />
-
+            
             {/* Admin Portal Routes */}
             <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="/admin/brands" element={<ProtectedRoute roles={['admin']}><AdminBrands /></ProtectedRoute>} />
@@ -98,7 +100,7 @@ function App() {
             <Route path="/admin/reports" element={<ProtectedRoute roles={['admin']}><AdminReports /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute roles={['admin']}><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/billing" element={<ProtectedRoute roles={['admin']}><AdminBillingLogs /></ProtectedRoute>} />
-
+            
             {/* Fallback Routes */}
             <Route path="/unauthorized" element={<h1>403 - Not Authorized</h1>} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
