@@ -8,6 +8,7 @@ import HomePage from './components/public/HomePage';
 import PublicComplaints from './components/public/PublicComplaints';
 import ComplaintTracking from './components/public/ComplaintTracking';
 import ContactPage from './components/public/ContactPage';
+import HelpCenter from './components/public/HelpCenter';
 import UserLogin from './components/auth/UserLogin';
 import UserSignup from './components/auth/UserSignup';
 import BrandLogin from './components/auth/BrandLogin';
@@ -68,6 +69,7 @@ function App() {
             <Route path="/complaints" element={<PublicComplaints />} />
             <Route path="/track-complaint" element={<ComplaintTracking />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/help" element={<HelpCenter />} />
             <Route path="/login" element={<UserLogin />} />
             <Route path="/signup" element={<UserSignup />} />
             <Route path="/brand/login" element={<BrandLogin />} />
