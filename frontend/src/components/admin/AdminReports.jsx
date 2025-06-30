@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Layout from '../shared/Layout';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import adminService from '../../services/adminService';
 import './AdminReports.css';
@@ -107,288 +106,213 @@ export default function AdminReports() {
 
   if (!reports) {
     return (
-      <Layout title="System Reports">
+      <div className="admin-reports">
         <div className="no-reports">
           <h3>No reports available</h3>
           <p>Reports will be generated once there is sufficient data.</p>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout title="System Reports">
-      <div className="admin-reports">
-        {/* Page Header */}
-        <div className="page-header">
-          <h1>System Reports</h1>
-          <div className="export-buttons">
-            <button className="btn btn-secondary" onClick={() => handleExport('PDF')}>
-              Export PDF
-            </button>
-            <button className="btn btn-secondary" onClick={() => handleExport('CSV')}>
-              Export CSV
-            </button>
-          </div>
-        </div>
-
-        {/* Report Type Tabs */}
-        <div className="report-tabs">
-          <button 
-            className={`report-tab ${activeReportType === 'overview' ? 'active' : ''}`}
-            onClick={() => setActiveReportType('overview')}
-          >
-            Overview
+    <div className="admin-reports">
+      {/* Page Header */}
+      <div className="page-header">
+        <h1>System Reports</h1>
+        <div className="export-buttons">
+          <button className="btn btn-secondary" onClick={() => handleExport('PDF')}>
+            Export PDF
           </button>
-          <button 
-            className={`report-tab ${activeReportType === 'complaints' ? 'active' : ''}`}
-            onClick={() => setActiveReportType('complaints')}
-          >
-            Complaints
-          </button>
-          <button 
-            className={`report-tab ${activeReportType === 'performance' ? 'active' : ''}`}
-            onClick={() => setActiveReportType('performance')}
-          >
-            Performance
-          </button>
-          <button 
-            className={`report-tab ${activeReportType === 'financial' ? 'active' : ''}`}
-            onClick={() => setActiveReportType('financial')}
-          >
-            Financial
+          <button className="btn btn-secondary" onClick={() => handleExport('CSV')}>
+            Export CSV
           </button>
         </div>
+      </div>
 
-        {/* Date Range Selector */}
-        <div className="date-range-section">
-          <div className="date-inputs">
-            <label>Date Range:</label>
-            <select 
-              value={dateRange} 
-              onChange={(e) => handleDateRangeChange(e.target.value)}
-              className="date-input"
-            >
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
-              <option value="custom">Custom range</option>
-            </select>
-            {dateRange === 'custom' && (
-              <>
-                <input 
-                  type="date" 
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="date-input"
-                />
-                <span>to</span>
-                <input 
-                  type="date" 
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="date-input"
-                />
-              </>
-            )}
-          </div>
-          <div className="quick-ranges">
-            <button className="quick-range">Today</button>
-            <button className="quick-range">Yesterday</button>
-            <button className="quick-range">This Week</button>
-            <button className="quick-range">This Month</button>
-          </div>
+      {/* Report Type Tabs */}
+      <div className="report-tabs">
+        <button 
+          className={`report-tab ${activeReportType === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveReportType('overview')}
+        >
+          Overview
+        </button>
+        <button 
+          className={`report-tab ${activeReportType === 'complaints' ? 'active' : ''}`}
+          onClick={() => setActiveReportType('complaints')}
+        >
+          Complaints
+        </button>
+        <button 
+          className={`report-tab ${activeReportType === 'performance' ? 'active' : ''}`}
+          onClick={() => setActiveReportType('performance')}
+        >
+          Performance
+        </button>
+        <button 
+          className={`report-tab ${activeReportType === 'financial' ? 'active' : ''}`}
+          onClick={() => setActiveReportType('financial')}
+        >
+          Financial
+        </button>
+      </div>
+
+      {/* Date Range Selector */}
+      <div className="date-range-section">
+        <div className="date-inputs">
+          <label>Date Range:</label>
+          <select 
+            value={dateRange} 
+            onChange={(e) => handleDateRangeChange(e.target.value)}
+            className="date-input"
+          >
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+            <option value="custom">Custom range</option>
+          </select>
+          {dateRange === 'custom' && (
+            <>
+              <input 
+                type="date" 
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="date-input"
+              />
+              <span>to</span>
+              <input 
+                type="date" 
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="date-input"
+              />
+            </>
+          )}
         </div>
+        <div className="quick-ranges">
+          <button className="quick-range">Today</button>
+          <button className="quick-range">Yesterday</button>
+          <button className="quick-range">This Week</button>
+          <button className="quick-range">This Month</button>
+        </div>
+      </div>
 
-        {/* Overview Report */}
-        {activeReportType === 'overview' && (
-          <div className="report-content">
-            <div className="summary-grid">
-              <div className="summary-card">
-                <div className="summary-value">{reports.overview.totalComplaints}</div>
-                <div className="summary-label">Total Complaints</div>
-                <div className="summary-change positive">+12% vs last period</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-value">{reports.overview.resolvedComplaints}</div>
-                <div className="summary-label">Resolved</div>
-                <div className="summary-change positive">95.3% resolution rate</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-value">{reports.overview.pendingComplaints}</div>
-                <div className="summary-label">Pending</div>
-                <div className="summary-change neutral">4.7% pending</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-value">{reports.overview.avgResolutionTime}</div>
-                <div className="summary-label">Avg Resolution Time</div>
-                <div className="summary-change positive">+12% improvement</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-value">{reports.overview.satisfactionScore}/5</div>
-                <div className="summary-label">Satisfaction Score</div>
-                <div className="summary-change positive">+0.3 vs last period</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-value">{reports.overview.totalBrands}</div>
-                <div className="summary-label">Active Brands</div>
-                <div className="summary-change positive">+8 new this month</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-value">{reports.overview.totalUsers}</div>
-                <div className="summary-label">Total Users</div>
-                <div className="summary-change positive">+156 new users</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-value">${reports.overview.revenue.toLocaleString()}</div>
-                <div className="summary-label">Monthly Revenue</div>
-                <div className="summary-change positive">+15% vs last month</div>
-              </div>
+      {/* Overview Report */}
+      {activeReportType === 'overview' && (
+        <div className="report-content">
+          <div className="summary-grid">
+            <div className="summary-card">
+              <div className="summary-value">{reports.overview.totalComplaints}</div>
+              <div className="summary-label">Total Complaints</div>
+              <div className="summary-change positive">+12% vs last period</div>
+            </div>
+            <div className="summary-card">
+              <div className="summary-value">{reports.overview.resolvedComplaints}</div>
+              <div className="summary-label">Resolved</div>
+              <div className="summary-change positive">95.3% resolution rate</div>
+            </div>
+            <div className="summary-card">
+              <div className="summary-value">{reports.overview.pendingComplaints}</div>
+              <div className="summary-label">Pending</div>
+              <div className="summary-change neutral">4.7% pending</div>
+            </div>
+            <div className="summary-card">
+              <div className="summary-value">{reports.overview.avgResolutionTime}</div>
+              <div className="summary-label">Avg Resolution Time</div>
+              <div className="summary-change positive">+12% improvement</div>
+            </div>
+            <div className="summary-card">
+              <div className="summary-value">{reports.overview.satisfactionScore}/5</div>
+              <div className="summary-label">Satisfaction Score</div>
+              <div className="summary-change positive">+0.3 vs last period</div>
+            </div>
+            <div className="summary-card">
+              <div className="summary-value">{reports.overview.totalBrands}</div>
+              <div className="summary-label">Active Brands</div>
+              <div className="summary-change positive">+8 new this month</div>
+            </div>
+            <div className="summary-card">
+              <div className="summary-value">{reports.overview.totalUsers}</div>
+              <div className="summary-label">Total Users</div>
+              <div className="summary-change positive">+156 new users</div>
+            </div>
+            <div className="summary-card">
+              <div className="summary-value">${reports.overview.revenue.toLocaleString()}</div>
+              <div className="summary-label">Monthly Revenue</div>
+              <div className="summary-change positive">+15% vs last month</div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Complaints Report */}
-        {activeReportType === 'complaints' && (
-          <div className="report-content">
-            <div className="report-grid">
-              <div className="report-card">
-                <h3>Complaints by Status</h3>
-                <div className="status-chart">
-                  {reports.complaints.byStatus.map((item, index) => (
-                    <div key={index} className="status-item">
-                      <div className="status-info">
-                        <span className="status-name">{item.status}</span>
-                        <span className="status-count">{item.count}</span>
-                      </div>
-                      <div className="status-bar">
-                        <div 
-                          className="status-fill" 
-                          style={{ width: `${item.percentage}%` }}
-                        ></div>
-                      </div>
-                      <span className="status-percentage">{item.percentage}%</span>
+      {/* Complaints Report */}
+      {activeReportType === 'complaints' && (
+        <div className="report-content">
+          <div className="report-grid">
+            <div className="report-card">
+              <h3>Complaints by Status</h3>
+              <div className="status-chart">
+                {reports.complaints.byStatus.map((item, index) => (
+                  <div key={index} className="status-item">
+                    <div className="status-info">
+                      <span className="status-name">{item.status}</span>
+                      <span className="status-count">{item.count}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="report-card">
-                <h3>Complaints by Category</h3>
-                <div className="category-list">
-                  {reports.complaints.byCategory.map((item, index) => (
-                    <div key={index} className="category-item">
-                      <div className="category-info">
-                        <span className="category-name">{item.category}</span>
-                        <span className="category-count">{item.count}</span>
-                      </div>
-                      <div className="category-bar">
-                        <div 
-                          className="category-fill" 
-                          style={{ width: `${item.percentage}%` }}
-                        ></div>
-                      </div>
-                      <span className="category-percentage">{item.percentage}%</span>
+                    <div className="status-bar">
+                      <div 
+                        className="status-fill" 
+                        style={{ width: `${item.percentage}%` }}
+                      ></div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="report-card full-width">
-                <h3>Top Brands by Complaint Volume</h3>
-                <div className="brands-table">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Brand</th>
-                        <th>Complaints</th>
-                        <th>Avg Resolution Time</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reports.complaints.byBrand.map((brand, index) => (
-                        <tr key={index}>
-                          <td>{brand.brand}</td>
-                          <td>{brand.count}</td>
-                          <td>{brand.avgResolution}</td>
-                          <td>
-                            <span className="status-badge good">Good</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Performance Report */}
-        {activeReportType === 'performance' && (
-          <div className="report-content">
-            <div className="performance-grid">
-              <div className="performance-card">
-                <h3>Response Time</h3>
-                <div className="metric-display">
-                  <div className="metric-value">{reports.performance.responseTime.average}</div>
-                  <div className="metric-target">Target: {reports.performance.responseTime.target}</div>
-                  <div className="metric-trend positive">{reports.performance.responseTime.trend}</div>
-                </div>
-              </div>
-
-              <div className="performance-card">
-                <h3>Resolution Rate</h3>
-                <div className="metric-display">
-                  <div className="metric-value">{reports.performance.resolutionRate.current}</div>
-                  <div className="metric-target">Target: {reports.performance.resolutionRate.target}</div>
-                  <div className="metric-trend positive">{reports.performance.resolutionRate.trend}</div>
-                </div>
-              </div>
-
-              <div className="performance-card">
-                <h3>Customer Satisfaction</h3>
-                <div className="metric-display">
-                  <div className="metric-value">{reports.performance.satisfaction.current}</div>
-                  <div className="metric-target">Target: {reports.performance.satisfaction.target}</div>
-                  <div className="metric-trend positive">{reports.performance.satisfaction.trend}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Financial Report */}
-        {activeReportType === 'financial' && (
-          <div className="report-content">
-            <div className="financial-summary">
-              <div className="financial-card">
-                <h3>Monthly Revenue</h3>
-                <div className="financial-value">${reports.financial.monthlyRevenue.toLocaleString()}</div>
-                <div className="financial-growth positive">{reports.financial.monthlyGrowth}</div>
+                    <span className="status-percentage">{item.percentage}%</span>
+                  </div>
+                ))}
               </div>
             </div>
 
             <div className="report-card">
-              <h3>Top Revenue Generating Brands</h3>
-              <div className="revenue-table">
+              <h3>Complaints by Category</h3>
+              <div className="category-list">
+                {reports.complaints.byCategory.map((item, index) => (
+                  <div key={index} className="category-item">
+                    <div className="category-info">
+                      <span className="category-name">{item.category}</span>
+                      <span className="category-count">{item.count}</span>
+                    </div>
+                    <div className="category-bar">
+                      <div 
+                        className="category-fill" 
+                        style={{ width: `${item.percentage}%` }}
+                      ></div>
+                    </div>
+                    <span className="category-percentage">{item.percentage}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="report-card full-width">
+              <h3>Top Brands by Complaint Volume</h3>
+              <div className="brands-table">
                 <table>
                   <thead>
                     <tr>
                       <th>Brand</th>
-                      <th>Revenue</th>
                       <th>Complaints</th>
-                      <th>Revenue per Complaint</th>
+                      <th>Avg Resolution Time</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {reports.financial.topRevenueBrands.map((brand, index) => (
+                    {reports.complaints.byBrand.map((brand, index) => (
                       <tr key={index}>
                         <td>{brand.brand}</td>
-                        <td>${brand.revenue.toLocaleString()}</td>
-                        <td>{brand.complaints}</td>
-                        <td>${(brand.revenue / brand.complaints).toFixed(0)}</td>
+                        <td>{brand.count}</td>
+                        <td>{brand.avgResolution}</td>
+                        <td>
+                          <span className="status-badge good">Good</span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -396,8 +320,81 @@ export default function AdminReports() {
               </div>
             </div>
           </div>
-        )}
-      </div>
-    </Layout>
+        </div>
+      )}
+
+      {/* Performance Report */}
+      {activeReportType === 'performance' && (
+        <div className="report-content">
+          <div className="performance-grid">
+            <div className="performance-card">
+              <h3>Response Time</h3>
+              <div className="metric-display">
+                <div className="metric-value">{reports.performance.responseTime.average}</div>
+                <div className="metric-target">Target: {reports.performance.responseTime.target}</div>
+                <div className="metric-trend positive">{reports.performance.responseTime.trend}</div>
+              </div>
+            </div>
+
+            <div className="performance-card">
+              <h3>Resolution Rate</h3>
+              <div className="metric-display">
+                <div className="metric-value">{reports.performance.resolutionRate.current}</div>
+                <div className="metric-target">Target: {reports.performance.resolutionRate.target}</div>
+                <div className="metric-trend positive">{reports.performance.resolutionRate.trend}</div>
+              </div>
+            </div>
+
+            <div className="performance-card">
+              <h3>Customer Satisfaction</h3>
+              <div className="metric-display">
+                <div className="metric-value">{reports.performance.satisfaction.current}</div>
+                <div className="metric-target">Target: {reports.performance.satisfaction.target}</div>
+                <div className="metric-trend positive">{reports.performance.satisfaction.trend}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Financial Report */}
+      {activeReportType === 'financial' && (
+        <div className="report-content">
+          <div className="financial-summary">
+            <div className="financial-card">
+              <h3>Monthly Revenue</h3>
+              <div className="financial-value">${reports.financial.monthlyRevenue.toLocaleString()}</div>
+              <div className="financial-growth positive">{reports.financial.monthlyGrowth}</div>
+            </div>
+          </div>
+
+          <div className="report-card">
+            <h3>Top Revenue Generating Brands</h3>
+            <div className="revenue-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Brand</th>
+                    <th>Revenue</th>
+                    <th>Complaints</th>
+                    <th>Revenue per Complaint</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reports.financial.topRevenueBrands.map((brand, index) => (
+                    <tr key={index}>
+                      <td>{brand.brand}</td>
+                      <td>${brand.revenue.toLocaleString()}</td>
+                      <td>{brand.complaints}</td>
+                      <td>${(brand.revenue / brand.complaints).toFixed(0)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
