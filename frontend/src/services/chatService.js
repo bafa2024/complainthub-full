@@ -21,7 +21,7 @@ const getRandomMockResponse = () => {
 
 const sendMessage = async (sessionId, message) => {
     try {
-        const response = await apiClient.post(`/chat/send/${sessionId}`, { message });
+        const response = await apiClient.post(`/chat/send`, { sessionId, message });
         return response.data;
     } catch (error) {
         console.error('Error sending message:', error.message || error);

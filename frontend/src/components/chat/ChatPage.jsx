@@ -1,27 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import chatService from '../../services/chatService';
 import './ChatPage.css';
 
 const ChatPage = () => {
-  const [messages, setMessages] = useState([
-    {
-      sender: 'bot',
-      text: 'Hello! I am the ComplaintHub AI assistant. How can I help you today?',
-      timestamp: new Date().toISOString()
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const { user } = useAuth();
   const messagesEndRef = useRef(null);
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const ticketId = params.get('ticketId');
+  const sessionId = params.get('sessionId');
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(scrollToBottom, [messages]);
+
+  // Fetch chat history for the ticket on mount
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (!ticketId) return;
+      try {
+        const history = await chatService.getChatHistory(ticketId);
+        setMessages(history.messages || []);
+      } catch (err) {
+        setMessages([
+          {
+            sender: 'bot',
+            text: 'Hello! I am the ComplaintHub AI assistant. How can I help you today?',
+            timestamp: new Date().toISOString()
+          }
+        ]);
+      }
+    };
+    fetchHistory();
+    // eslint-disable-next-line
+  }, [ticketId]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -36,10 +55,19 @@ const ChatPage = () => {
     setNewMessage('');
     setIsTyping(true);
 
-    // Get the mocked bot response
-    const botResponse = await chatService.sendMessage(newMessage);
-    setIsTyping(false);
-    setMessages(prev => [...prev, botResponse]);
+    // Send message to backend with sessionId
+    try {
+      const botResponse = await chatService.sendMessage(sessionId, newMessage);
+      setIsTyping(false);
+      setMessages(prev => [...prev, botResponse]);
+    } catch (err) {
+      setIsTyping(false);
+      setMessages(prev => [...prev, {
+        sender: 'bot',
+        text: 'Sorry, there was a problem sending your message. Please try again.',
+        timestamp: new Date().toISOString()
+      }]);
+    }
   };
 
   return (
