@@ -13,6 +13,7 @@ import UserLogin from './components/auth/UserLogin';
 import UserSignup from './components/auth/UserSignup';
 import BrandLogin from './components/auth/BrandLogin';
 import AdminLogin from './components/auth/AdminLogin';
+import AdminSignup from './components/auth/AdminSignup';
 import BrandSignup from './components/auth/BrandSignup';
 import UserDashboard from './components/user/UserDashboard';
 import UserSettings from './components/user/UserSettings';
@@ -75,6 +76,7 @@ function App() {
             <Route path="/brand/login" element={<BrandLogin />} />
             <Route path="/brand/signup" element={<BrandSignup />} />
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/signup" element={<AdminSignup />} />
             <Route path="/responsive-test" element={<ResponsiveTest />} />
             
             {/* User Portal Routes */}

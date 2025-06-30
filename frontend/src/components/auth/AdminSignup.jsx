@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './auth.css';
 
-const BrandSignup = () => {
-    const [brandName, setBrandName] = useState('');
+const AdminSignup = () => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,14 +24,13 @@ const BrandSignup = () => {
         setLoading(true);
         try {
             const userData = {
-                brand_name: brandName,
                 full_name: fullName,
                 email: email,
                 password: password,
-                role: 'brand_user'
+                role: 'admin'
             };
             await signup(userData);
-            navigate('/brand/login', { state: { message: 'Brand signup successful! Please log in.' } });
+            navigate('/admin/login', { state: { message: 'Admin signup successful! Please log in.' } });
         } catch (err) {
             setError(err.message || 'Signup failed. Please try again.');
         } finally {
@@ -53,7 +51,7 @@ const BrandSignup = () => {
                     <div style={{ marginBottom: '20px' }}>
                         <h4>Quick Access:</h4>
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '15px' }}>
-                            <button onClick={() => navigate('/brand/dashboard')} className="btn btn-success">Brand Dashboard</button>
+                            <button onClick={() => navigate('/admin/dashboard')} className="btn btn-warning">Admin Dashboard</button>
                         </div>
                     </div>
                     <div style={{ background: '#f5f5f5', padding: '15px', borderRadius: '8px', fontSize: '14px' }}>
@@ -69,22 +67,11 @@ const BrandSignup = () => {
     return (
         <div className="auth-container">
             <form onSubmit={handleSubmit} className="auth-form">
-                <h2>Brand Registration</h2>
-                <p>Create a brand account to manage your complaints and team.</p>
+                <h2>Admin Registration</h2>
+                <p>Create an administrator account to manage the platform.</p>
                 {error && <div className="error-message">{error}</div>}
                 <div className="form-group">
-                    <label htmlFor="brandName">Brand Name</label>
-                    <input
-                        type="text"
-                        id="brandName"
-                        value={brandName}
-                        onChange={(e) => setBrandName(e.target.value)}
-                        required
-                        autoComplete="organization"
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="fullName">Your Name</label>
+                    <label htmlFor="fullName">Full Name</label>
                     <input
                         type="text"
                         id="fullName"
@@ -95,7 +82,7 @@ const BrandSignup = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="email">Work Email</label>
+                    <label htmlFor="email">Email Address</label>
                     <input
                         type="email"
                         id="email"
@@ -127,15 +114,15 @@ const BrandSignup = () => {
                         autoComplete="new-password"
                     />
                 </div>
-                <button type="submit" className="btn btn-success" disabled={loading}>
-                    {loading ? 'Creating Brand Account...' : 'Create Brand Account'}
+                <button type="submit" className="btn btn-warning" disabled={loading}>
+                    {loading ? 'Creating Admin Account...' : 'Create Admin Account'}
                 </button>
                 <p className="auth-switch">
-                    Already have a brand account? <Link to="/brand/login">Brand Login</Link>
+                    Already an admin? <Link to="/admin/login">Login</Link>
                 </p>
             </form>
         </div>
     );
 };
 
-export default BrandSignup;
+export default AdminSignup; 
