@@ -34,6 +34,7 @@ import AdminBrands from './components/admin/AdminBrands';
 import AdminUsers from './components/admin/AdminUsers';
 import AdminComplaints from './components/admin/AdminComplaints';
 import AdminComplaintDetail from './components/admin/AdminComplaintDetail';
+import AdminBrandsAnalytics from './components/admin/AdminBrandsAnalytics';
 import AdminSettings from './components/admin/AdminSettings';
 import AdminBillingLogs from './components/admin/AdminBillingLogs';
 import ResponsiveTest from './components/shared/ResponsiveTest';
@@ -105,6 +106,7 @@ function App() {
             <Route path="/admin/users" element={<ProtectedRoute roles={['admin']}><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/complaints" element={<ProtectedRoute roles={['admin']}><AdminComplaints /></ProtectedRoute>} />
             <Route path="/admin/complaints/:complaintId" element={<ProtectedRoute roles={['admin']}><AdminComplaintDetail /></ProtectedRoute>} />
+            <Route path="/admin/brands-analytics" element={<ProtectedRoute roles={['admin']}><AdminBrandsAnalytics /></ProtectedRoute>} />
             <Route path="/admin/reports" element={<ProtectedRoute roles={['admin']}><AdminReports /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute roles={['admin']}><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/billing" element={<ProtectedRoute roles={['admin']}><AdminBillingLogs /></ProtectedRoute>} />

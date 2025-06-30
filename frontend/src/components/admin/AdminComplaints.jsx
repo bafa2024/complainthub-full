@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import adminService from '../../services/adminService';
 import ticketService from '../../services/ticketService';
 import brandService from '../../services/brandService';
@@ -7,13 +7,14 @@ import LoadingSpinner from '../shared/LoadingSpinner';
 import './Admin.css';
 
 const AdminComplaints = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [complaints, setComplaints] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
   // Filter states
-  const [selectedBrand, setSelectedBrand] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brand') || '');
   const [statusFilter, setStatusFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('');
@@ -96,7 +97,15 @@ const AdminComplaints = () => {
   };
 
   const handleBrandChange = (e) => {
-    setSelectedBrand(e.target.value);
+    const brandId = e.target.value;
+    setSelectedBrand(brandId);
+    
+    // Update URL parameters
+    if (brandId) {
+      setSearchParams({ brand: brandId });
+    } else {
+      setSearchParams({});
+    }
   };
 
   const handleStatusChange = (e) => {
