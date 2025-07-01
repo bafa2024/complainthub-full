@@ -15,6 +15,7 @@ import BrandLogin from './components/auth/BrandLogin';
 import AdminLogin from './components/auth/AdminLogin';
 import AdminSignup from './components/auth/AdminSignup';
 import BrandSignup from './components/auth/BrandSignup';
+import TeamInvitation from './components/auth/TeamInvitation';
 import UserDashboard from './components/user/UserDashboard';
 import UserSettings from './components/user/UserSettings';
 import TicketDetail from './components/user/TicketDetail';
@@ -80,6 +81,7 @@ function App() {
             <Route path="/brand/signup" element={<BrandSignup />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/signup" element={<AdminSignup />} />
+            <Route path="/team-invitation/:token" element={<TeamInvitation />} />
             <Route path="/responsive-test" element={<ResponsiveTest />} />
             
             {/* User Portal Routes */}

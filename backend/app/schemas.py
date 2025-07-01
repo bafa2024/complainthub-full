@@ -76,6 +76,33 @@ class Brand(BrandBase):
         orm_mode = True
 
 
+# -- Team Invitation Schemas --
+class TeamInvitationCreate(BaseModel):
+    email: str
+    role: RoleEnum = RoleEnum.brand_user
+
+
+class TeamInvitationResponse(BaseModel):
+    id: int
+    email: str
+    role: RoleEnum
+    brand_id: int
+    invited_by: int
+    is_accepted: bool
+    expires_at: datetime
+    created_at: datetime
+    accepted_at: Optional[datetime] = None
+
+    class Config:
+        orm_mode = True
+
+
+class TeamInvitationAccept(BaseModel):
+    full_name: str
+    password: str
+    phone_number: Optional[str] = None
+
+
 # -- Ticket Schemas --
 class TicketBase(BaseModel):
     title: str

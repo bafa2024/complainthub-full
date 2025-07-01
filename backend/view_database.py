@@ -10,6 +10,8 @@ from sqlalchemy import create_engine, text
 from tabulate import tabulate
 import psycopg2
 from dotenv import load_dotenv
+from app.database import SessionLocal
+from app.models import Ticket, User, Brand
 
 # Load environment variables
 load_dotenv()
@@ -238,3 +240,33 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+print('--- All Brands ---')
+db = SessionLocal()
+brands = db.query(Brand).all()
+for b in brands:
+    print(f'Brand ID: {b.id}, Name: {b.name}')
+
+print('\n--- All Brand Users ---')
+users = db.query(User).filter(User.role == 'brand_user').all()
+for u in users:
+    print(f'User ID: {u.id}, Email: {u.email}, Brand ID: {u.brand_id}')
+
+print('\n--- All Tickets ---')
+tickets = db.query(Ticket).all()
+for t in tickets:
+    print(f'Ticket ID: {t.id}, Title: {t.title}, Brand ID: {t.brand_id}, Status: {t.status}')
+
+def assign_brand_to_user(user_email, brand_id):
+    user = db.query(User).filter(User.email == user_email).first()
+    if not user:
+        print(f'User {user_email} not found!')
+        return
+    user.brand_id = brand_id
+    db.commit()
+    print(f'Assigned brand_id {brand_id} to user {user_email}')
+
+# Example usage:
+# assign_brand_to_user("testbrand@example.com", 1)
+
+db.close()

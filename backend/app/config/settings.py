@@ -21,6 +21,16 @@ class Settings(BaseSettings):
     DEEPGRAM_API_KEY: str = ""
     GOOGLE_API_KEY: str = ""
 
+    # Email Configuration
+    SMTP_SERVER: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    FROM_EMAIL: str = "noreply@complainthubbot.com"
+    
+    # Frontend URL for invitation links
+    FRONTEND_URL: str = "http://localhost:3000"
+
     model_config = SettingsConfigDict(
         env_file=".env", 
         env_file_encoding='utf-8',

@@ -12,32 +12,43 @@ const BrandTicketDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
+  // Convert ticketId to integer
+  const numericTicketId = parseInt(ticketId, 10);
+  
   const fetchTicketDetails = async () => {
     try {
       setLoading(true);
-      const ticketData = await ticketService.getTicketById(ticketId);
+      console.log('Fetching ticket with ID:', numericTicketId);
+      const ticketData = await ticketService.getTicketById(numericTicketId);
       setTicket(ticketData);
       setError('');
     } catch (err) {
-      setError('Failed to load ticket details.');
-      console.error(err);
+      console.error('Error fetching ticket:', err);
+      setError(`Failed to load ticket details: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    if (isNaN(numericTicketId)) {
+      setError('Invalid ticket ID');
+      setLoading(false);
+      return;
+    }
     fetchTicketDetails();
   }, [ticketId]);
 
   const handleStatusChange = async (newStatus) => {
     try {
-      await ticketService.updateTicket(ticketId, { status: newStatus });
+      console.log('Attempting to update ticket status:', { numericTicketId, newStatus });
+      const result = await ticketService.updateTicket(numericTicketId, { status: newStatus });
+      console.log('Status update successful:', result);
       // Refresh ticket data after update
       fetchTicketDetails();
     } catch (error) {
-      setError('Failed to update status.');
-      console.error(error);
+      console.error('Status update failed:', error);
+      setError(`Failed to update status: ${error.message}`);
     }
   };
 

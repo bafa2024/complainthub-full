@@ -49,6 +49,7 @@ class Brand(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     tickets = relationship("Ticket", back_populates="brand")
     brand_users = relationship("User", back_populates="brand")
+    team_invitations = relationship("TeamInvitation", back_populates="brand")
 
 class User(Base):
     __tablename__ = "users"
@@ -65,6 +66,20 @@ class User(Base):
     brand = relationship("Brand", back_populates="brand_users")
     tickets = relationship("Ticket", foreign_keys="[Ticket.owner_id]", back_populates="owner")
     assigned_tickets = relationship("Ticket", foreign_keys="[Ticket.assignee_id]", back_populates="assignee")
+
+class TeamInvitation(Base):
+    __tablename__ = "team_invitations"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, nullable=False)
+    role = Column(Enum(RoleEnum), default=RoleEnum.brand_user)
+    brand_id = Column(Integer, ForeignKey("brands.id"), nullable=False)
+    invited_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    invitation_token = Column(String, unique=True, index=True, nullable=False)
+    is_accepted = Column(Boolean, default=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    accepted_at = Column(DateTime(timezone=True), nullable=True)
+    brand = relationship("Brand", back_populates="team_invitations")
 
 class Ticket(Base):
     __tablename__ = "tickets"

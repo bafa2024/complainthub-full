@@ -11,6 +11,7 @@ export default function BrandAnalytics() {
   const [endDate, setEndDate] = useState('2024-01-31');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState('overview');
   const { user } = useAuth();
 
   // Real analytics data
@@ -134,6 +135,10 @@ export default function BrandAnalytics() {
     alert(`${type} data exported successfully!`);
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'resolved': return '#27ae60';
@@ -174,6 +179,385 @@ export default function BrandAnalytics() {
 
   const chartData = getChartData();
   const categoryData = getCategoryData();
+
+  // Render Overview Tab Content
+  const renderOverviewTab = () => (
+    <>
+      {/* Stats Grid */}
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-title">Total Complaints</span>
+            <span className="stat-icon">📊</span>
+          </div>
+          <div className="stat-value">{analyticsData.totalComplaints}</div>
+          <div className="stat-change positive">
+            +{analyticsData.complaintsThisWeek} this week
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-title">Resolved</span>
+            <span className="stat-icon">✅</span>
+          </div>
+          <div className="stat-value">{analyticsData.resolvedComplaints}</div>
+          <div className="stat-change positive">
+            {analyticsData.totalComplaints > 0 ? ((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1) : 0}% resolution rate
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-title">Pending</span>
+            <span className="stat-icon">⏳</span>
+          </div>
+          <div className="stat-value">{analyticsData.pendingComplaints}</div>
+          <div className="stat-change neutral">
+            {analyticsData.pendingComplaints} open tickets
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-title">Avg Response Time</span>
+            <span className="stat-icon">⏱️</span>
+          </div>
+          <div className="stat-value">{analyticsData.avgResponseTime}</div>
+          <div className="stat-change positive">
+            {analyticsData.responseTimeTrend} vs last period
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-title">Satisfaction Score</span>
+            <span className="stat-icon">⭐</span>
+          </div>
+          <div className="stat-value">{analyticsData.satisfactionScore}/5</div>
+          <div className="stat-change positive">
+            {analyticsData.satisfactionTrend} vs last period
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-title">Weekly Growth</span>
+            <span className="stat-icon">📈</span>
+          </div>
+          <div className="stat-value">
+            {analyticsData.complaintsLastWeek > 0 
+              ? ((analyticsData.complaintsThisWeek - analyticsData.complaintsLastWeek) / analyticsData.complaintsLastWeek * 100).toFixed(1)
+              : 0}%
+          </div>
+          <div className="stat-change positive">
+            {analyticsData.complaintsThisWeek} vs {analyticsData.complaintsLastWeek} last week
+          </div>
+        </div>
+      </div>
+
+      {/* Charts Section */}
+      <div className="charts-section">
+        <div className="chart-container">
+          <h3>Complaints Over Time</h3>
+          <div className="chart-placeholder">
+            <div className="chart-bars">
+              {chartData.map((height, index) => (
+                <div 
+                  key={index} 
+                  className="chart-bar" 
+                  style={{ height: `${Math.max(height * 10, 5)}%` }}
+                >
+                  <span className="bar-value">{height}</span>
+                </div>
+              ))}
+            </div>
+            <div className="chart-labels">
+              <span>Mon</span>
+              <span>Tue</span>
+              <span>Wed</span>
+              <span>Thu</span>
+              <span>Fri</span>
+              <span>Sat</span>
+              <span>Sun</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="chart-container">
+          <h3>Complaint Categories</h3>
+          <div className="pie-chart-placeholder">
+            <div className="pie-segments">
+              <div className="pie-segment" style={{ 
+                background: `conic-gradient(#3498db 0deg 120deg, #e74c3c 120deg 200deg, #f39c12 200deg 280deg, #27ae60 280deg 360deg)` 
+              }}></div>
+            </div>
+            <div className="pie-legend">
+              {Object.entries(categoryData).map(([category, count]) => (
+                <div key={category} className="legend-item">
+                  <span className="legend-color" style={{ background: '#3498db' }}></span>
+                  <span>{category.charAt(0).toUpperCase() + category.slice(1)} ({count})</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="recent-activity">
+        <h3>Recent Activity</h3>
+        <div className="activity-list">
+          {recentActivity.length === 0 ? (
+            <div className="text-center text-muted py-4">No recent activity</div>
+          ) : (
+            recentActivity.map((activity, index) => (
+              <div key={index} className="activity-item">
+                <div className="activity-icon">{activity.icon}</div>
+                <div className="activity-content">
+                  <div className="activity-title">{activity.title}</div>
+                  <div className="activity-details">{activity.details}</div>
+                  <div className="activity-time">{activity.time}</div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </>
+  );
+
+  // Render Complaints Tab Content
+  const renderComplaintsTab = () => (
+    <div className="complaints-tab">
+      <div className="complaints-header">
+        <h3>Complaint Details</h3>
+        <div className="complaints-filters">
+          <select className="filter-select">
+            <option value="">All Status</option>
+            <option value="new">New</option>
+            <option value="pending">Pending</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <select className="filter-select">
+            <option value="">All Categories</option>
+            <option value="technical">Technical</option>
+            <option value="billing">Billing</option>
+            <option value="service">Service</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="complaints-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tickets.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center text-muted py-4">No complaints found</td>
+              </tr>
+            ) : (
+              tickets.map((ticket) => (
+                <tr key={ticket.id}>
+                  <td>#{ticket.id}</td>
+                  <td>{ticket.title || 'No title'}</td>
+                  <td>{ticket.category || 'Other'}</td>
+                  <td>
+                    <span className={`status-badge status-${ticket.status}`}>
+                      {ticket.status}
+                    </span>
+                  </td>
+                  <td>{new Date(ticket.created_at).toLocaleDateString()}</td>
+                  <td>
+                    <Link to={`/brand/tickets/${ticket.id}`} className="btn btn-sm btn-primary">
+                      View
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  // Render Performance Tab Content
+  const renderPerformanceTab = () => (
+    <div className="performance-tab">
+      <div className="performance-metrics">
+        <h3>Performance Metrics</h3>
+        <div className="metrics-grid">
+          <div className="metric-card">
+            <h4>Response Time</h4>
+            <div className="metric-value">{analyticsData.avgResponseTime}</div>
+            <div className="metric-target">Target: &lt; 4 hours</div>
+            <div className="metric-status good">On Target</div>
+          </div>
+
+          <div className="metric-card">
+            <h4>Resolution Rate</h4>
+            <div className="metric-value">
+              {analyticsData.totalComplaints > 0 ? ((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1) : 0}%
+            </div>
+            <div className="metric-target">Target: &gt; 90%</div>
+            <div className="metric-status good">Exceeding Target</div>
+          </div>
+
+          <div className="metric-card">
+            <h4>Customer Satisfaction</h4>
+            <div className="metric-value">{analyticsData.satisfactionScore}/5</div>
+            <div className="metric-target">Target: &gt; 4.0</div>
+            <div className="metric-status good">On Target</div>
+          </div>
+
+          <div className="metric-card">
+            <h4>First Contact Resolution</h4>
+            <div className="metric-value">78%</div>
+            <div className="metric-target">Target: &gt; 75%</div>
+            <div className="metric-status good">On Target</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="performance-charts">
+        <div className="chart-container">
+          <h3>Response Time Trend</h3>
+          <div className="chart-placeholder">
+            <div className="line-chart">
+              <div className="line" style={{ background: 'linear-gradient(to right, #3498db, #27ae60)' }}></div>
+              <div className="chart-points">
+                <span className="point" style={{ left: '10%', top: '60%' }}></span>
+                <span className="point" style={{ left: '30%', top: '40%' }}></span>
+                <span className="point" style={{ left: '50%', top: '30%' }}></span>
+                <span className="point" style={{ left: '70%', top: '20%' }}></span>
+                <span className="point" style={{ left: '90%', top: '15%' }}></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="chart-container">
+          <h3>Satisfaction Trend</h3>
+          <div className="chart-placeholder">
+            <div className="line-chart">
+              <div className="line" style={{ background: 'linear-gradient(to right, #f39c12, #e74c3c)' }}></div>
+              <div className="chart-points">
+                <span className="point" style={{ left: '10%', top: '70%' }}></span>
+                <span className="point" style={{ left: '30%', top: '50%' }}></span>
+                <span className="point" style={{ left: '50%', top: '40%' }}></span>
+                <span className="point" style={{ left: '70%', top: '30%' }}></span>
+                <span className="point" style={{ left: '90%', top: '25%' }}></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render Trends Tab Content
+  const renderTrendsTab = () => (
+    <div className="trends-tab">
+      <div className="trends-overview">
+        <h3>Trends Analysis</h3>
+        <div className="trends-grid">
+          <div className="trend-card">
+            <h4>Complaint Volume</h4>
+            <div className="trend-value positive">+15%</div>
+            <div className="trend-description">Increase from last month</div>
+            <div className="trend-chart">
+              <div className="mini-chart">
+                <div className="bar" style={{ height: '30%' }}></div>
+                <div className="bar" style={{ height: '45%' }}></div>
+                <div className="bar" style={{ height: '60%' }}></div>
+                <div className="bar" style={{ height: '75%' }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="trend-card">
+            <h4>Resolution Time</h4>
+            <div className="trend-value negative">-8%</div>
+            <div className="trend-description">Faster resolution</div>
+            <div className="trend-chart">
+              <div className="mini-chart">
+                <div className="bar" style={{ height: '80%' }}></div>
+                <div className="bar" style={{ height: '65%' }}></div>
+                <div className="bar" style={{ height: '50%' }}></div>
+                <div className="bar" style={{ height: '35%' }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="trend-card">
+            <h4>Customer Satisfaction</h4>
+            <div className="trend-value positive">+12%</div>
+            <div className="trend-description">Improved ratings</div>
+            <div className="trend-chart">
+              <div className="mini-chart">
+                <div className="bar" style={{ height: '40%' }}></div>
+                <div className="bar" style={{ height: '55%' }}></div>
+                <div className="bar" style={{ height: '70%' }}></div>
+                <div className="bar" style={{ height: '85%' }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="trend-card">
+            <h4>Category Distribution</h4>
+            <div className="trend-value neutral">Stable</div>
+            <div className="trend-description">No significant changes</div>
+            <div className="trend-chart">
+              <div className="mini-chart">
+                <div className="bar" style={{ height: '50%' }}></div>
+                <div className="bar" style={{ height: '50%' }}></div>
+                <div className="bar" style={{ height: '50%' }}></div>
+                <div className="bar" style={{ height: '50%' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="trends-details">
+        <div className="chart-container">
+          <h3>Monthly Comparison</h3>
+          <div className="comparison-chart">
+            <div className="chart-legend">
+              <span className="legend-item">
+                <span className="legend-color" style={{ background: '#3498db' }}></span>
+                Current Month
+              </span>
+              <span className="legend-item">
+                <span className="legend-color" style={{ background: '#95a5a6' }}></span>
+                Previous Month
+              </span>
+            </div>
+            <div className="chart-bars">
+              {[1, 2, 3, 4].map((week) => (
+                <div key={week} className="week-group">
+                  <div className="bar current" style={{ height: `${Math.random() * 60 + 20}%` }}></div>
+                  <div className="bar previous" style={{ height: `${Math.random() * 60 + 20}%` }}></div>
+                  <span className="week-label">Week {week}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   if (loading) {
     return (
@@ -239,10 +623,30 @@ export default function BrandAnalytics() {
       {/* Navigation Tabs */}
       <nav className="nav-tabs">
         <div className="nav-container">
-          <button className="nav-tab active">Overview</button>
-          <button className="nav-tab">Complaints</button>
-          <button className="nav-tab">Performance</button>
-          <button className="nav-tab">Trends</button>
+          <button 
+            className={`nav-tab ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => handleTabChange('overview')}
+          >
+            Overview
+          </button>
+          <button 
+            className={`nav-tab ${activeTab === 'complaints' ? 'active' : ''}`}
+            onClick={() => handleTabChange('complaints')}
+          >
+            Complaints
+          </button>
+          <button 
+            className={`nav-tab ${activeTab === 'performance' ? 'active' : ''}`}
+            onClick={() => handleTabChange('performance')}
+          >
+            Performance
+          </button>
+          <button 
+            className={`nav-tab ${activeTab === 'trends' ? 'active' : ''}`}
+            onClick={() => handleTabChange('trends')}
+          >
+            Trends
+          </button>
         </div>
       </nav>
 
@@ -289,183 +693,11 @@ export default function BrandAnalytics() {
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-header">
-              <span className="stat-title">Total Complaints</span>
-              <span className="stat-icon">📊</span>
-            </div>
-            <div className="stat-value">{analyticsData.totalComplaints}</div>
-            <div className="stat-change positive">
-              +{analyticsData.complaintsThisWeek} this week
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-header">
-              <span className="stat-title">Resolved</span>
-              <span className="stat-icon">✅</span>
-            </div>
-            <div className="stat-value">{analyticsData.resolvedComplaints}</div>
-            <div className="stat-change positive">
-              {analyticsData.totalComplaints > 0 ? ((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1) : 0}% resolution rate
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-header">
-              <span className="stat-title">Pending</span>
-              <span className="stat-icon">⏳</span>
-            </div>
-            <div className="stat-value">{analyticsData.pendingComplaints}</div>
-            <div className="stat-change neutral">
-              {analyticsData.pendingComplaints} open tickets
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-header">
-              <span className="stat-title">Avg Response Time</span>
-              <span className="stat-icon">⏱️</span>
-            </div>
-            <div className="stat-value">{analyticsData.avgResponseTime}</div>
-            <div className="stat-change positive">
-              {analyticsData.responseTimeTrend} vs last period
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-header">
-              <span className="stat-title">Satisfaction Score</span>
-              <span className="stat-icon">⭐</span>
-            </div>
-            <div className="stat-value">{analyticsData.satisfactionScore}/5</div>
-            <div className="stat-change positive">
-              {analyticsData.satisfactionTrend} vs last period
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-header">
-              <span className="stat-title">Weekly Growth</span>
-              <span className="stat-icon">📈</span>
-            </div>
-            <div className="stat-value">
-              {analyticsData.complaintsLastWeek > 0 
-                ? ((analyticsData.complaintsThisWeek - analyticsData.complaintsLastWeek) / analyticsData.complaintsLastWeek * 100).toFixed(1)
-                : 0}%
-            </div>
-            <div className="stat-change positive">
-              {analyticsData.complaintsThisWeek} vs {analyticsData.complaintsLastWeek} last week
-            </div>
-          </div>
-        </div>
-
-        {/* Charts Section */}
-        <div className="charts-section">
-          <div className="chart-container">
-            <h3>Complaints Over Time</h3>
-            <div className="chart-placeholder">
-              <div className="chart-bars">
-                {chartData.map((height, index) => (
-                  <div 
-                    key={index} 
-                    className="chart-bar" 
-                    style={{ height: `${Math.max(height * 10, 5)}%` }}
-                  >
-                    <span className="bar-value">{height}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="chart-labels">
-                <span>Mon</span>
-                <span>Tue</span>
-                <span>Wed</span>
-                <span>Thu</span>
-                <span>Fri</span>
-                <span>Sat</span>
-                <span>Sun</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="chart-container">
-            <h3>Complaint Categories</h3>
-            <div className="pie-chart-placeholder">
-              <div className="pie-segments">
-                <div className="pie-segment" style={{ 
-                  background: `conic-gradient(#3498db 0deg 120deg, #e74c3c 120deg 200deg, #f39c12 200deg 280deg, #27ae60 280deg 360deg)` 
-                }}></div>
-              </div>
-              <div className="pie-legend">
-                {Object.entries(categoryData).map(([category, count]) => (
-                  <div key={category} className="legend-item">
-                    <span className="legend-color" style={{ background: '#3498db' }}></span>
-                    <span>{category.charAt(0).toUpperCase() + category.slice(1)} ({count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="recent-activity">
-          <h3>Recent Activity</h3>
-          <div className="activity-list">
-            {recentActivity.length === 0 ? (
-              <div className="text-center text-muted py-4">No recent activity</div>
-            ) : (
-              recentActivity.map((activity, index) => (
-                <div key={index} className="activity-item">
-                  <div className="activity-icon">{activity.icon}</div>
-                  <div className="activity-content">
-                    <div className="activity-title">{activity.title}</div>
-                    <div className="activity-details">{activity.details}</div>
-                    <div className="activity-time">{activity.time}</div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Performance Metrics */}
-        <div className="performance-metrics">
-          <h3>Performance Metrics</h3>
-          <div className="metrics-grid">
-            <div className="metric-card">
-              <h4>Response Time</h4>
-              <div className="metric-value">{analyticsData.avgResponseTime}</div>
-              <div className="metric-target">Target: &lt; 4 hours</div>
-              <div className="metric-status good">On Target</div>
-            </div>
-
-            <div className="metric-card">
-              <h4>Resolution Rate</h4>
-              <div className="metric-value">
-                {analyticsData.totalComplaints > 0 ? ((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1) : 0}%
-              </div>
-              <div className="metric-target">Target: &gt; 90%</div>
-              <div className="metric-status good">Exceeding Target</div>
-            </div>
-
-            <div className="metric-card">
-              <h4>Customer Satisfaction</h4>
-              <div className="metric-value">{analyticsData.satisfactionScore}/5</div>
-              <div className="metric-target">Target: &gt; 4.0</div>
-              <div className="metric-status good">On Target</div>
-            </div>
-
-            <div className="metric-card">
-              <h4>First Contact Resolution</h4>
-              <div className="metric-value">78%</div>
-              <div className="metric-target">Target: &gt; 75%</div>
-              <div className="metric-status good">On Target</div>
-            </div>
-          </div>
-        </div>
+        {/* Tab Content */}
+        {activeTab === 'overview' && renderOverviewTab()}
+        {activeTab === 'complaints' && renderComplaintsTab()}
+        {activeTab === 'performance' && renderPerformanceTab()}
+        {activeTab === 'trends' && renderTrendsTab()}
       </div>
     </div>
   );

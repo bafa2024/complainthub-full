@@ -1,11 +1,10 @@
 import logging
-from app.database import SessionLocal
+from app.database import SessionLocal, engine
 from app import crud, schemas
-from app.models import RoleEnum
+from app.models import RoleEnum, User, Brand, Ticket, TeamInvitation
+from app.db.base_class import Base
 
 # --- Add these lines to create tables before any CRUD ---
-from app.models import Base
-from app.database import engine
 Base.metadata.create_all(bind=engine)
 # -------------------------------------------------------
 
@@ -48,3 +47,4 @@ if __name__ == "__main__":
     logger.info("Creating initial data...")
     init_db()
     logger.info("Initial data created.")
+    print("Database tables created successfully!")

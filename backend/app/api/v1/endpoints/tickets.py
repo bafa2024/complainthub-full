@@ -3,6 +3,8 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+import logging
+import traceback
 
 from app import crud, models, schemas
 from app.api.v1 import deps # CORRECTED IMPORT PATH
@@ -71,12 +73,30 @@ def update_ticket(
     ticket_in: schemas.TicketUpdate,
     current_user: models.User = Depends(deps.get_current_active_brand_user),
 ):
+    """Update a ticket"""
+    logger = logging.getLogger(__name__)
+    
+    logger.info(f"Update ticket request - Ticket ID: {ticket_id}, User ID: {current_user.id}, User Role: {current_user.role}")
+    logger.info(f"Update data: {ticket_in.dict()}")
+    
     ticket = crud.get_ticket(db, ticket_id=ticket_id)
     if not ticket:
+        logger.error(f"Ticket not found - Ticket ID: {ticket_id}")
         raise HTTPException(status_code=404, detail="Ticket not found")
 
+    logger.info(f"Found ticket - Brand ID: {ticket.brand_id}, Owner ID: {ticket.owner_id}")
+
     if current_user.role == models.RoleEnum.brand_user and ticket.brand_id != current_user.brand_id:
+        logger.error(f"Authorization failed - User brand ID: {current_user.brand_id}, Ticket brand ID: {ticket.brand_id}")
         raise HTTPException(status_code=403, detail="Not authorized to update this ticket")
 
-    ticket = crud.update_ticket(db=db, ticket_id=ticket_id, ticket_update=ticket_in)
-    return ticket
+    logger.info("Authorization successful, updating ticket...")
+    
+    try:
+        updated_ticket = crud.update_ticket(db=db, ticket_id=ticket_id, ticket_update=ticket_in)
+        logger.info(f"Ticket updated successfully - New status: {updated_ticket.status}")
+        return updated_ticket
+    except Exception as e:
+        logger.error(f"Error updating ticket: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to update ticket: {str(e)}")

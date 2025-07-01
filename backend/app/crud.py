@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from fastapi import HTTPException
 from typing import List, Optional
 import traceback
+from datetime import datetime
 
 from . import models, schemas
 from .core.security import get_password_hash
@@ -394,21 +395,31 @@ def create_ticket(db: Session, ticket: schemas.TicketCreate, owner_id: int):
 
 def update_ticket(db: Session, ticket_id: int, ticket_update: schemas.TicketUpdate):
     """Update ticket with error handling"""
+    logger.info(f"Starting ticket update - Ticket ID: {ticket_id}")
+    logger.info(f"Update data received: {ticket_update.dict()}")
+    
     try:
         db_ticket = get_ticket(db, ticket_id)
         if not db_ticket:
             logger.warning(f"Ticket update failed - ticket not found: {ticket_id}")
             return None
         
+        logger.info(f"Found ticket - Current status: {db_ticket.status}")
+        
         update_data = ticket_update.dict(exclude_unset=True)
+        logger.info(f"Fields to update: {update_data}")
+        
         for key, value in update_data.items():
+            logger.info(f"Setting {key} = {value}")
             setattr(db_ticket, key, value)
+        
+        logger.info(f"Updated ticket status to: {db_ticket.status}")
         
         db.add(db_ticket)
         db.commit()
         db.refresh(db_ticket)
         
-        logger.info(f"Ticket updated successfully: {ticket_id}")
+        logger.info(f"Ticket updated successfully: {ticket_id}, New status: {db_ticket.status}")
         return db_ticket
         
     except IntegrityError as e:
@@ -432,5 +443,209 @@ def update_ticket(db: Session, ticket_id: int, ticket_update: schemas.TicketUpda
         raise HTTPException(
             status_code=500,
             detail="An internal error occurred while updating the ticket."
+        )
+#endregion
+
+#region Team Invitation CRUD
+def create_team_invitation(db: Session, invitation: schemas.TeamInvitationCreate, brand_id: int, invited_by: int, invitation_token: str, expires_at: datetime):
+    """Create team invitation with comprehensive error handling"""
+    logger.info(f"Creating team invitation for email: {invitation.email}, brand_id: {brand_id}")
+    try:
+        db_invitation = models.TeamInvitation(
+            email=invitation.email,
+            role=invitation.role,
+            brand_id=brand_id,
+            invited_by=invited_by,
+            invitation_token=invitation_token,
+            expires_at=expires_at
+        )
+        db.add(db_invitation)
+        db.commit()
+        db.refresh(db_invitation)
+        logger.info(f"Team invitation created successfully with ID: {db_invitation.id}")
+        return db_invitation
+    except IntegrityError as e:
+        db.rollback()
+        logger.error(f"Integrity error creating team invitation: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail="Team invitation creation failed due to constraint violation."
+        )
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Database error creating team invitation: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Database error occurred while creating the team invitation."
+        )
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Unexpected error creating team invitation: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=500,
+            detail="An internal error occurred while creating the team invitation."
+        )
+
+def get_team_members_by_brand(db: Session, brand_id: int, skip: int = 0, limit: int = 100):
+    """Get team members by brand with error handling"""
+    try:
+        team_members = db.query(models.User).filter(
+            models.User.brand_id == brand_id,
+            models.User.role.in_([models.RoleEnum.brand_user, models.RoleEnum.admin])
+        ).order_by(models.User.created_at.desc()).offset(skip).limit(limit).all()
+        
+        logger.debug(f"Retrieved {len(team_members)} team members for brand {brand_id}")
+        return team_members
+    except SQLAlchemyError as e:
+        logger.error(f"Database error getting team members for brand {brand_id}: {e}")
+        raise HTTPException(status_code=500, detail="Database error occurred")
+    except Exception as e:
+        logger.error(f"Unexpected error getting team members for brand {brand_id}: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+def get_team_invitation_by_token(db: Session, token: str):
+    """Get team invitation by token with error handling"""
+    try:
+        invitation = db.query(models.TeamInvitation).filter(
+            models.TeamInvitation.invitation_token == token
+        ).first()
+        if invitation:
+            logger.debug(f"Team invitation found with token: {token}")
+        else:
+            logger.debug(f"Team invitation not found with token: {token}")
+        return invitation
+    except SQLAlchemyError as e:
+        logger.error(f"Database error getting team invitation by token {token}: {e}")
+        raise HTTPException(status_code=500, detail="Database error occurred")
+    except Exception as e:
+        logger.error(f"Unexpected error getting team invitation by token {token}: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+def get_team_invitations_by_brand(db: Session, brand_id: int, skip: int = 0, limit: int = 100):
+    """Get team invitations by brand with error handling"""
+    try:
+        invitations = db.query(models.TeamInvitation).filter(
+            models.TeamInvitation.brand_id == brand_id
+        ).order_by(models.TeamInvitation.created_at.desc()).offset(skip).limit(limit).all()
+        
+        logger.debug(f"Retrieved {len(invitations)} team invitations for brand {brand_id}")
+        return invitations
+    except SQLAlchemyError as e:
+        logger.error(f"Database error getting team invitations for brand {brand_id}: {e}")
+        raise HTTPException(status_code=500, detail="Database error occurred")
+    except Exception as e:
+        logger.error(f"Unexpected error getting team invitations for brand {brand_id}: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+def accept_team_invitation(db: Session, invitation_id: int, user_data: schemas.TeamInvitationAccept):
+    """Accept team invitation and create user with error handling"""
+    logger.info(f"Accepting team invitation ID: {invitation_id}")
+    try:
+        # Get the invitation
+        invitation = db.query(models.TeamInvitation).filter(
+            models.TeamInvitation.id == invitation_id
+        ).first()
+        
+        if not invitation:
+            logger.warning(f"Team invitation not found: {invitation_id}")
+            raise HTTPException(status_code=404, detail="Invitation not found")
+        
+        if invitation.is_accepted:
+            logger.warning(f"Team invitation already accepted: {invitation_id}")
+            raise HTTPException(status_code=400, detail="Invitation already accepted")
+        
+        if invitation.expires_at < datetime.utcnow():
+            logger.warning(f"Team invitation expired: {invitation_id}")
+            raise HTTPException(status_code=400, detail="Invitation has expired")
+        
+        # Check if user already exists
+        existing_user = get_user_by_email(db, invitation.email)
+        if existing_user:
+            logger.warning(f"User already exists with email: {invitation.email}")
+            raise HTTPException(status_code=400, detail="User with this email already exists")
+        
+        # Create new user
+        hashed_password = get_password_hash(user_data.password)
+        db_user = models.User(
+            email=invitation.email,
+            hashed_password=hashed_password,
+            full_name=user_data.full_name,
+            phone_number=user_data.phone_number,
+            role=invitation.role,
+            brand_id=invitation.brand_id
+        )
+        db.add(db_user)
+        
+        # Mark invitation as accepted
+        invitation.is_accepted = True
+        invitation.accepted_at = datetime.utcnow()
+        
+        db.commit()
+        db.refresh(db_user)
+        db.refresh(invitation)
+        
+        logger.info(f"Team invitation accepted successfully. User created with ID: {db_user.id}")
+        return db_user
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions as they are already properly formatted
+        raise
+    except IntegrityError as e:
+        db.rollback()
+        logger.error(f"Integrity error accepting team invitation: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to accept invitation due to constraint violation."
+        )
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Database error accepting team invitation: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Database error occurred while accepting the invitation."
+        )
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Unexpected error accepting team invitation: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=500,
+            detail="An internal error occurred while accepting the invitation."
+        )
+
+def delete_team_invitation(db: Session, invitation_id: int):
+    """Delete team invitation with error handling"""
+    try:
+        invitation = db.query(models.TeamInvitation).filter(
+            models.TeamInvitation.id == invitation_id
+        ).first()
+        
+        if not invitation:
+            logger.warning(f"Team invitation not found for deletion: {invitation_id}")
+            return False
+        
+        db.delete(invitation)
+        db.commit()
+        logger.info(f"Team invitation deleted successfully: {invitation_id}")
+        return True
+        
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Database error deleting team invitation {invitation_id}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Database error occurred while deleting the invitation."
+        )
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Unexpected error deleting team invitation {invitation_id}: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=500,
+            detail="An internal error occurred while deleting the invitation."
         )
 #endregion

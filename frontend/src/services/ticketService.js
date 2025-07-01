@@ -55,10 +55,15 @@ const getTicketById = async (ticketId) => {
 
 const createTicket = async (ticketData) => {
     try {
+        console.log('Creating ticket with data:', ticketData);
         const response = await apiClient.post('/tickets/', ticketData);
+        console.log('Ticket created successfully:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error creating ticket:', error.message || error);
+        if (error.response) {
+            console.error('Backend error response:', error.response);
+        }
         
         // Extract specific error message from backend
         let errorMessage = 'Failed to create ticket. Please try again.';
@@ -77,11 +82,39 @@ const createTicket = async (ticketData) => {
 
 const updateTicket = async (ticketId, ticketData) => {
     try {
-        const response = await apiClient.put(`/tickets/${ticketId}`, ticketData);
+        console.log('updateTicket called with:', { ticketId, ticketData });
+        
+        // Check if we have a token
+        const token = localStorage.getItem('token');
+        console.log('Auth token:', token ? 'Present' : 'Missing');
+        
+        const response = await apiClient.patch(`/tickets/${ticketId}`, ticketData);
+        console.log('updateTicket response:', response);
         return response.data;
     } catch (error) {
-        console.error('Error updating ticket:', error.message || error);
-        throw error;
+        console.error('Error updating ticket:', error);
+        console.error('Error details:', {
+            message: error.message,
+            status: error.status,
+            data: error.data
+        });
+        
+        // Extract specific error message from backend
+        let errorMessage = 'Failed to update ticket. Please try again.';
+        if (error.response && error.response.data) {
+            if (error.response.data.detail) {
+                errorMessage = error.response.data.detail;
+            } else if (error.response.data.message) {
+                errorMessage = error.response.data.message;
+            }
+        } else if (error.data && error.data.detail) {
+            errorMessage = error.data.detail;
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        // Throw error with specific message
+        throw new Error(errorMessage);
     }
 };
 
