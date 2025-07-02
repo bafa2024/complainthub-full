@@ -73,20 +73,22 @@ def update_brand(
 @router.get("/{brand_id}/tickets", response_model=List[schemas.Ticket])
 def read_brand_tickets(
     *,
-    db: Session = Depends(get_db), # This will now work
+    db: Session = Depends(get_db),
     brand_id: int,
     skip: int = 0,
     limit: int = 100,
+    status: str = None,
     current_user: models.User = Depends(deps.get_current_active_brand_user),
 ):
     """
     Get all tickets for a specific brand. (Brand Users and Admins only)
+    Optionally filter by status (e.g., open, in-progress, etc.)
     """
     # Security check: ensure brand user is associated with this brand_id
     if current_user.role == models.RoleEnum.brand_user and current_user.brand_id != brand_id:
         raise HTTPException(status_code=403, detail="Not authorized to access this brand's tickets")
 
-    tickets = crud.get_tickets_by_brand(db, brand_id=brand_id, skip=skip, limit=limit)
+    tickets = crud.get_tickets_by_brand(db, brand_id=brand_id, skip=skip, limit=limit, status=status)
     return tickets
 
 # Team Invitation Endpoints
@@ -252,3 +254,18 @@ def accept_team_invitation(
         "user_id": user.id,
         "email": user.email
     }
+
+@router.delete("/{brand_id}")
+def delete_brand(
+    brand_id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: schemas.User = Depends(deps.get_current_user)
+):
+    """Delete a brand by ID (admin or brand manager only)"""
+    # Only allow if admin or the brand manager (support_email matches current_user.email)
+    brand = crud.get_brand(db, brand_id=brand_id)
+    if not brand:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    if current_user.role != "admin" and (not brand.support_email or brand.support_email.lower() != current_user.email.lower()):
+        raise HTTPException(status_code=403, detail="Not authorized to delete this brand")
+    return crud.delete_brand(db, brand_id=brand_id)

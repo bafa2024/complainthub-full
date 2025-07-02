@@ -40,6 +40,7 @@ import AdminSettings from './components/admin/AdminSettings';
 import AdminBillingLogs from './components/admin/AdminBillingLogs';
 import ResponsiveTest from './components/shared/ResponsiveTest';
 import AdminReports from './components/admin/AdminReports';
+import BrandManage from './components/brand/BrandManage';
 
 import './App.css';
 import './utils/responsive.css';
@@ -101,6 +102,7 @@ function App() {
             <Route path="/brand/topup" element={<ProtectedRoute roles={['brand_user', 'admin']}><TopUpCredit /></ProtectedRoute>} />
             <Route path="/brand/proceed-payment" element={<ProtectedRoute roles={['brand_user', 'admin']}><ProceedPayment /></ProtectedRoute>} />
             <Route path="/brand/team" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandTeam /></ProtectedRoute>} />
+            <Route path="/brand/manage-brands" element={<ProtectedRoute roles={['brand_user', 'admin']}><BrandManage /></ProtectedRoute>} />
             
             {/* Admin Portal Routes */}
             <Route path="/admin/dashboard" element={<ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>} />

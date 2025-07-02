@@ -167,6 +167,12 @@ const BrandDashboard = () => {
               <Link to="/brand/billing" className="list-group-item list-group-item-action">
                 <span className="sidebar-link-icon me-2" role="img" aria-label="billing">💳</span> Manage Billing
               </Link>
+              <Link to="/brand/manage-brands" className="list-group-item list-group-item-action">
+                <span className="sidebar-link-icon me-2" role="img" aria-label="brands">🏢</span> Manage Brands
+              </Link>
+              <Link to="/brand/manage-brands?add=1" className="list-group-item list-group-item-action">
+                <span className="sidebar-link-icon me-2" role="img" aria-label="add-brand">➕</span> Add Brand
+              </Link>
             </div>
           </div>
         </div>

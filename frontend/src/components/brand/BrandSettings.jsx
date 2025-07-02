@@ -1,24 +1,22 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
-import apiClient from '../../services/apiClient';
+import brandService from '../../services/brandService';
 import './BrandSettings.css';
 
 export default function BrandSettings() {
   const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [alert, setAlert] = useState({ show: false, type: '', message: '' });
 
   // Brand profile state
   const [brandProfile, setBrandProfile] = useState({
-    name: user?.brand_name || 'Acme Corporation',
-    description: 'Leading provider of innovative solutions',
-    website: 'https://acme.com',
-    industry: 'Technology',
-    address: '123 Business Street, Tech City, TC 12345',
-    contactEmail: 'support@acme.com',
-    contactPhone: '+1 (555) 123-4567'
+    name: '',
+    support_email: '',
+    industry: '',
+    logo_url: ''
   });
 
   // Integration settings
@@ -69,6 +67,31 @@ export default function BrandSettings() {
     smsNotifications: false
   });
 
+  // Load brand data on component mount
+  useEffect(() => {
+    const loadBrandData = async () => {
+      try {
+        setInitialLoading(true);
+        const brandData = await brandService.getCurrentUserBrand();
+        setBrandProfile({
+          name: brandData.name || '',
+          support_email: brandData.support_email || '',
+          industry: brandData.industry || '',
+          logo_url: brandData.logo_url || ''
+        });
+      } catch (error) {
+        console.error('Error loading brand data:', error);
+        showAlert('error', 'Failed to load brand data. Please try again.');
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    if (user) {
+      loadBrandData();
+    }
+  }, [user]);
+
   const showAlert = (type, message) => {
     setAlert({ show: true, type, message });
     setTimeout(() => setAlert({ show: false, type: '', message: '' }), 3000);
@@ -78,10 +101,19 @@ export default function BrandSettings() {
     e.preventDefault();
     setLoading(true);
     try {
-      await apiClient.put('/brand/profile', brandProfile);
+      // Map frontend fields to backend schema
+      const brandUpdateData = {
+        name: brandProfile.name,
+        support_email: brandProfile.support_email,
+        industry: brandProfile.industry,
+        logo_url: brandProfile.logo_url
+      };
+
+      await brandService.updateCurrentUserBrand(brandUpdateData);
       showAlert('success', 'Brand profile updated successfully!');
     } catch (error) {
-      showAlert('error', 'Failed to update brand profile');
+      console.error('Error updating brand profile:', error);
+      showAlert('error', error.message || 'Failed to update brand profile');
     } finally {
       setLoading(false);
     }
@@ -132,15 +164,30 @@ export default function BrandSettings() {
     }
   };
 
+  if (initialLoading) {
+    return (
+      <div className="brand-settings">
+        <div className="container">
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3">Loading brand settings...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="brand-settings">
       {/* Header */}
       <header className="settings-header">
         <div className="header-content">
           <div className="brand-info">
-            <div className="brand-logo">AC</div>
+            <div className="brand-logo">{brandProfile.name ? brandProfile.name.charAt(0).toUpperCase() : 'B'}</div>
             <div>
-              <h2>{brandProfile.name}</h2>
+              <h2>{brandProfile.name || 'Brand Settings'}</h2>
               <p>Brand Settings</p>
             </div>
           </div>
@@ -207,24 +254,15 @@ export default function BrandSettings() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Description</label>
-                <textarea 
-                  className="form-control" 
-                  rows="3"
-                  value={brandProfile.description}
-                  onChange={(e) => setBrandProfile({...brandProfile, description: e.target.value})}
-                />
-                <div className="form-text">Brief description of your brand</div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Website</label>
+                <label className="form-label">Support Email</label>
                 <input 
-                  type="url" 
+                  type="email" 
                   className="form-control" 
-                  value={brandProfile.website}
-                  onChange={(e) => setBrandProfile({...brandProfile, website: e.target.value})}
+                  value={brandProfile.support_email}
+                  onChange={(e) => setBrandProfile({...brandProfile, support_email: e.target.value})}
+                  required
                 />
+                <div className="form-text">Primary contact email for customer support</div>
               </div>
 
               <div className="form-group">
@@ -234,6 +272,7 @@ export default function BrandSettings() {
                   value={brandProfile.industry}
                   onChange={(e) => setBrandProfile({...brandProfile, industry: e.target.value})}
                 >
+                  <option value="">Select Industry</option>
                   <option value="Technology">Technology</option>
                   <option value="Healthcare">Healthcare</option>
                   <option value="Finance">Finance</option>
@@ -244,34 +283,15 @@ export default function BrandSettings() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Address</label>
-                <textarea 
-                  className="form-control" 
-                  rows="2"
-                  value={brandProfile.address}
-                  onChange={(e) => setBrandProfile({...brandProfile, address: e.target.value})}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Contact Email</label>
+                <label className="form-label">Logo URL</label>
                 <input 
-                  type="email" 
+                  type="url" 
                   className="form-control" 
-                  value={brandProfile.contactEmail}
-                  onChange={(e) => setBrandProfile({...brandProfile, contactEmail: e.target.value})}
-                  required
+                  value={brandProfile.logo_url}
+                  onChange={(e) => setBrandProfile({...brandProfile, logo_url: e.target.value})}
+                  placeholder="https://example.com/logo.png"
                 />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Contact Phone</label>
-                <input 
-                  type="tel" 
-                  className="form-control" 
-                  value={brandProfile.contactPhone}
-                  onChange={(e) => setBrandProfile({...brandProfile, contactPhone: e.target.value})}
-                />
+                <div className="form-text">URL to your brand logo</div>
               </div>
 
               <button type="submit" className="btn btn-primary" disabled={loading}>
@@ -417,52 +437,67 @@ export default function BrandSettings() {
           <div className="settings-section">
             <h2 className="section-title">Team Management</h2>
             
-            <div className="team-header">
-              <h3>Team Members ({teamMembers.length})</h3>
-              <button className="btn btn-primary" onClick={addTeamMember}>
-                + Add Team Member
-              </button>
-            </div>
-
-            <div className="team-list">
-              {teamMembers.map((member) => (
-                <div key={member.id} className="team-member-card">
-                  <div className="member-info">
-                    <div className="member-avatar">
-                      {member.name.charAt(0).toUpperCase()}
+            <div className="team-members">
+              <div className="team-header">
+                <h3>Team Members</h3>
+                <button onClick={addTeamMember} className="btn btn-success btn-sm">
+                  + Add Member
+                </button>
+              </div>
+              
+              <div className="team-list">
+                {teamMembers.map((member, index) => (
+                  <div key={member.id} className="team-member-card">
+                    <div className="member-info">
+                      <input 
+                        type="text" 
+                        className="form-control" 
+                        placeholder="Name"
+                        value={member.name}
+                        onChange={(e) => {
+                          const updatedMembers = [...teamMembers];
+                          updatedMembers[index].name = e.target.value;
+                          setTeamMembers(updatedMembers);
+                        }}
+                      />
+                      <input 
+                        type="email" 
+                        className="form-control" 
+                        placeholder="Email"
+                        value={member.email}
+                        onChange={(e) => {
+                          const updatedMembers = [...teamMembers];
+                          updatedMembers[index].email = e.target.value;
+                          setTeamMembers(updatedMembers);
+                        }}
+                      />
+                      <select 
+                        className="form-control" 
+                        value={member.role}
+                        onChange={(e) => {
+                          const updatedMembers = [...teamMembers];
+                          updatedMembers[index].role = e.target.value;
+                          setTeamMembers(updatedMembers);
+                        }}
+                      >
+                        <option value="admin">Admin</option>
+                        <option value="agent">Agent</option>
+                      </select>
                     </div>
-                    <div className="member-details">
-                      <h4>{member.name || 'New Member'}</h4>
-                      <p>{member.email || 'email@example.com'}</p>
-                      <span className={`status-badge ${member.status}`}>
+                    <div className="member-actions">
+                      <span className={`status-badge status-${member.status}`}>
                         {member.status}
                       </span>
+                      <button 
+                        onClick={() => removeTeamMember(member.id)}
+                        className="btn btn-danger btn-sm"
+                      >
+                        Remove
+                      </button>
                     </div>
                   </div>
-                  <div className="member-actions">
-                    <select 
-                      className="form-control role-select"
-                      value={member.role}
-                      onChange={(e) => {
-                        const updatedMembers = teamMembers.map(m => 
-                          m.id === member.id ? {...m, role: e.target.value} : m
-                        );
-                        setTeamMembers(updatedMembers);
-                      }}
-                    >
-                      <option value="admin">Admin</option>
-                      <option value="agent">Agent</option>
-                      <option value="viewer">Viewer</option>
-                    </select>
-                    <button 
-                      className="btn btn-danger btn-sm"
-                      onClick={() => removeTeamMember(member.id)}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -473,92 +508,88 @@ export default function BrandSettings() {
             <h2 className="section-title">Notification Preferences</h2>
             
             <form onSubmit={handleNotificationSubmit}>
-              <div className="notification-group">
-                <h3>Complaint Notifications</h3>
+              <div className="notification-settings">
+                <div className="form-group">
+                  <label className="form-label">
+                    <input 
+                      type="checkbox" 
+                      checked={notifications.newComplaints}
+                      onChange={(e) => setNotifications({
+                        ...notifications, 
+                        newComplaints: e.target.checked
+                      })}
+                    />
+                    New Complaint Notifications
+                  </label>
+                </div>
                 
-                <div className="form-check">
-                  <input 
-                    type="checkbox" 
-                    id="newComplaints"
-                    checked={notifications.newComplaints}
-                    onChange={(e) => setNotifications({...notifications, newComplaints: e.target.checked})}
-                  />
-                  <label htmlFor="newComplaints">
-                    <strong>New complaints</strong><br />
-                    <span className="form-text">Get notified when new complaints are received</span>
+                <div className="form-group">
+                  <label className="form-label">
+                    <input 
+                      type="checkbox" 
+                      checked={notifications.urgentComplaints}
+                      onChange={(e) => setNotifications({
+                        ...notifications, 
+                        urgentComplaints: e.target.checked
+                      })}
+                    />
+                    Urgent Complaint Alerts
                   </label>
                 </div>
-
-                <div className="form-check">
-                  <input 
-                    type="checkbox" 
-                    id="urgentComplaints"
-                    checked={notifications.urgentComplaints}
-                    onChange={(e) => setNotifications({...notifications, urgentComplaints: e.target.checked})}
-                  />
-                  <label htmlFor="urgentComplaints">
-                    <strong>Urgent complaints</strong><br />
-                    <span className="form-text">Immediate notification for high-priority complaints</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="notification-group">
-                <h3>Report Notifications</h3>
                 
-                <div className="form-check">
-                  <input 
-                    type="checkbox" 
-                    id="dailyDigest"
-                    checked={notifications.dailyDigest}
-                    onChange={(e) => setNotifications({...notifications, dailyDigest: e.target.checked})}
-                  />
-                  <label htmlFor="dailyDigest">
-                    <strong>Daily digest</strong><br />
-                    <span className="form-text">Summary of all complaints received in the last 24 hours</span>
+                <div className="form-group">
+                  <label className="form-label">
+                    <input 
+                      type="checkbox" 
+                      checked={notifications.dailyDigest}
+                      onChange={(e) => setNotifications({
+                        ...notifications, 
+                        dailyDigest: e.target.checked
+                      })}
+                    />
+                    Daily Digest Email
                   </label>
                 </div>
-
-                <div className="form-check">
-                  <input 
-                    type="checkbox" 
-                    id="weeklyReport"
-                    checked={notifications.weeklyReport}
-                    onChange={(e) => setNotifications({...notifications, weeklyReport: e.target.checked})}
-                  />
-                  <label htmlFor="weeklyReport">
-                    <strong>Weekly report</strong><br />
-                    <span className="form-text">Comprehensive weekly analytics and insights</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="notification-group">
-                <h3>Delivery Methods</h3>
                 
-                <div className="form-check">
-                  <input 
-                    type="checkbox" 
-                    id="emailNotifications"
-                    checked={notifications.emailNotifications}
-                    onChange={(e) => setNotifications({...notifications, emailNotifications: e.target.checked})}
-                  />
-                  <label htmlFor="emailNotifications">
-                    <strong>Email notifications</strong><br />
-                    <span className="form-text">Receive notifications via email</span>
+                <div className="form-group">
+                  <label className="form-label">
+                    <input 
+                      type="checkbox" 
+                      checked={notifications.weeklyReport}
+                      onChange={(e) => setNotifications({
+                        ...notifications, 
+                        weeklyReport: e.target.checked
+                      })}
+                    />
+                    Weekly Report
                   </label>
                 </div>
-
-                <div className="form-check">
-                  <input 
-                    type="checkbox" 
-                    id="smsNotifications"
-                    checked={notifications.smsNotifications}
-                    onChange={(e) => setNotifications({...notifications, smsNotifications: e.target.checked})}
-                  />
-                  <label htmlFor="smsNotifications">
-                    <strong>SMS notifications</strong><br />
-                    <span className="form-text">Receive urgent notifications via SMS</span>
+                
+                <div className="form-group">
+                  <label className="form-label">
+                    <input 
+                      type="checkbox" 
+                      checked={notifications.emailNotifications}
+                      onChange={(e) => setNotifications({
+                        ...notifications, 
+                        emailNotifications: e.target.checked
+                      })}
+                    />
+                    Email Notifications
+                  </label>
+                </div>
+                
+                <div className="form-group">
+                  <label className="form-label">
+                    <input 
+                      type="checkbox" 
+                      checked={notifications.smsNotifications}
+                      onChange={(e) => setNotifications({
+                        ...notifications, 
+                        smsNotifications: e.target.checked
+                      })}
+                    />
+                    SMS Notifications
                   </label>
                 </div>
               </div>

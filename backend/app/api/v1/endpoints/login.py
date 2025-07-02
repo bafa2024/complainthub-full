@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app import crud
+from app import crud, schemas
 from app.api.v1 import deps # CORRECTED IMPORT PATH
 from app.core import security
 from app.config.settings import settings
@@ -36,3 +36,12 @@ def login_access_token(
         "access_token": access_token,
         "token_type": "bearer",
     }
+
+@router.get("/me", response_model=schemas.User)
+def read_users_me(
+    current_user: schemas.User = Depends(deps.get_current_user),
+):
+    """
+    Get current user.
+    """
+    return current_user

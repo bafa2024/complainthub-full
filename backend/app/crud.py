@@ -276,6 +276,22 @@ def update_brand(db: Session, brand_id: int, brand_update: schemas.BrandUpdate):
             status_code=500,
             detail="An internal error occurred while updating the brand."
         )
+
+def delete_brand(db: Session, brand_id: int):
+    """Delete a brand by ID with error handling."""
+    brand = get_brand(db, brand_id)
+    if not brand:
+        logger.warning(f"Brand delete failed - brand not found: {brand_id}")
+        raise HTTPException(status_code=404, detail="Brand not found.")
+    try:
+        db.delete(brand)
+        db.commit()
+        logger.info(f"Brand deleted successfully: {brand_id}")
+        return {"msg": "Brand deleted successfully."}
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Brand delete failed: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete brand.")
 #endregion
 
 #region Ticket CRUD
@@ -328,11 +344,14 @@ def get_tickets(db: Session, skip: int = 0, limit: int = 100):
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-def get_tickets_by_brand(db: Session, brand_id: int, skip: int = 0, limit: int = 100):
-    """Get tickets by brand with error handling"""
+def get_tickets_by_brand(db: Session, brand_id: int, skip: int = 0, limit: int = 100, status: str = None):
+    """Get tickets by brand with optional status filter and error handling"""
     try:
-        tickets = db.query(models.Ticket).filter(models.Ticket.brand_id == brand_id).order_by(models.Ticket.created_at.desc()).offset(skip).limit(limit).all()
-        logger.debug(f"Retrieved {len(tickets)} tickets for brand {brand_id} (skip={skip}, limit={limit})")
+        query = db.query(models.Ticket).filter(models.Ticket.brand_id == brand_id)
+        if status:
+            query = query.filter(models.Ticket.status == status)
+        tickets = query.order_by(models.Ticket.created_at.desc()).offset(skip).limit(limit).all()
+        logger.debug(f"Retrieved {len(tickets)} tickets for brand {brand_id} (status={status}, skip={skip}, limit={limit})")
         return tickets
     except SQLAlchemyError as e:
         logger.error(f"Database error getting tickets for brand {brand_id}: {e}")
