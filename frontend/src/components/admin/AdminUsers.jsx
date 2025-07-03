@@ -7,9 +7,11 @@ import './Admin.css';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     
     // State for the create/edit form
     const [showForm, setShowForm] = useState(false);
@@ -32,6 +34,7 @@ const AdminUsers = () => {
             setLoading(true);
             const data = await adminService.getAllUsers();
             setUsers(data);
+            setFilteredUsers(data);
         } catch (err) {
             setError('Could not load users.');
             console.error(err);
@@ -43,6 +46,22 @@ const AdminUsers = () => {
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    // Filter users based on search term
+    useEffect(() => {
+        if (searchTerm.trim() === '') {
+            setFilteredUsers(users);
+        } else {
+            const filtered = users.filter(user => 
+                user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.role?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.phone_number?.includes(searchTerm) ||
+                user.brand_id?.toString().includes(searchTerm)
+            );
+            setFilteredUsers(filtered);
+        }
+    }, [searchTerm, users]);
 
     const handleCreateNew = () => {
         setIsEditing(false);
@@ -160,6 +179,14 @@ const AdminUsers = () => {
         }
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const clearSearch = () => {
+        setSearchTerm('');
+    };
+
     if (loading) return <LoadingSpinner />;
 
     return (
@@ -171,6 +198,35 @@ const AdminUsers = () => {
 
             {error && <p className="error-message">{error}</p>}
             {successMessage && <p className="success-message">{successMessage}</p>}
+
+            {/* Search Box */}
+            <div className="search-container">
+                <div className="search-box">
+                    <input
+                        type="text"
+                        placeholder="Search users by email, name, role, phone, or brand ID..."
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        className="search-input"
+                    />
+                    {searchTerm && (
+                        <button 
+                            onClick={clearSearch}
+                            className="search-clear"
+                            title="Clear search"
+                        >
+                            ×
+                        </button>
+                    )}
+                </div>
+                <div className="search-info">
+                    {searchTerm && (
+                        <span className="search-results">
+                            Showing {filteredUsers.length} of {users.length} users
+                        </span>
+                    )}
+                </div>
+            </div>
 
             {showForm && (
                 <div className="admin-form-container">
@@ -277,7 +333,7 @@ const AdminUsers = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map(user => (
+                    {filteredUsers.map(user => (
                         <tr key={user.id}>
                             <td>{user.id}</td>
                             <td>{user.email}</td>
@@ -313,6 +369,16 @@ const AdminUsers = () => {
                     ))}
                 </tbody>
             </table>
+            
+            {filteredUsers.length === 0 && !loading && (
+                <div className="no-results">
+                    {searchTerm ? (
+                        <p>No users found matching "{searchTerm}". Try a different search term.</p>
+                    ) : (
+                        <p>No users found.</p>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
