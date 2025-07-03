@@ -112,12 +112,13 @@ const HomePage = () => {
   };
 
   return (
-    <div className="homepage-container">
+    <div className="homepage">
       {/* Hero Section */}
-      <section className="hero-section">
+      <section className="hero-section page-container">
         <div className="hero-content">
           <div className="hero-badge">
-            <span>🚀 Trusted by 500+ brands worldwide</span>
+            <i className="fas fa-rocket me-2"></i>
+            <span>Trusted by 500+ brands worldwide</span>
           </div>
           <h1 className="hero-title">
             Your Voice, <span className="highlight">Amplified.</span>
@@ -128,13 +129,13 @@ const HomePage = () => {
           </p>
           <div className="hero-cta-buttons">
             <Link to="/new-complaint" className="btn btn-primary btn-lg">
-              Lodge a Complaint
+              <i className="fas fa-plus me-2"></i>Lodge a Complaint
             </Link>
-            <Link to="/track-complaint" className="btn btn-outline btn-lg">
-              Track Complaint
+            <Link to="/track-complaint" className="btn btn-secondary btn-lg">
+              <i className="fas fa-search me-2"></i>Track Complaint
             </Link>
-            <Link to="/complaints" className="btn btn-outline btn-lg">
-              View Public Complaints
+            <Link to="/complaints" className="btn btn-outline-secondary btn-lg">
+              <i className="fas fa-list me-2"></i>View Public Complaints
             </Link>
           </div>
           <div className="hero-stats">
@@ -169,74 +170,92 @@ const HomePage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="features-section">
-        <div className="section-header">
-          <h2>A Better Way to Be Heard</h2>
-          <p>Our platform ensures your issues are documented, seen, and resolved with cutting-edge technology.</p>
+      <section className="features-section page-container">
+        <div className="page-header">
+          <h2 className="page-title">A Better Way to Be Heard</h2>
+          <p className="page-subtitle">Our platform ensures your issues are documented, seen, and resolved with cutting-edge technology.</p>
         </div>
         <div className="features-grid">
           {features.map((feature, index) => (
-            <div key={index} className="feature-card">
-              <div className="feature-icon">{feature.icon}</div>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
+            <div key={index} className="feature-card card">
+              <div className="card-body">
+                <div className="feature-icon">{feature.icon}</div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className="how-it-works-section">
-        <div className="section-header">
-          <h2>How It Works</h2>
-          <p>Simple, transparent, and effective complaint resolution process</p>
+      <section className="how-it-works-section page-container">
+        <div className="page-header">
+          <h2 className="page-title">How It Works</h2>
+          <p className="page-subtitle">Simple, transparent, and effective complaint resolution process</p>
         </div>
         <div className="steps-container">
-          <div className="step">
-            <div className="step-number">1</div>
-            <h3>Lodge Your Complaint</h3>
-            <p>Use our AI-powered bot via voice, text, or web chat to submit your complaint 24/7</p>
+          <div className="step card">
+            <div className="card-body text-center">
+              <div className="step-number">1</div>
+              <h3>Lodge Your Complaint</h3>
+              <p>Use our AI-powered bot via voice, text, or web chat to submit your complaint 24/7</p>
+            </div>
           </div>
-          <div className="step-arrow">→</div>
-          <div className="step">
-            <div className="step-number">2</div>
-            <h3>AI Processing</h3>
-            <p>Our AI analyzes and categorizes your complaint, ensuring it reaches the right department</p>
+          <div className="step-arrow">
+            <i className="fas fa-arrow-right"></i>
           </div>
-          <div className="step-arrow">→</div>
-          <div className="step">
-            <div className="step-number">3</div>
-            <h3>Brand Response</h3>
-            <p>Brands receive instant notifications and can respond directly through our platform</p>
+          <div className="step card">
+            <div className="card-body text-center">
+              <div className="step-number">2</div>
+              <h3>AI Processing</h3>
+              <p>Our intelligent system categorizes and routes your complaint to the right brand automatically</p>
+            </div>
           </div>
-          <div className="step-arrow">→</div>
-          <div className="step">
-            <div className="step-number">4</div>
-            <h3>Resolution Tracking</h3>
-            <p>Track the progress of your complaint and get notified when it's resolved</p>
+          <div className="step-arrow">
+            <i className="fas fa-arrow-right"></i>
+          </div>
+          <div className="step card">
+            <div className="card-body text-center">
+              <div className="step-number">3</div>
+              <h3>Brand Response</h3>
+              <p>Brands receive your complaint and respond within 24 hours with a resolution plan</p>
+            </div>
+          </div>
+          <div className="step-arrow">
+            <i className="fas fa-arrow-right"></i>
+          </div>
+          <div className="step card">
+            <div className="card-body text-center">
+              <div className="step-number">4</div>
+              <h3>Resolution & Feedback</h3>
+              <p>Track the resolution progress and provide feedback on the outcome</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="testimonials-section">
-        <div className="section-header">
-          <h2>What Our Users Say</h2>
-          <p>Join thousands of satisfied customers and brands</p>
+      <section className="testimonials-section page-container">
+        <div className="page-header">
+          <h2 className="page-title">What Our Users Say</h2>
+          <p className="page-subtitle">Real feedback from customers and brands who trust ComplaintHub</p>
         </div>
         <div className="testimonials-grid">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="testimonial-card">
-              <div className="testimonial-rating">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <span key={i} className="star">⭐</span>
-                ))}
-              </div>
-              <p className="testimonial-content">"{testimonial.content}"</p>
-              <div className="testimonial-author">
-                <div className="author-info">
-                  <h4>{testimonial.name}</h4>
-                  <p>{testimonial.role} at {testimonial.company}</p>
+            <div key={index} className="testimonial-card card">
+              <div className="card-body">
+                <div className="testimonial-rating">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <i key={i} className="fas fa-star text-warning"></i>
+                  ))}
+                </div>
+                <p className="testimonial-content">"{testimonial.content}"</p>
+                <div className="testimonial-author">
+                  <div className="author-info">
+                    <h4>{testimonial.name}</h4>
+                    <p>{testimonial.role} at {testimonial.company}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -245,124 +264,77 @@ const HomePage = () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="pricing-section">
-        <div className="section-header">
-          <h2>Simple, Transparent Pricing</h2>
-          <p>Choose the plan that fits your needs</p>
+      <section className="pricing-section page-container">
+        <div className="page-header">
+          <h2 className="page-title">Simple, Transparent Pricing</h2>
+          <p className="page-subtitle">Choose the plan that fits your needs. No hidden fees, no surprises.</p>
         </div>
-        <div className="pricing-toggle">
-          <button 
-            className={`toggle-btn ${activeTab === 'monthly' ? 'active' : ''}`}
-            onClick={() => setActiveTab('monthly')}
-          >
-            Monthly
-          </button>
-          <button 
-            className={`toggle-btn ${activeTab === 'yearly' ? 'active' : ''}`}
-            onClick={() => setActiveTab('yearly')}
-          >
-            Yearly <span className="save-badge">Save 20%</span>
-          </button>
+        
+        <div className="pricing-toggle text-center mb-4">
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className={`btn ${activeTab === 'monthly' ? 'btn-primary' : 'btn-outline-secondary'}`}
+              onClick={() => setActiveTab('monthly')}
+            >
+              Monthly
+            </button>
+            <button
+              type="button"
+              className={`btn ${activeTab === 'yearly' ? 'btn-primary' : 'btn-outline-secondary'}`}
+              onClick={() => setActiveTab('yearly')}
+            >
+              Yearly <span className="badge bg-success ms-1">Save 20%</span>
+            </button>
+          </div>
         </div>
+
         <div className="pricing-grid">
           {pricingPlans[activeTab].map((plan, index) => (
-            <div key={index} className={`pricing-card ${plan.popular ? 'popular' : ''}`}>
-              {plan.popular && <div className="popular-badge">Most Popular</div>}
-              <h3>{plan.name}</h3>
-              <div className="price">
-                <span className="price-amount">{plan.price}</span>
-                <span className="price-period">{plan.period}</span>
+            <div key={index} className={`pricing-card card ${plan.popular ? 'popular' : ''}`}>
+              {plan.popular && (
+                <div className="popular-badge">
+                  <span>Most Popular</span>
+                </div>
+              )}
+              <div className="card-body">
+                <h3 className="plan-name">{plan.name}</h3>
+                <div className="plan-price">
+                  <span className="price">{plan.price}</span>
+                  <span className="period">{plan.period}</span>
+                </div>
+                <ul className="plan-features">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex}>
+                      <i className="fas fa-check text-success me-2"></i>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/signup" className="btn btn-primary w-100">
+                  Get Started
+                </Link>
               </div>
-              <ul className="features-list">
-                {plan.features.map((feature, featureIndex) => (
-                  <li key={featureIndex}>{feature}</li>
-                ))}
-              </ul>
-              <button className="btn btn-primary btn-full">Get Started</button>
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="cta-section">
-        <div className="cta-content">
-          <h2>Ready to Transform Your Complaint Management?</h2>
-          <p>Join thousands of brands and customers who trust ComplaintHub</p>
+      <section className="cta-section page-container">
+        <div className="cta-content text-center">
+          <h2>Ready to Get Started?</h2>
+          <p>Join thousands of customers and brands who trust ComplaintHub for their complaint management needs.</p>
           <div className="cta-buttons">
-            <Link to="/signup" className="btn btn-primary btn-lg">Start Free Trial</Link>
-            <Link to="/contact" className="btn btn-outline btn-lg">Contact Sales</Link>
+            <Link to="/signup" className="btn btn-primary btn-lg">
+              <i className="fas fa-user-plus me-2"></i>Sign Up Now
+            </Link>
+            <Link to="/contact" className="btn btn-outline-secondary btn-lg">
+              <i className="fas fa-envelope me-2"></i>Contact Sales
+            </Link>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-section">
-            <h3>ComplaintHub</h3>
-            <p>Empowering customers and brands through transparent, AI-powered complaint resolution.</p>
-            <div className="social-links">
-              <a href="#" className="social-link">📘</a>
-              <a href="#" className="social-link">🐦</a>
-              <a href="#" className="social-link">💼</a>
-              <a href="#" className="social-link">📷</a>
-            </div>
-          </div>
-          
-          <div className="footer-section">
-            <h4>Product</h4>
-            <ul>
-              <li><Link to="/features">Features</Link></li>
-              <li><Link to="/pricing">Pricing</Link></li>
-              <li><Link to="/integrations">Integrations</Link></li>
-              <li><Link to="/api">API</Link></li>
-            </ul>
-          </div>
-          
-          <div className="footer-section">
-            <h4>Company</h4>
-            <ul>
-              <li><Link to="/about">About Us</Link></li>
-              <li><Link to="/careers">Careers</Link></li>
-              <li><Link to="/press">Press</Link></li>
-              <li><Link to="/contact">Contact</Link></li>
-            </ul>
-          </div>
-          
-          <div className="footer-section">
-            <h4>Support</h4>
-            <ul>
-              <li><Link to="/help">Help Center</Link></li>
-              <li><Link to="/track-complaint">Track Complaint</Link></li>
-              <li><Link to="/docs">Documentation</Link></li>
-              <li><Link to="/status">System Status</Link></li>
-              <li><Link to="/contact">Contact Support</Link></li>
-            </ul>
-          </div>
-          
-          <div className="footer-section">
-            <h4>Legal</h4>
-            <ul>
-              <li><Link to="/privacy">Privacy Policy</Link></li>
-              <li><Link to="/terms">Terms of Service</Link></li>
-              <li><Link to="/cookies">Cookie Policy</Link></li>
-              <li><Link to="/gdpr">GDPR</Link></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div className="footer-bottom">
-          <div className="footer-bottom-content">
-            <p>&copy; 2024 ComplaintHub. All rights reserved.</p>
-            <div className="footer-bottom-links">
-              <Link to="/sitemap">Sitemap</Link>
-              <Link to="/accessibility">Accessibility</Link>
-              <Link to="/security">Security</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

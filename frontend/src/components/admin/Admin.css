@@ -18,6 +18,590 @@
 }
 
 .chart-placeholder {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border: 2px dashed #ced4da;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-weight: 500;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.chart-placeholder:hover {
+    border-color: #007bff;
+    background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+}
+
+.chart-placeholder p {
+    margin: 0;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+/* Admin Container and Header Styles */
+.admin-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.admin-header h1 {
+    margin: 0;
+    color: #343a40;
+    font-weight: 600;
+}
+
+/* Admin Table Styles */
+.admin-table {
+    width: 100%;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-collapse: collapse;
+    overflow: hidden;
+}
+
+.admin-table th {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+    padding: 1rem 1.5rem;
+    text-align: left;
+}
+
+.admin-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.admin-table tr:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+
+/* Action Buttons */
+.btn-edit, .btn-delete {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-edit {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+}
+
+.btn-delete:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn-delete:disabled {
+    background: linear-gradient(135deg, #6c757d, #545b62);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Admin Form Styles */
+.admin-form-container {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e9ecef;
+}
+
+.admin-form-container h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    background-color: white;
+    transition: border-color 0.2s ease;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+/* Button Styles */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background-color: #198754;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #157347;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5c636a;
+    transform: translateY(-1px);
+}
+
+/* Error Message Styles */
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px 16px;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.875rem;
+}
+
+/* Success Message Styles */
+.success-message {
+    background-color: #d1edff;
+    color: #0c5460;
+    padding: 12px 16px;
+    border: 1px solid #bee5eb;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.875rem;
+}
+
+/* Search Box Styles */
+.search-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e9ecef;
+}
+
+.search-box {
+    position: relative;
+    max-width: 500px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 3rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.search-clear {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.search-clear:hover {
+    background-color: #f8f9fa;
+    color: #dc3545;
+}
+
+.search-info {
+    margin-top: 1rem;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* Search Results Styles */
+.search-results {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* No Results Styles */
+.no-results {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.no-results p {
+    color: #6c757d;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Complaints Management Styles */
+.complaints-filters {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e9ecef;
+}
+
+.complaints-table {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.complaints-table .table {
+    margin-bottom: 0;
+}
+
+.complaints-table .table th {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+    padding: 1rem 1.5rem;
+}
+
+.complaints-table .table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #fff;
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #212529;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: #fff;
+}
+
+.badge-secondary {
+    background: linear-gradient(135deg, #6c757d, #545b62);
+    color: #fff;
+}
+
+.badge-light {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    color: #495057;
+}
+
+.badge-info {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: #fff;
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: #fff;
+}
+
+/* Filter form styles */
+.filter-form .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.filter-form .form-control,
+.filter-form .form-select {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.filter-form .form-control:focus,
+.filter-form .form-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Status update buttons */
+.status-update-buttons .btn-group .btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.status-update-buttons .btn-group .btn:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.status-update-buttons .btn-group .btn:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Complaint detail styles */
+.complaint-detail-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #e9ecef;
+}
+
+.complaint-detail-card .card-header {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-bottom: 1px solid #e9ecef;
+    padding: 1.5rem;
+}
+
+.complaint-description {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-left: 4px solid #007bff;
+}
+
+.audio-player {
+    width: 100%;
+    margin: 1rem 0;
+    border-radius: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .admin-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .admin-table {
+        font-size: 0.875rem;
+    }
+    
+    .admin-table th,
+    .admin-table td {
+        padding: 0.75rem;
+    }
+    
+    .btn-edit, .btn-delete {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .complaints-filters .row {
+        margin: 0;
+    }
+    
+    .complaints-filters .col-md-3 {
+        margin-bottom: 1rem;
+    }
+    
+    .table-responsive {
+        border-radius: 8px;
+    }
+    
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .search-container,
+    .complaints-filters,
+    .admin-form-container {
+        padding: 1rem;
+    }
+    
+    .chart-placeholder {
+        height: 200px;
+    }
+    
+    .chart-placeholder p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .admin-table {
+        font-size: 0.75rem;
+    }
+    
+    .admin-table th,
+    .admin-table td {
+        padding: 0.5rem;
+    }
+    
+    .btn-edit, .btn-delete {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        margin-right: 0.25rem;
+    }
+    
+    .search-container,
+    .complaints-filters,
+    .admin-form-container {
+        padding: 0.75rem;
+    }
+    
+    .chart-placeholder {
+        height: 150px;
+    }
+    
+/* Add these styles to your existing frontend/src/components/admin/Admin.css file */
+
+.stat-card-admin {
+    border: none;
+    border-left: 5px solid #0d6efd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.stat-card-admin .card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.stat-card-admin .card-text {
+    font-weight: 700;
+    color: #343a40;
+}
+
+.chart-placeholder {
     background-color: #e9ecef;
     border: 1px dashed #ced4da;
     height: 200px;

@@ -61,6 +61,14 @@ class BrandCreate(BrandBase):
     pass
 
 
+class BrandCreateAdmin(BaseModel):
+    name: str
+    support_email: str
+    industry: Optional[str] = None
+    logo_url: Optional[str] = None
+    # Note: contact_info is excluded since the column doesn't exist in the database
+
+
 class BrandUpdate(BaseModel):
     name: Optional[str] = None
     support_email: Optional[str] = None

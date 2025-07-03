@@ -118,6 +118,25 @@ def read_all_brands(
     """
     brands = crud.get_brands(db, skip=skip, limit=limit)
     return brands
+
+@router.post("/brands", response_model=schemas.Brand)
+def create_brand_admin(
+    *,
+    db: Session = Depends(get_db),
+    brand_in: schemas.BrandCreateAdmin,
+    current_user: models.User = Depends(deps.get_current_active_admin),
+):
+    """
+    Create new brand. (Admins only)
+    """
+    brand = crud.get_brand_by_name(db, name=brand_in.name)
+    if brand:
+        raise HTTPException(
+            status_code=400,
+            detail="A brand with this name already exists.",
+        )
+    brand = crud.create_brand_admin(db=db, brand=brand_in)
+    return brand
     
 @router.put("/brands/{brand_id}", response_model=schemas.Brand)
 def update_brand_details(
@@ -138,3 +157,22 @@ def update_brand_details(
         )
     brand = crud.update_brand(db=db, brand_id=brand_id, brand_update=brand_in)
     return brand
+
+@router.delete("/brands/{brand_id}")
+def delete_brand_admin(
+    *,
+    db: Session = Depends(get_db),
+    brand_id: int,
+    current_user: models.User = Depends(deps.get_current_active_admin),
+):
+    """
+    Delete brand. (Admins only)
+    """
+    brand = crud.get_brand(db, brand_id=brand_id)
+    if not brand:
+        raise HTTPException(
+            status_code=404,
+            detail="The brand with this ID does not exist in the system",
+        )
+    
+    return crud.delete_brand(db, brand_id=brand_id)

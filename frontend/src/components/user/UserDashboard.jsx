@@ -41,41 +41,82 @@ const UserDashboard = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div>
-      <div className="dashboard-header mb-4">
-        <h1 className="mb-3">My Dashboard</h1>
-        <div className="btn-group dashboard-actions" role="group" aria-label="Lodge Complaint Actions">
+    <div className="user-dashboard">
+      {/* Dashboard Header */}
+      <div className="page-container">
+        <div className="page-header">
+          <h1 className="page-title">
+            <i className="fas fa-tachometer-alt me-2"></i>
+            My Dashboard
+          </h1>
+          <p className="page-subtitle">Manage your complaints and track their progress</p>
+        </div>
+
+        {error && (
+          <div className="alert alert-danger">
+            <i className="fas fa-exclamation-triangle me-2"></i>
+            {error}
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="dashboard-actions mb-4">
           <Link to="/new-complaint" className="btn btn-outline-secondary dashboard-action-btn">
+            <i className="fas fa-file-alt me-2"></i>
             Lodge via Form
           </Link>
           <Link to="/lodge-voice" className="btn btn-outline-secondary dashboard-action-btn">
+            <i className="fas fa-microphone me-2"></i>
             Lodge via Voice
           </Link>
           <Link to="/chat" className="btn btn-primary dashboard-action-btn">
+            <i className="fas fa-comments me-2"></i>
             Start a Chat
           </Link>
         </div>
+
+        {/* Statistics Cards */}
+        <div className="stats-grid mb-4">
+          <div className="stat-card card">
+            <div className="card-body text-center">
+              <div className="stat-icon">
+                <i className="fas fa-ticket-alt"></i>
+              </div>
+              <h2 className="stat-number">{tickets.length}</h2>
+              <p className="stat-label">Total Tickets</p>
+            </div>
+          </div>
+          <div className="stat-card card">
+            <div className="card-body text-center">
+              <div className="stat-icon">
+                <i className="fas fa-clock"></i>
+              </div>
+              <h2 className="stat-number">{statusCounts.new + statusCounts['in-progress']}</h2>
+              <p className="stat-label">Active Tickets</p>
+            </div>
+          </div>
+          <div className="stat-card card">
+            <div className="card-body text-center">
+              <div className="stat-icon">
+                <i className="fas fa-check-circle"></i>
+              </div>
+              <h2 className="stat-number">{statusCounts.resolved}</h2>
+              <p className="stat-label">Resolved Tickets</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {error && <div className="alert alert-danger">{error}</div>}
+      {/* Tickets Section */}
+      <div className="page-container">
+        <div className="page-header">
+          <h2 className="page-title">
+            <i className="fas fa-list me-2"></i>
+            My Tickets
+          </h2>
+          <p className="page-subtitle">Track the status of your complaints</p>
+        </div>
 
-      <div className="stats-container">
-        <div className="stat-card">
-          <h2>{tickets.length}</h2>
-          <p>Total Tickets</p>
-        </div>
-        <div className="stat-card">
-          <h2>{statusCounts.new + statusCounts['in-progress']}</h2>
-          <p>Active Tickets</p>
-        </div>
-        <div className="stat-card">
-          <h2>{statusCounts.resolved}</h2>
-          <p>Resolved Tickets</p>
-        </div>
-      </div>
-
-      <div className="tickets-section">
-        <h2 className="mb-3">My Tickets</h2>
         {tickets.length > 0 ? (
           <div className="tickets-list">
             {tickets.map((ticket) => (
@@ -85,7 +126,15 @@ const UserDashboard = () => {
         ) : (
           <div className="card">
             <div className="card-body text-center">
-              <p className="mb-0">You haven't submitted any tickets yet.</p>
+              <div className="empty-state">
+                <i className="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h3>No Tickets Yet</h3>
+                <p className="text-muted">You haven't submitted any complaints yet. Start by lodging your first complaint!</p>
+                <Link to="/new-complaint" className="btn btn-primary">
+                  <i className="fas fa-plus me-2"></i>
+                  Lodge Your First Complaint
+                </Link>
+              </div>
             </div>
           </div>
         )}

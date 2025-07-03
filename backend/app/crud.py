@@ -142,11 +142,45 @@ def delete_user(db: Session, user_id: int):
     if not user:
         logger.warning(f"User delete failed - user not found: {user_id}")
         raise HTTPException(status_code=404, detail="User not found.")
+    
+    # Check for related records before deletion
     try:
+        # Check for tickets owned by this user
+        owned_tickets_count = db.query(models.Ticket).filter(models.Ticket.owner_id == user_id).count()
+        if owned_tickets_count > 0:
+            logger.warning(f"User delete failed - {owned_tickets_count} tickets owned by user: {user_id}")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete user. There are {owned_tickets_count} tickets owned by this user. Please delete or reassign tickets first."
+            )
+        
+        # Check for tickets assigned to this user
+        assigned_tickets_count = db.query(models.Ticket).filter(models.Ticket.assignee_id == user_id).count()
+        if assigned_tickets_count > 0:
+            logger.warning(f"User delete failed - {assigned_tickets_count} tickets assigned to user: {user_id}")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete user. There are {assigned_tickets_count} tickets assigned to this user. Please reassign tickets first."
+            )
+        
+        # Check for team invitations sent by this user
+        invitations_count = db.query(models.TeamInvitation).filter(models.TeamInvitation.invited_by == user_id).count()
+        if invitations_count > 0:
+            logger.warning(f"User delete failed - {invitations_count} team invitations sent by user: {user_id}")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete user. There are {invitations_count} team invitations sent by this user. Please delete invitations first."
+            )
+        
+        # If no related records, proceed with deletion
         db.delete(user)
         db.commit()
         logger.info(f"User deleted successfully: {user_id}")
         return {"msg": "User deleted successfully."}
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (our custom error messages)
+        raise
     except Exception as e:
         db.rollback()
         logger.error(f"User delete failed: {e}")
@@ -207,6 +241,49 @@ def create_brand(db: Session, brand: schemas.BrandCreate):
     logger.info(f"Creating brand with name: {brand.name}")
     try:
         db_brand = models.Brand(**brand.dict())
+        db.add(db_brand)
+        db.commit()
+        db.refresh(db_brand)
+        logger.info(f"Brand created successfully with ID: {db_brand.id}")
+        return db_brand
+    except IntegrityError as e:
+        db.rollback()
+        logger.error(f"Integrity error creating brand: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail="A brand with this name already exists."
+        )
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Database error creating brand: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Database error occurred while creating the brand."
+        )
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Unexpected error creating brand: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(
+            status_code=500,
+            detail="An internal error occurred while creating the brand."
+        )
+
+
+def create_brand_admin(db: Session, brand: schemas.BrandCreateAdmin):
+    """Create brand for admin (without contact_info column)"""
+    logger.info(f"Creating brand with name: {brand.name}")
+    try:
+        # Only use fields that exist in the database
+        brand_data = {
+            'name': brand.name,
+            'support_email': brand.support_email,
+            'industry': brand.industry,
+            'logo_url': brand.logo_url,
+            'credit_balance': 0.0  # Default credit balance
+        }
+        
+        db_brand = models.Brand(**brand_data)
         db.add(db_brand)
         db.commit()
         db.refresh(db_brand)

@@ -20,12 +20,12 @@ def create_brand(
     *,
     db: Session = Depends(get_db),
     brand_in: schemas.BrandCreate,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.User = Depends(deps.get_current_active_user),
 ):
     """
     Create new brand. (Admin and Brand Manager only)
     """
-    if current_user.role not in ["admin", "brand_user"]:
+    if current_user.role not in [models.RoleEnum.admin, models.RoleEnum.brand_user]:
         raise HTTPException(status_code=403, detail="Not authorized to create a brand")
     brand = crud.get_brand_by_name(db, name=brand_in.name)
     if brand:

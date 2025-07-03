@@ -2,7 +2,8 @@ import apiClient from './apiClient';
 
 const getBrands = async () => {
   try {
-    const response = await apiClient.get('/brands');
+    // Use the admin endpoint for getting all brands
+    const response = await apiClient.get('/admin/brands');
     return response.data;
   } catch (error) {
     console.error('Error fetching brands:', error.message || error);
@@ -12,11 +13,21 @@ const getBrands = async () => {
 
 const createBrand = async (brandData) => {
   try {
-    const response = await apiClient.post('/brands', brandData);
+    // Use the admin endpoint for brand creation
+    const response = await apiClient.post('/admin/brands', brandData);
     return response.data;
   } catch (error) {
-    console.error('Error creating brand:', error.message || error);
-    throw error;
+    console.error('Error creating brand:', error);
+    // Re-throw the error with more context
+    if (error.response?.status === 403) {
+      throw new Error('You do not have permission to create brands. Please contact an administrator.');
+    } else if (error.response?.status === 400) {
+      throw new Error(error.response.data?.detail || 'Invalid brand data. Please check your input.');
+    } else if (error.response?.status === 401) {
+      throw new Error('Authentication required. Please log in again.');
+    } else {
+      throw error;
+    }
   }
 };
 
@@ -80,11 +91,23 @@ const updateCurrentUserBrand = async (brandData) => {
 
 const deleteBrand = async (brandId) => {
   try {
-    const response = await apiClient.delete(`/brands/${brandId}`);
+    // Use the admin endpoint for brand deletion
+    const response = await apiClient.delete(`/admin/brands/${brandId}`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting brand:', error.message || error);
-    throw error;
+    console.error('Error deleting brand:', error);
+    // Re-throw the error with more context
+    if (error.response?.status === 403) {
+      throw new Error('You do not have permission to delete brands. Please contact an administrator.');
+    } else if (error.response?.status === 400) {
+      throw new Error(error.response.data?.detail || 'Cannot delete brand. Please check for related data.');
+    } else if (error.response?.status === 401) {
+      throw new Error('Authentication required. Please log in again.');
+    } else if (error.response?.status === 404) {
+      throw new Error('Brand not found.');
+    } else {
+      throw error;
+    }
   }
 };
 
