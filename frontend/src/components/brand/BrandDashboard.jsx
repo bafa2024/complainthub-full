@@ -21,9 +21,13 @@ const BrandDashboard = () => {
     const fetchBrandTickets = async () => {
       try {
         setLoading(true);
-        const allTickets = await ticketService.getTickets(); 
-        // Backend already filters tickets by brand for brand users
-        setTickets(allTickets);
+        if (!user || !user.brand_id) {
+          setError('No brand associated with your account.');
+          setTickets([]);
+          return;
+        }
+        const brandTickets = await ticketService.getTicketsByBrand(user.brand_id);
+        setTickets(brandTickets);
       } catch (err) {
         setError('Failed to load tickets for your brand.');
         console.error(err);
@@ -32,7 +36,7 @@ const BrandDashboard = () => {
       }
     };
     fetchBrandTickets();
-  }, []);
+  }, [user]);
 
   const getStatusCounts = () => {
     const counts = { new: 0, "in-progress": 0, resolved: 0 };
@@ -50,6 +54,9 @@ const BrandDashboard = () => {
 
   return (
     <div className="brand-dashboard-container">
+      {/* DEBUG OUTPUT START */}
+      {/* Debug box removed */}
+      {/* DEBUG OUTPUT END */}
       <h1 className="mb-4">Brand Dashboard</h1>
       {error && <div className="alert alert-danger">{error}</div>}
 

@@ -11,6 +11,11 @@ const getBrands = async () => {
   }
 };
 
+const getPublicBrands = async () => {
+  const response = await apiClient.get('/brands');
+  return response.data;
+};
+
 const createBrand = async (brandData) => {
   try {
     // Use the admin endpoint for brand creation
@@ -113,6 +118,7 @@ const deleteBrand = async (brandId) => {
 
 export default {
   getBrands,
+  getPublicBrands,
   createBrand,
   updateBrand,
   getBrandById,

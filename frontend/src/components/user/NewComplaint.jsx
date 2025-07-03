@@ -22,7 +22,7 @@ const NewComplaint = () => {
     const fetchBrands = async () => {
         try {
             setLoading(true);
-            const brandsData = await brandService.getBrands();
+            const brandsData = await brandService.getPublicBrands();
             setBrands(brandsData || []); // Ensure brands is always an array
         } catch (err) {
             console.error(err);

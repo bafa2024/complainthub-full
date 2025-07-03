@@ -42,6 +42,16 @@ const getTickets = async () => {
   }
 };
 
+const getTicketsByBrand = async (brandId) => {
+  try {
+    const response = await apiClient.get(`/brands/${brandId}/tickets`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching tickets for brand:', error.message || error);
+    return [];
+  }
+};
+
 const getTicketById = async (ticketId) => {
   try {
     const response = await apiClient.get(`/tickets/${ticketId}`);
@@ -132,6 +142,7 @@ const uploadVoiceNote = async (ticketId, formData) => {
 
 export default {
   getTickets,
+  getTicketsByBrand,
   getTicketById,
   createTicket,
   updateTicket,

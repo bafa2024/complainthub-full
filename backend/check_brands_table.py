@@ -95,6 +95,12 @@ def check_brands_table():
         except Exception as e:
             print(f"❌ Direct insertion failed: {e}")
         
+        # Print all brands and their IDs
+        print("\nAll brands:")
+        cursor.execute("SELECT id, name FROM brands ORDER BY id")
+        for row in cursor.fetchall():
+            print(f"  ID: {row['id']}, Name: {row['name']}")
+        
         conn.commit()
         cursor.close()
         conn.close()
