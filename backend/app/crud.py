@@ -283,11 +283,45 @@ def delete_brand(db: Session, brand_id: int):
     if not brand:
         logger.warning(f"Brand delete failed - brand not found: {brand_id}")
         raise HTTPException(status_code=404, detail="Brand not found.")
+    
+    # Check for related records before deletion
     try:
+        # Check for users associated with this brand
+        users_count = db.query(models.User).filter(models.User.brand_id == brand_id).count()
+        if users_count > 0:
+            logger.warning(f"Brand delete failed - {users_count} users associated with brand: {brand_id}")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete brand. There are {users_count} users associated with this brand. Please remove or reassign users first."
+            )
+        
+        # Check for tickets associated with this brand
+        tickets_count = db.query(models.Ticket).filter(models.Ticket.brand_id == brand_id).count()
+        if tickets_count > 0:
+            logger.warning(f"Brand delete failed - {tickets_count} tickets associated with brand: {brand_id}")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete brand. There are {tickets_count} tickets associated with this brand. Please delete or reassign tickets first."
+            )
+        
+        # Check for team invitations associated with this brand
+        invitations_count = db.query(models.TeamInvitation).filter(models.TeamInvitation.brand_id == brand_id).count()
+        if invitations_count > 0:
+            logger.warning(f"Brand delete failed - {invitations_count} team invitations associated with brand: {brand_id}")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete brand. There are {invitations_count} team invitations associated with this brand. Please delete invitations first."
+            )
+        
+        # If no related records, proceed with deletion
         db.delete(brand)
         db.commit()
         logger.info(f"Brand deleted successfully: {brand_id}")
         return {"msg": "Brand deleted successfully."}
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (our custom error messages)
+        raise
     except Exception as e:
         db.rollback()
         logger.error(f"Brand delete failed: {e}")

@@ -17,12 +17,52 @@ const MOCK_BRANDS = [
 
 const getAllUsers = async () => {
   try {
-    const response = await apiClient.get('/users');
+    const response = await apiClient.get('/admin/users');
     return response.data;
   } catch (error) {
     console.error('Error fetching users:', error.message || error);
     // Return mock data as fallback
     return MOCK_USERS;
+  }
+};
+
+const createUser = async (userData) => {
+  try {
+    const response = await apiClient.post('/admin/users', userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating user:', error.message || error);
+    throw error;
+  }
+};
+
+const getUserById = async (userId) => {
+  try {
+    const response = await apiClient.get(`/admin/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user:', error.message || error);
+    throw error;
+  }
+};
+
+const updateUser = async (userId, userData) => {
+  try {
+    const response = await apiClient.put(`/admin/users/${userId}`, userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user:', error.message || error);
+    throw error;
+  }
+};
+
+const deleteUser = async (userId) => {
+  try {
+    const response = await apiClient.delete(`/admin/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting user:', error.message || error);
+    throw error;
   }
 };
 
@@ -66,6 +106,10 @@ const updateSystemSettings = async (settings) => {
 
 export default {
   getAllUsers,
+  createUser,
+  getUserById,
+  updateUser,
+  deleteUser,
   getAllBrands,
   getSystemStats,
   updateSystemSettings,

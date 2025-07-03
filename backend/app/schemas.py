@@ -54,6 +54,7 @@ class BrandBase(BaseModel):
     support_email: str
     industry: Optional[str] = None
     logo_url: Optional[str] = None
+    contact_info: Optional[str] = None
 
 
 class BrandCreate(BrandBase):
@@ -65,6 +66,7 @@ class BrandUpdate(BaseModel):
     support_email: Optional[str] = None
     industry: Optional[str] = None
     logo_url: Optional[str] = None
+    contact_info: Optional[str] = None
 
 
 class Brand(BrandBase):

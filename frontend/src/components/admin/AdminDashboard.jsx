@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import adminService from '../../services/adminService';
 import ticketService from '../../services/ticketService'; // Admins can get all tickets
 import LoadingSpinner from '../shared/LoadingSpinner';
+import Modal from '../shared/Modal';
+import brandService from '../../services/brandService';
 import './Admin.css';
 
 const AdminDashboard = () => {
@@ -14,6 +16,10 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addBrand, setAddBrand] = useState({ name: '', industry: '', logo_url: '', contact_info: '', support_email: '' });
+  const [addLoading, setAddLoading] = useState(false);
+  const [addError, setAddError] = useState('');
 
   const fetchAllData = async () => {
     try {
@@ -48,6 +54,28 @@ const AdminDashboard = () => {
       setError('Failed to load dashboard data: ' + (err.message || 'Unknown error'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    setAddLoading(true);
+    setAddError('');
+    try {
+      await brandService.createBrand({
+        name: addBrand.name,
+        industry: addBrand.industry,
+        logo_url: addBrand.logo_url,
+        contact_info: addBrand.contact_info,
+        support_email: addBrand.support_email
+      });
+      setShowAddModal(false);
+      setAddBrand({ name: '', industry: '', logo_url: '', contact_info: '', support_email: '' });
+      // Optionally refresh brand list if present
+    } catch (err) {
+      setAddError('Failed to add brand.');
+    } finally {
+      setAddLoading(false);
     }
   };
 
@@ -102,6 +130,10 @@ const AdminDashboard = () => {
           {loading ? 'Refreshing...' : 'Refresh Data'}
         </button>
       </div>
+
+      <button className="btn btn-success mb-3" onClick={() => setShowAddModal(true)}>
+        + Add Brand
+      </button>
 
       {/* Stats Cards */}
       <div className="row g-4 mb-4">
@@ -172,6 +204,36 @@ const AdminDashboard = () => {
             </div>
         </div>
       </div>
+
+      {showAddModal && (
+        <Modal onClose={() => setShowAddModal(false)} title="Register New Brand">
+          <form onSubmit={handleAdd}>
+            <div className="mb-3">
+              <label className="form-label">Name</label>
+              <input type="text" className="form-control" value={addBrand.name} onChange={e => setAddBrand({ ...addBrand, name: e.target.value })} required />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Industry</label>
+              <input type="text" className="form-control" value={addBrand.industry} onChange={e => setAddBrand({ ...addBrand, industry: e.target.value })} />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Logo URL</label>
+              <input type="text" className="form-control" value={addBrand.logo_url} onChange={e => setAddBrand({ ...addBrand, logo_url: e.target.value })} />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Contact Info</label>
+              <input type="text" className="form-control" value={addBrand.contact_info} onChange={e => setAddBrand({ ...addBrand, contact_info: e.target.value })} />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Default Support Email</label>
+              <input type="email" className="form-control" value={addBrand.support_email} onChange={e => setAddBrand({ ...addBrand, support_email: e.target.value })} required />
+            </div>
+            {addError && <div className="alert alert-danger">{addError}</div>}
+            <button className="btn btn-primary" type="submit" disabled={addLoading}>{addLoading ? 'Adding...' : 'Add Brand'}</button>
+            <button className="btn btn-secondary ms-2" type="button" onClick={() => setShowAddModal(false)}>Cancel</button>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 };
