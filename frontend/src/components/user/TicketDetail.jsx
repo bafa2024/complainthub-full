@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import ticketService from '../../services/ticketService';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import SatisfactionRating from './SatisfactionRating'; // Import the new component
-import chatService from '../../services/chatService';
 
 const TicketDetail = () => {
   const { ticketId } = useParams();
@@ -11,8 +10,6 @@ const TicketDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isRated, setIsRated] = useState(false); // To hide the form after submission
-  const [chatLoading, setChatLoading] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -36,22 +33,6 @@ const TicketDetail = () => {
       setIsRated(true); // Hide the form after submission
   };
 
-  const handleStartChat = async () => {
-    setChatLoading(true);
-    try {
-      const result = await chatService.startChat(ticketId);
-      if (result && result.session_id) {
-        navigate(`/chat?ticketId=${ticketId}&sessionId=${result.session_id}`);
-      } else {
-        alert('Failed to start chat session. Please try again.');
-      }
-    } catch (err) {
-      alert('Failed to start chat session. Please try again.');
-    } finally {
-      setChatLoading(false);
-    }
-  };
-
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="alert alert-danger">{error}</div>;
   if (!ticket) return <div>Ticket not found.</div>;
@@ -67,9 +48,6 @@ const TicketDetail = () => {
         <div className="card-body">
             <p><strong>Brand:</strong> {ticket.brand?.name}</p>
             <p><strong>Description:</strong> {ticket.description || 'No description provided.'}</p>
-            <button className="btn btn-outline-primary mt-3" onClick={handleStartChat} disabled={chatLoading}>
-              {chatLoading ? 'Starting Chat...' : 'Start Chat About This Complaint'}
-            </button>
         </div>
       </div>
       

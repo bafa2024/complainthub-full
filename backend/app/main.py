@@ -9,10 +9,16 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from .api.v1.endpoints import users, login, tickets, brands, webhook, admin, chat, testing, tickets_extended
+from .api.v1.endpoints import (
+    login, users, brands, tickets, webhook, admin, chat, testing,
+    tickets_extended, channels, analytics, billing, ai_management,
+    compliance, security, phone_numbers, followup
+)
+from .api.v1.endpoints.webhook import router as webhook_router
 from .api.v1.routes import auth
 from .database import engine, Base
-from .config import settings
+from .config.settings import settings
+from .middleware.security import AuditMiddleware, SecurityMiddleware, RateLimitMiddleware
 import os
 
 # Configure logging
@@ -103,28 +109,11 @@ async def general_exception_handler(request, exc):
             content={"error": "Critical error occurred"}
         )
 
-# CORS Middleware
-try:
-    origins = [
-        "http://localhost",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    logger.info("CORS middleware configured successfully")
-except Exception as e:
-    logger.error(f"Failed to configure CORS middleware: {e}")
+# Add security middleware
+app.add_middleware(SecurityMiddleware)
+app.add_middleware(RateLimitMiddleware, requests_per_minute=100)
+app.add_middleware(AuditMiddleware)
+app.add_middleware(CORSMiddleware, allow_origins=settings.CORS_ORIGINS)
 
 # API Routers with error handling
 try:
@@ -139,12 +128,23 @@ try:
     api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
     api_router.include_router(testing.router, prefix="/testing", tags=["testing"])
     api_router.include_router(tickets_extended.router, prefix="/tickets_extended", tags=["tickets_extended"])
+    api_router.include_router(channels.router, prefix="/channels", tags=["channels"])
+    api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
+    api_router.include_router(billing.router, prefix="/billing", tags=["billing"])
+    api_router.include_router(ai_management.router, prefix="/ai", tags=["ai-management"])
+    api_router.include_router(compliance.router, prefix="/compliance", tags=["compliance"])
+    api_router.include_router(security.router, prefix="/security", tags=["security"])
+    api_router.include_router(phone_numbers.router, prefix="/phone-numbers", tags=["phone-numbers"])
+    api_router.include_router(followup.router, prefix="/followup", tags=["followup"])
 
     app.include_router(api_router, prefix="/api/v1")
     logger.info("API routers configured successfully")
 except Exception as e:
     logger.error(f"Failed to configure API routers: {e}")
     logger.error(f"Traceback: {traceback.format_exc()}")
+
+# Include webhook routes
+app.include_router(webhook_router, prefix="/api/v1/webhook", tags=["webhooks"])
 
 @app.get("/")
 def read_root():
@@ -169,8 +169,9 @@ def health_check():
         
         # Check database connection
         try:
+            from sqlalchemy import text
             with engine.connect() as conn:
-                conn.execute("SELECT 1")
+                conn.execute(text("SELECT 1"))
             health_status["database"] = "connected"
         except Exception as e:
             logger.error(f"Database health check failed: {e}")
@@ -179,7 +180,7 @@ def health_check():
         
         # Check OpenAI configuration
         try:
-            openai_key = settings.get_openai_api_key()
+            openai_key = settings.OPENAI_API_KEY
             health_status["openai"] = "configured" if openai_key else "not_configured"
         except Exception as e:
             logger.error(f"OpenAI health check failed: {e}")
@@ -229,7 +230,7 @@ async def startup_event():
         logger.info(f"API Version: {settings.API_V1_STR}")
         
         # Log configuration status
-        if settings.get_openai_api_key():
+        if settings.OPENAI_API_KEY:
             logger.info("OpenAI API key is configured")
         else:
             logger.warning("OpenAI API key is not configured - AI features will be limited")

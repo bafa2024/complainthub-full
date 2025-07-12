@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './ComplaintTracking.css';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 export default function ComplaintTracking() {
   const [ticketNumber, setTicketNumber] = useState('');
@@ -126,144 +127,186 @@ export default function ComplaintTracking() {
   };
 
   return (
-    <div className="complaint-tracking">
-      {/* Header */}
-      <header className="tracking-header">
-        <div className="header-container">
-          <div className="logo">
-            <Link to="/">ComplaintHub</Link>
-          </div>
-          <div className="header-nav">
-            <Link to="/" className="btn btn-primary">Home</Link>
-            <Link to="/complaints" className="btn btn-secondary">View Complaints</Link>
-          </div>
-        </div>
-      </header>
-
-      <div className="main-container">
-        {/* Search Section */}
-        <div className="search-section">
-          <h1 className="search-title">Track Your Complaint</h1>
-          <p className="search-subtitle">
-            Enter your ticket number to check the status and updates of your complaint
-          </p>
-          
-          <form onSubmit={handleSearch} className="search-form">
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Enter ticket number (e.g., COMP-2024-001247)"
-              value={ticketNumber}
-              onChange={(e) => setTicketNumber(e.target.value)}
-            />
-            <button type="submit" className="search-btn" disabled={loading}>
-              {loading ? 'Searching...' : 'Track Complaint'}
-            </button>
-          </form>
-
-          {error && (
-            <div className="alert alert-danger">
-              {error}
-            </div>
-          )}
-        </div>
-
-        {/* Complaint Details */}
-        {complaint && (
-          <div className="complaint-container show">
-            {/* Complaint Header */}
-            <div className="complaint-header">
-              <div className="ticket-number">{complaint.id}</div>
-              <div className="complaint-meta">
-                <span>Status: <strong>{getStatusText(complaint.status)}</strong></span>
-                <span>Priority: <strong>{complaint.priority}</strong></span>
-                <span>Category: <strong>{complaint.category}</strong></span>
+    <HelmetProvider>
+      <>
+        <Helmet>
+          <title>{complaint?.title ? `${complaint.title} | ComplaintHub` : 'Complaint Tracking | ComplaintHub'}</title>
+          <meta name="description" content={complaint?.summary || complaint?.content?.slice(0, 160) || 'Track the status of your complaint and see updates from the brand.'} />
+          <meta property="og:title" content={complaint?.title || 'Complaint Tracking | ComplaintHub'} />
+          <meta property="og:description" content={complaint?.summary || complaint?.content?.slice(0, 160) || 'Track the status of your complaint and see updates from the brand.'} />
+          <meta property="og:type" content="article" />
+          <meta property="og:url" content={window.location.href} />
+          <meta property="og:image" content="/complaint-og.png" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={complaint?.title || 'Complaint Tracking | ComplaintHub'} />
+          <meta name="twitter:description" content={complaint?.summary || complaint?.content?.slice(0, 160) || 'Track the status of your complaint and see updates from the brand.'} />
+          <meta name="twitter:image" content="/complaint-og.png" />
+          <link rel="canonical" href={window.location.href} />
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              "name": complaint?.title || `Complaint #${complaint?.id}`,
+              "description": complaint?.summary || complaint?.content?.slice(0, 160),
+              "brand": complaint?.brand_name,
+              "url": window.location.href,
+              "identifier": complaint?.id,
+              "review": complaint?.rating ? {
+                "@type": "Review",
+                "reviewRating": {
+                  "@type": "Rating",
+                  "ratingValue": complaint.rating,
+                  "bestRating": 5,
+                  "worstRating": 0
+                },
+                "author": {
+                  "@type": "Person",
+                  "name": complaint?.user_alias || 'Anonymous'
+                }
+              } : undefined
+            })}
+          </script>
+        </Helmet>
+        <div className="complaint-tracking">
+          {/* Header */}
+          <header className="tracking-header">
+            <div className="header-container">
+              <div className="logo">
+                <Link to="/">ComplaintHub</Link>
+              </div>
+              <div className="header-nav">
+                <Link to="/" className="btn btn-primary">Home</Link>
+                <Link to="/complaints" className="btn btn-secondary">View Complaints</Link>
               </div>
             </div>
+          </header>
 
-            {/* Complaint Info */}
-            <div className="complaint-info">
-              <div className="info-grid">
-                <div className="info-item">
-                  <label>Title</label>
-                  <div>{complaint.title}</div>
+          <div className="main-container">
+            {/* Search Section */}
+            <div className="search-section">
+              <h1 className="search-title">Track Your Complaint</h1>
+              <p className="search-subtitle">
+                Enter your ticket number to check the status and updates of your complaint
+              </p>
+              
+              <form onSubmit={handleSearch} className="search-form">
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="Enter ticket number (e.g., COMP-2024-001247)"
+                  value={ticketNumber}
+                  onChange={(e) => setTicketNumber(e.target.value)}
+                />
+                <button type="submit" className="search-btn" disabled={loading}>
+                  {loading ? 'Searching...' : 'Track Complaint'}
+                </button>
+              </form>
+
+              {error && (
+                <div className="alert alert-danger">
+                  {error}
                 </div>
-                <div className="info-item">
-                  <label>Description</label>
-                  <div>{complaint.description}</div>
-                </div>
-                <div className="info-item">
-                  <label>Brand</label>
-                  <div>{complaint.brand}</div>
-                </div>
-                <div className="info-item">
-                  <label>Customer</label>
-                  <div>{complaint.customer}</div>
-                </div>
-                <div className="info-item">
-                  <label>Submitted</label>
-                  <div>{formatDate(complaint.createdAt)}</div>
-                </div>
-                <div className="info-item">
-                  <label>Last Updated</label>
-                  <div>{formatDate(complaint.updatedAt)}</div>
-                </div>
-                <div className="info-item">
-                  <label>Estimated Resolution</label>
-                  <div>{formatDate(complaint.estimatedResolution)}</div>
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* Timeline */}
-            <div className="timeline-section">
-              <h3>Complaint Timeline</h3>
-              <div className="timeline">
-                {complaint.timeline.map((event, index) => (
-                  <div key={event.id} className={`timeline-item ${event.status}`}>
-                    <div className="timeline-icon">
-                      <span>{event.icon}</span>
+            {/* Complaint Details */}
+            {complaint && (
+              <div className="complaint-container show">
+                {/* Complaint Header */}
+                <div className="complaint-header">
+                  <div className="ticket-number">{complaint.id}</div>
+                  <div className="complaint-meta">
+                    <span>Status: <strong>{getStatusText(complaint.status)}</strong></span>
+                    <span>Priority: <strong>{complaint.priority}</strong></span>
+                    <span>Category: <strong>{complaint.category}</strong></span>
+                  </div>
+                </div>
+
+                {/* Complaint Info */}
+                <div className="complaint-info">
+                  <div className="info-grid">
+                    <div className="info-item">
+                      <label>Title</label>
+                      <div>{complaint.title}</div>
                     </div>
-                    <div className="timeline-content">
-                      <div className="timeline-title">{event.title}</div>
-                      <div className="timeline-description">{event.description}</div>
-                      <div className="timeline-time">{formatDate(event.timestamp)}</div>
+                    <div className="info-item">
+                      <label>Description</label>
+                      <div>{complaint.description}</div>
+                    </div>
+                    <div className="info-item">
+                      <label>Brand</label>
+                      <div>{complaint.brand}</div>
+                    </div>
+                    <div className="info-item">
+                      <label>Customer</label>
+                      <div>{complaint.customer}</div>
+                    </div>
+                    <div className="info-item">
+                      <label>Submitted</label>
+                      <div>{formatDate(complaint.createdAt)}</div>
+                    </div>
+                    <div className="info-item">
+                      <label>Last Updated</label>
+                      <div>{formatDate(complaint.updatedAt)}</div>
+                    </div>
+                    <div className="info-item">
+                      <label>Estimated Resolution</label>
+                      <div>{formatDate(complaint.estimatedResolution)}</div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            {/* Messages */}
-            <div className="messages-section">
-              <h3>Communication History</h3>
-              <div className="messages-list">
-                {complaint.messages.map((message) => (
-                  <div key={message.id} className={`message-item ${message.sender}`}>
-                    <div className="message-header">
-                      <span className="message-sender">
-                        {message.sender === 'customer' ? 'You' : complaint.brand}
-                      </span>
-                      <span className="message-time">{formatDate(message.timestamp)}</span>
-                    </div>
-                    <div className="message-content">{message.message}</div>
+                {/* Timeline */}
+                <div className="timeline-section">
+                  <h3>Complaint Timeline</h3>
+                  <div className="timeline">
+                    {complaint.timeline.map((event, index) => (
+                      <div key={event.id} className={`timeline-item ${event.status}`}>
+                        <div className="timeline-icon">
+                          <span>{event.icon}</span>
+                        </div>
+                        <div className="timeline-content">
+                          <div className="timeline-title">{event.title}</div>
+                          <div className="timeline-description">{event.description}</div>
+                          <div className="timeline-time">{formatDate(event.timestamp)}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            {/* Actions */}
-            <div className="complaint-actions">
-              <Link to="/new-complaint" className="btn btn-primary">
-                Submit New Complaint
-              </Link>
-              <Link to="/complaints" className="btn btn-secondary">
-                View All Complaints
-              </Link>
-            </div>
+                {/* Messages */}
+                <div className="messages-section">
+                  <h3>Communication History</h3>
+                  <div className="messages-list">
+                    {complaint.messages.map((message) => (
+                      <div key={message.id} className={`message-item ${message.sender}`}>
+                        <div className="message-header">
+                          <span className="message-sender">
+                            {message.sender === 'customer' ? 'You' : complaint.brand}
+                          </span>
+                          <span className="message-time">{formatDate(message.timestamp)}</span>
+                        </div>
+                        <div className="message-content">{message.message}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="complaint-actions">
+                  <Link to="/new-complaint" className="btn btn-primary">
+                    Submit New Complaint
+                  </Link>
+                  <Link to="/complaints" className="btn btn-secondary">
+                    View All Complaints
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      </>
+    </HelmetProvider>
   );
 } 

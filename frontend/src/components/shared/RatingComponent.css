@@ -1,0 +1,381 @@
+/* ===== RATING COMPONENT ===== */
+.rating-component {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: inherit;
+}
+
+.rating-component.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ===== RATING STARS ===== */
+.rating-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.rating-icon {
+  color: #e9ecef;
+  transition: all 0.2s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.rating-icon.filled {
+  color: #ffc107;
+}
+
+.rating-icon.half {
+  color: #e9ecef;
+}
+
+.rating-icon.half .half-star-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  color: #ffc107;
+}
+
+/* Rating Sizes */
+.rating-icon.small {
+  font-size: 1rem;
+}
+
+.rating-icon.medium {
+  font-size: 1.25rem;
+}
+
+.rating-icon.large {
+  font-size: 1.5rem;
+}
+
+/* Rating Colors */
+.rating-gold.filled {
+  color: #ffc107;
+}
+
+.rating-blue.filled {
+  color: #007bff;
+}
+
+.rating-green.filled {
+  color: #28a745;
+}
+
+.rating-red.filled {
+  color: #dc3545;
+}
+
+.rating-purple.filled {
+  color: #6f42c1;
+}
+
+/* Half star colors */
+.rating-gold.half .half-star-overlay {
+  color: #ffc107;
+}
+
+.rating-blue.half .half-star-overlay {
+  color: #007bff;
+}
+
+.rating-green.half .half-star-overlay {
+  color: #28a745;
+}
+
+.rating-red.half .half-star-overlay {
+  color: #dc3545;
+}
+
+.rating-purple.half .half-star-overlay {
+  color: #6f42c1;
+}
+
+/* ===== INTERACTIVE STATES ===== */
+.rating-icon:not(.readonly):hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
+.rating-icon:not(.readonly):focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.rating-icon:not(.readonly):focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ===== RATING VALUE ===== */
+.rating-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.rating-number {
+  font-size: 1.1rem;
+  color: #2c3e50;
+}
+
+.rating-max {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* ===== RATING LABEL ===== */
+.rating-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+/* ===== ANIMATIONS ===== */
+.rating-icon {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.rating-icon.filled {
+  animation: starFill 0.3s ease;
+}
+
+@keyframes starFill {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .rating-component {
+    gap: 0.5rem;
+  }
+  
+  .rating-stars {
+    gap: 0.2rem;
+  }
+  
+  .rating-icon.medium {
+    font-size: 1.1rem;
+  }
+  
+  .rating-icon.large {
+    font-size: 1.25rem;
+  }
+  
+  .rating-label {
+    min-width: 60px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rating-component {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .rating-icon.small {
+    font-size: 0.9rem;
+  }
+  
+  .rating-icon.medium {
+    font-size: 1rem;
+  }
+  
+  .rating-icon.large {
+    font-size: 1.1rem;
+  }
+  
+  .rating-value {
+    font-size: 0.9rem;
+  }
+  
+  .rating-label {
+    min-width: auto;
+    font-size: 0.75rem;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== DARK MODE SUPPORT ===== */
+@media (prefers-color-scheme: dark) {
+  .rating-icon {
+    color: #4a5f7a;
+  }
+  
+  .rating-number {
+    color: #ecf0f1;
+  }
+  
+  .rating-max {
+    color: #bdc3c7;
+  }
+  
+  .rating-label {
+    color: #bdc3c7;
+  }
+}
+
+/* ===== CUSTOM ICON STYLES ===== */
+.rating-icon.fas.fa-heart {
+  color: #e9ecef;
+}
+
+.rating-icon.fas.fa-heart.filled {
+  color: #e74c3c;
+}
+
+.rating-icon.fas.fa-thumbs-up {
+  color: #e9ecef;
+}
+
+.rating-icon.fas.fa-thumbs-up.filled {
+  color: #28a745;
+}
+
+.rating-icon.fas.fa-circle {
+  color: #e9ecef;
+}
+
+.rating-icon.fas.fa-circle.filled {
+  color: #007bff;
+}
+
+/* ===== HOVER EFFECTS FOR DIFFERENT ICONS ===== */
+.rating-icon.fas.fa-heart:not(.readonly):hover {
+  color: #e74c3c;
+  transform: scale(1.1);
+}
+
+.rating-icon.fas.fa-thumbs-up:not(.readonly):hover {
+  color: #28a745;
+  transform: scale(1.1);
+}
+
+.rating-icon.fas.fa-circle:not(.readonly):hover {
+  color: #007bff;
+  transform: scale(1.1);
+}
+
+/* ===== LOADING STATE ===== */
+.rating-component.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.rating-component.loading .rating-icon {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ===== COMPACT MODE ===== */
+.rating-component.compact {
+  gap: 0.5rem;
+}
+
+.rating-component.compact .rating-stars {
+  gap: 0.1rem;
+}
+
+.rating-component.compact .rating-value {
+  font-size: 0.9rem;
+}
+
+.rating-component.compact .rating-label {
+  font-size: 0.8rem;
+  min-width: 60px;
+}
+
+/* ===== INLINE MODE ===== */
+.rating-component.inline {
+  display: inline-flex;
+  align-items: center;
+}
+
+.rating-component.inline .rating-stars {
+  display: inline-flex;
+}
+
+/* ===== VERTICAL MODE ===== */
+.rating-component.vertical {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.rating-component.vertical .rating-stars {
+  justify-content: flex-start;
+}
+
+/* ===== CUSTOM STYLES FOR SPECIFIC USE CASES ===== */
+.rating-component.review {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.rating-component.card {
+  background: #fff;
+  padding: 0.75rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rating-component.minimal {
+  gap: 0.25rem;
+}
+
+.rating-component.minimal .rating-value,
+.rating-component.minimal .rating-label {
+  display: none;
+} 

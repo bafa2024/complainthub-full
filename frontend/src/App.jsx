@@ -20,7 +20,6 @@ import UserDashboard from './components/user/UserDashboard';
 import UserSettings from './components/user/UserSettings';
 import TicketDetail from './components/user/TicketDetail';
 import NewComplaint from './components/user/NewComplaint';
-import ChatPage from './components/chat/ChatPage';
 import LodgeVoicePage from './components/user/LodgeVoicePage';
 import BrandDashboard from './components/brand/BrandDashboard';
 import BrandTicketDetail from './components/brand/BrandTicketDetail';
@@ -41,6 +40,8 @@ import AdminBillingLogs from './components/admin/AdminBillingLogs';
 import ResponsiveTest from './components/shared/ResponsiveTest';
 import AdminReports from './components/admin/AdminReports';
 import BrandManage from './components/brand/BrandManage';
+import AdminSecurity from './components/admin/AdminSecurity';
+import TestingDashboard from './components/TestingDashboard';
 
 import './App.css';
 import './utils/responsive.css';
@@ -84,13 +85,13 @@ function App() {
             <Route path="/admin/signup" element={<AdminSignup />} />
             <Route path="/team-invitation/:token" element={<TeamInvitation />} />
             <Route path="/responsive-test" element={<ResponsiveTest />} />
+            <Route path="/test" element={<TestingDashboard />} />
             
             {/* User Portal Routes */}
             <Route path="/dashboard" element={<ProtectedRoute roles={['user']}><UserDashboard /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute roles={['user']}><UserSettings /></ProtectedRoute>} />
             <Route path="/lodge-voice" element={<ProtectedRoute roles={['user']}><LodgeVoicePage /></ProtectedRoute>} />
             <Route path="/new-complaint" element={<ProtectedRoute roles={['user']}><NewComplaint /></ProtectedRoute>} />
-            <Route path="/chat" element={<ProtectedRoute roles={['user']}><ChatPage /></ProtectedRoute>} />
             <Route path="/tickets/:ticketId" element={<ProtectedRoute roles={['user']}><TicketDetail /></ProtectedRoute>} />
 
             {/* Brand Portal Routes */}
@@ -114,6 +115,11 @@ function App() {
             <Route path="/admin/reports" element={<ProtectedRoute roles={['admin']}><AdminReports /></ProtectedRoute>} />
             <Route path="/admin/settings" element={<ProtectedRoute roles={['admin']}><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/billing" element={<ProtectedRoute roles={['admin']}><AdminBillingLogs /></ProtectedRoute>} />
+            <Route path="/admin/security" element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminSecurity />
+              </ProtectedRoute>
+            } />
             
             {/* Fallback Routes */}
             <Route path="/unauthorized" element={<h1>403 - Not Authorized</h1>} />

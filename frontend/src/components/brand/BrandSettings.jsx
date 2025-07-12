@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import brandService from '../../services/brandService';
+import crmService from '../../services/crmService';
 import './BrandSettings.css';
 
 export default function BrandSettings() {
@@ -67,6 +68,22 @@ export default function BrandSettings() {
     smsNotifications: false
   });
 
+  // CRM Integration settings
+  const [crmIntegrations, setCrmIntegrations] = useState([]);
+  const [supportedCRMs, setSupportedCRMs] = useState([]);
+  const [crmLoading, setCrmLoading] = useState(false);
+  const [showCRMForm, setShowCRMForm] = useState(false);
+  const [selectedCRM, setSelectedCRM] = useState(null);
+  const [crmFormData, setCrmFormData] = useState({
+    crm_type: '',
+    api_key: '',
+    base_url: '',
+    webhook_url: '',
+    webhook_secret: '',
+    sync_direction: 'bidirectional',
+    auto_sync: true
+  });
+
   // Load brand data on component mount
   useEffect(() => {
     const loadBrandData = async () => {
@@ -89,6 +106,29 @@ export default function BrandSettings() {
 
     if (user) {
       loadBrandData();
+    }
+  }, [user]);
+
+  // Load CRM data
+  const loadCRMData = async () => {
+    try {
+      setCrmLoading(true);
+      const [integrationsRes, supportedRes] = await Promise.all([
+        crmService.getCRMIntegrations(user.brand_id),
+        crmService.getSupportedCRMs()
+      ]);
+      setCrmIntegrations(integrationsRes);
+      setSupportedCRMs(supportedRes.supported_crms);
+    } catch (error) {
+      showAlert('error', 'Failed to load CRM data');
+    } finally {
+      setCrmLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.brand_id) {
+      loadCRMData();
     }
   }, [user]);
 
@@ -123,8 +163,9 @@ export default function BrandSettings() {
     e.preventDefault();
     setLoading(true);
     try {
-      await apiClient.put('/brand/integrations', integrations);
-      showAlert('success', 'Integration settings updated!');
+      // This function is no longer used for integrations, but kept for consistency
+      // await apiClient.put('/brand/integrations', integrations); 
+      showAlert('info', 'Integration settings are managed via CRM integrations.');
     } catch (error) {
       showAlert('error', 'Failed to update integration settings');
     } finally {
@@ -136,13 +177,92 @@ export default function BrandSettings() {
     e.preventDefault();
     setLoading(true);
     try {
-      await apiClient.put('/brand/notifications', notifications);
-      showAlert('success', 'Notification preferences saved!');
+      // This function is no longer used for notifications, but kept for consistency
+      // await apiClient.put('/brand/notifications', notifications); 
+      showAlert('info', 'Notification preferences are managed via CRM integrations.');
     } catch (error) {
       showAlert('error', 'Failed to save notification preferences');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCRMSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const integrationData = {
+        ...crmFormData,
+        brand_id: user.brand_id
+      };
+      
+      if (selectedCRM) {
+        await crmService.updateCRMIntegration(selectedCRM.id, crmFormData);
+        showAlert('success', 'CRM integration updated successfully!');
+      } else {
+        await crmService.createCRMIntegration(integrationData);
+        showAlert('success', 'CRM integration created successfully!');
+      }
+      
+      setShowCRMForm(false);
+      setSelectedCRM(null);
+      setCrmFormData({
+        crm_type: '',
+        api_key: '',
+        base_url: '',
+        webhook_url: '',
+        webhook_secret: '',
+        sync_direction: 'bidirectional',
+        auto_sync: true
+      });
+      loadCRMData();
+    } catch (error) {
+      showAlert('error', 'Failed to save CRM integration');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCRMSync = async (integrationId) => {
+    try {
+      setLoading(true);
+      await crmService.syncCRMIntegration(integrationId);
+      showAlert('success', 'CRM sync completed successfully!');
+      loadCRMData();
+    } catch (error) {
+      showAlert('error', 'CRM sync failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCRMDelete = async (integrationId) => {
+    if (window.confirm('Are you sure you want to delete this CRM integration?')) {
+      try {
+        setLoading(true);
+        await crmService.deleteCRMIntegration(integrationId);
+        showAlert('success', 'CRM integration deleted successfully!');
+        loadCRMData();
+      } catch (error) {
+        showAlert('error', 'Failed to delete CRM integration');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleCRMEdit = (integration) => {
+    setSelectedCRM(integration);
+    setCrmFormData({
+      crm_type: integration.crm_type,
+      api_key: integration.api_key,
+      base_url: integration.base_url,
+      webhook_url: integration.webhook_url || '',
+      webhook_secret: integration.webhook_secret || '',
+      sync_direction: integration.sync_direction,
+      auto_sync: integration.auto_sync
+    });
+    setShowCRMForm(true);
   };
 
   const addTeamMember = () => {
@@ -224,6 +344,12 @@ export default function BrandSettings() {
             onClick={() => setActiveTab('notifications')}
           >
             Notifications
+          </button></li>
+          <li><button 
+            className={`nav-tab ${activeTab === 'crm' ? 'active' : ''}`}
+            onClick={() => setActiveTab('crm')}
+          >
+            CRM Integrations
           </button></li>
         </ul>
       </nav>
@@ -598,6 +724,187 @@ export default function BrandSettings() {
                 {loading ? 'Saving...' : 'Save Notification Preferences'}
               </button>
             </form>
+          </div>
+        )}
+
+        {/* CRM Integrations Tab */}
+        {activeTab === 'crm' && (
+          <div className="settings-section">
+            <div className="section-header">
+              <h2 className="section-title">CRM Integrations</h2>
+              <button 
+                className="btn btn-primary"
+                onClick={() => setShowCRMForm(true)}
+              >
+                Add CRM Integration
+              </button>
+            </div>
+            
+            {crmLoading ? (
+              <div className="loading">Loading CRM integrations...</div>
+            ) : (
+              <div className="crm-integrations">
+                {crmIntegrations.length === 0 ? (
+                  <div className="empty-state">
+                    <p>No CRM integrations configured yet.</p>
+                    <p>Connect your CRM system to automatically sync tickets and customer data.</p>
+                  </div>
+                ) : (
+                  crmIntegrations.map((integration) => (
+                    <div key={integration.id} className="crm-integration-card">
+                      <div className="crm-header">
+                        <div className="crm-info">
+                          <h3>{integration.crm_type.toUpperCase()}</h3>
+                          <span className={`status ${integration.is_active ? 'active' : 'inactive'}`}>
+                            {integration.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                        <div className="crm-actions">
+                          <button 
+                            className="btn btn-sm btn-secondary"
+                            onClick={() => handleCRMSync(integration.id)}
+                          >
+                            Sync Now
+                          </button>
+                          <button 
+                            className="btn btn-sm btn-outline"
+                            onClick={() => handleCRMEdit(integration)}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleCRMDelete(integration.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                      <div className="crm-details">
+                        <div className="detail-item">
+                          <span className="label">Sync Direction:</span>
+                          <span className="value">{integration.sync_direction}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="label">Auto Sync:</span>
+                          <span className="value">{integration.auto_sync ? 'Enabled' : 'Disabled'}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="label">Last Sync:</span>
+                          <span className="value">
+                            {integration.last_sync ? new Date(integration.last_sync).toLocaleString() : 'Never'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* CRM Integration Form */}
+            {showCRMForm && (
+              <div className="modal-overlay">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h3>{selectedCRM ? 'Edit CRM Integration' : 'Add CRM Integration'}</h3>
+                    <button 
+                      className="close-btn"
+                      onClick={() => {
+                        setShowCRMForm(false);
+                        setSelectedCRM(null);
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <form onSubmit={handleCRMSubmit}>
+                    <div className="form-group">
+                      <label className="form-label">CRM System</label>
+                      <select 
+                        className="form-control"
+                        value={crmFormData.crm_type}
+                        onChange={(e) => setCrmFormData({...crmFormData, crm_type: e.target.value})}
+                        required
+                      >
+                        <option value="">Select CRM System</option>
+                        {supportedCRMs.map((crm) => (
+                          <option key={crm.id} value={crm.id}>
+                            {crm.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">API Key</label>
+                      <input 
+                        type="password"
+                        className="form-control"
+                        value={crmFormData.api_key}
+                        onChange={(e) => setCrmFormData({...crmFormData, api_key: e.target.value})}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">Base URL</label>
+                      <input 
+                        type="url"
+                        className="form-control"
+                        value={crmFormData.base_url}
+                        onChange={(e) => setCrmFormData({...crmFormData, base_url: e.target.value})}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">Sync Direction</label>
+                      <select 
+                        className="form-control"
+                        value={crmFormData.sync_direction}
+                        onChange={(e) => setCrmFormData({...crmFormData, sync_direction: e.target.value})}
+                      >
+                        <option value="outbound">Outbound Only (Our system → CRM)</option>
+                        <option value="inbound">Inbound Only (CRM → Our system)</option>
+                        <option value="bidirectional">Bidirectional (Two-way sync)</option>
+                      </select>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">
+                        <input 
+                          type="checkbox"
+                          checked={crmFormData.auto_sync}
+                          onChange={(e) => setCrmFormData({...crmFormData, auto_sync: e.target.checked})}
+                        />
+                        Enable Auto Sync
+                      </label>
+                    </div>
+                    
+                    <div className="form-actions">
+                      <button 
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          setShowCRMForm(false);
+                          setSelectedCRM(null);
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={loading}
+                      >
+                        {loading ? 'Saving...' : (selectedCRM ? 'Update' : 'Create')}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

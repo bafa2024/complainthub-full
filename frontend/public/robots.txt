@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /complaints
+Allow: /brands
+Disallow: /user
+Disallow: /admin
+Disallow: /settings
+Disallow: /dashboard
+Sitemap: /sitemap.xml 
