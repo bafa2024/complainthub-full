@@ -60,7 +60,6 @@ class Brand(Base):
     subscriptions = relationship("Subscription", back_populates="brand")
     payment_methods = relationship("PaymentMethod", back_populates="brand")
     phone_numbers = relationship("PhoneNumber", back_populates="brand")
-    telephony_providers = relationship("TelephonyProvider", back_populates="brand")
     phone_number_requests = relationship("PhoneNumberRequest", back_populates="brand")
     follow_ups = relationship("FollowUpLog", back_populates="brand")
     ai_learning_data = relationship("AILearningData", back_populates="brand")
@@ -105,7 +104,6 @@ class User(Base):
     assigned_tickets = relationship("Ticket", foreign_keys="[Ticket.assignee_id]", back_populates="assignee")
     security_events = relationship("SecurityEvent", back_populates="user")
     consents = relationship("UserConsent", back_populates="user")
-    failed_login_attempts = relationship("FailedLoginAttempt", back_populates="user")
     interactions = relationship("UserInteraction", back_populates="user")
     phone_number_requests = relationship("PhoneNumberRequest", back_populates="user")
     conversation_sessions = relationship("ConversationSession", back_populates="user")
@@ -150,7 +148,6 @@ class Ticket(Base):
     brand = relationship("Brand", back_populates="tickets")
     assignee = relationship("User", foreign_keys=[assignee_id], back_populates="assigned_tickets")
     transactions = relationship("Transaction", back_populates="ticket")
-    phone_number = relationship("PhoneNumber", back_populates="tickets")
     follow_ups = relationship("FollowUpLog", back_populates="ticket")
     ai_learning_data = relationship("AILearningData", back_populates="ticket")
     crm_integrations = relationship("CRMIntegration", back_populates="ticket")
@@ -463,9 +460,6 @@ class FailedLoginAttempt(Base):
     last_attempt = Column(DateTime(timezone=True), server_default=func.now())
     is_locked = Column(Boolean, default=False)
     locked_until = Column(DateTime(timezone=True), nullable=True)
-    
-    # Relationships
-    user = relationship("User", back_populates="failed_login_attempts")
 
 class Admin(Base):
     __tablename__ = "admins"
@@ -511,7 +505,6 @@ class PhoneNumber(Base):
     
     # Relationships
     brand = relationship("Brand", back_populates="phone_numbers")
-    tickets = relationship("Ticket", back_populates="phone_number")
 
 class TelephonyProvider(Base):
     __tablename__ = "telephony_providers"
@@ -620,6 +613,7 @@ class ConversationSession(Base):
     user = relationship("User", back_populates="conversation_sessions")
     ticket = relationship("Ticket", back_populates="conversation_sessions")
     conversation_turns = relationship("ConversationTurn", back_populates="session", cascade="all, delete-orphan")
+    session_contexts = relationship("SessionContext", back_populates="session", cascade="all, delete-orphan")
 
 class ConversationTurn(Base):
     __tablename__ = "conversation_turns"
@@ -716,7 +710,6 @@ Brand.brand_knowledge = relationship("BrandKnowledge", back_populates="brand")
 Brand.ai_response_templates = relationship("AIResponseTemplate", back_populates="brand")
 Brand.user_interactions = relationship("UserInteraction", back_populates="brand")
 Brand.phone_numbers = relationship("PhoneNumber", back_populates="brand")
-Brand.telephony_providers = relationship("TelephonyProvider", back_populates="brand")
 Brand.phone_number_requests = relationship("PhoneNumberRequest", back_populates="brand")
 Brand.follow_ups = relationship("FollowUpLog", back_populates="brand")
 Brand.conversation_sessions = relationship("ConversationSession", back_populates="brand")
@@ -725,7 +718,6 @@ Brand.email_outreach_logs = relationship("EmailOutreachLog", back_populates="bra
 
 # Add to Ticket model
 Ticket.ai_learning_data = relationship("AILearningData", back_populates="ticket")
-Ticket.phone_number = relationship("PhoneNumber", back_populates="tickets")
 Ticket.crm_integrations = relationship("CRMIntegration", back_populates="ticket")
 Ticket.conversation_sessions = relationship("ConversationSession", back_populates="ticket")
 

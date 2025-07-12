@@ -31,7 +31,7 @@ def test_user_registration():
         
         print(f"📊 Response Status: {response.status_code}")
         
-        if response.status_code == 200:
+        if response.status_code == 201:
             data = response.json()
             print("✅ Registration successful!")
             print(f"   User ID: {data.get('id', 'N/A')}")

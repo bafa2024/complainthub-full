@@ -258,7 +258,7 @@ header.d-flex {
   .nav-item {
     width: 100%;
   }
-
+  
   .nav-link {
     width: 100%;
     padding: 1rem;
@@ -361,4 +361,4 @@ html {
 
 .nav-pills .nav-link.active {
   background: var(--primary-color) !important;
-}
+} 
