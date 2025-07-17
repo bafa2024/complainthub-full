@@ -3,13 +3,21 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
+<<<<<<< HEAD
 from app.api.v1.deps import get_current_user, get_current_brand_user
+=======
+from app.api.v1.deps import get_current_user, get_current_active_brand_user
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 from app.database import get_db
 from app.services.telephony import TelephonyService
 from app.schemas import (
     AvailableNumber, NumberGenerationRequest, NumberGenerationResponse,
     PhoneNumber, PhoneNumberRequest, PhoneNumberRequestCreate,
+<<<<<<< HEAD
     PhoneNumberUpdate, TelephonyProvider
+=======
+    PhoneNumberUpdate, TelephonyProvider, PhoneNumberRequestUpdate
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 )
 from app.models import User, Brand, RoleEnum
 import logging
@@ -21,7 +29,11 @@ router = APIRouter()
 @router.get("/providers", response_model=List[dict])
 def get_telephony_providers(
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 ):
     """Get available telephony providers"""
     try:
@@ -42,7 +54,11 @@ def search_available_numbers(
     capabilities: Optional[str] = None,
     provider: Optional[str] = None,
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 ):
     """Search for available phone numbers"""
     try:
@@ -73,12 +89,20 @@ def search_available_numbers(
 def purchase_phone_number(
     request: NumberGenerationRequest,
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 ):
     """Purchase a phone number"""
     try:
         # Get brand ID from current user
+<<<<<<< HEAD
         if not current_user.brand_id:
+=======
+        if not current_brand_user.brand_id:
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User is not associated with a brand"
@@ -107,7 +131,11 @@ def purchase_phone_number(
         result = telephony_service.purchase_number(
             phone_number=selected_number.phone_number,
             provider=selected_number.provider,
+<<<<<<< HEAD
             brand_id=current_user.brand_id,
+=======
+            brand_id=current_brand_user.brand_id,
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             capabilities=selected_number.capabilities
         )
         
@@ -135,18 +163,30 @@ def purchase_phone_number(
 @router.get("/brand", response_model=List[PhoneNumber])
 def get_brand_phone_numbers(
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
 ):
     """Get all phone numbers for the current brand"""
     try:
         if not current_user.brand_id:
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+):
+    """Get all phone numbers for the current brand"""
+    try:
+        if not current_brand_user.brand_id:
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User is not associated with a brand"
             )
         
         telephony_service = TelephonyService(db)
+<<<<<<< HEAD
         phone_numbers = telephony_service.get_brand_numbers(current_user.brand_id)
+=======
+        phone_numbers = telephony_service.get_brand_numbers(current_brand_user.brand_id)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
         return phone_numbers
     except Exception as e:
         logger.error(f"Error getting brand phone numbers: {e}")
@@ -160,11 +200,19 @@ def update_phone_number_status(
     phone_number: str,
     update_data: PhoneNumberUpdate,
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
 ):
     """Update phone number status"""
     try:
         if not current_user.brand_id:
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+):
+    """Update phone number status"""
+    try:
+        if not current_brand_user.brand_id:
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User is not associated with a brand"
@@ -174,7 +222,11 @@ def update_phone_number_status(
         from app.models import PhoneNumber as PhoneNumberModel
         db_phone_number = db.query(PhoneNumberModel).filter(
             PhoneNumberModel.phone_number == phone_number,
+<<<<<<< HEAD
             PhoneNumberModel.brand_id == current_user.brand_id
+=======
+            PhoneNumberModel.brand_id == current_brand_user.brand_id
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
         ).first()
         
         if not db_phone_number:
@@ -202,11 +254,19 @@ def update_phone_number_status(
 def release_phone_number(
     phone_number: str,
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
 ):
     """Release a phone number back to the provider"""
     try:
         if not current_user.brand_id:
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+):
+    """Release a phone number back to the provider"""
+    try:
+        if not current_brand_user.brand_id:
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User is not associated with a brand"
@@ -233,11 +293,19 @@ def release_phone_number(
 def create_phone_number_request(
     request: PhoneNumberRequestCreate,
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
 ):
     """Create a phone number request"""
     try:
         if not current_user.brand_id:
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+):
+    """Create a phone number request"""
+    try:
+        if not current_brand_user.brand_id:
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User is not associated with a brand"
@@ -246,8 +314,13 @@ def create_phone_number_request(
         # Create phone number request
         from app.models import PhoneNumberRequest as PhoneNumberRequestModel
         db_request = PhoneNumberRequestModel(
+<<<<<<< HEAD
             brand_id=current_user.brand_id,
             user_id=current_user.id,
+=======
+            brand_id=current_brand_user.brand_id,
+            user_id=current_brand_user.id,
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             country_code=request.country_code,
             area_code=request.area_code,
             number_type=request.number_type,
@@ -270,18 +343,30 @@ def create_phone_number_request(
 @router.get("/requests", response_model=List[PhoneNumberRequest])
 def get_phone_number_requests(
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
 ):
     """Get all phone number requests for the current brand"""
     try:
         if not current_user.brand_id:
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+):
+    """Get all phone number requests for the current brand"""
+    try:
+        if not current_brand_user.brand_id:
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User is not associated with a brand"
             )
         
         telephony_service = TelephonyService(db)
+<<<<<<< HEAD
         requests = telephony_service.get_number_requests(current_user.brand_id)
+=======
+        requests = telephony_service.get_number_requests(current_brand_user.brand_id)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
         return requests
     except Exception as e:
         logger.error(f"Error getting phone number requests: {e}")
@@ -295,12 +380,20 @@ def update_phone_number_request(
     request_id: int,
     update_data: PhoneNumberRequestUpdate,
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 ):
     """Update a phone number request (admin only)"""
     try:
         # Check if user is admin
+<<<<<<< HEAD
         if current_user.role != RoleEnum.admin:
+=======
+        if current_brand_user.role != RoleEnum.admin:
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Only admins can update phone number requests"
@@ -336,11 +429,19 @@ def update_phone_number_request(
 @router.get("/analytics")
 def get_phone_number_analytics(
     db: Session = Depends(get_db),
+<<<<<<< HEAD
     current_user: User = Depends(get_current_brand_user)
 ):
     """Get phone number analytics for the brand"""
     try:
         if not current_user.brand_id:
+=======
+    current_brand_user: User = Depends(get_current_active_brand_user)
+):
+    """Get phone number analytics for the brand"""
+    try:
+        if not current_brand_user.brand_id:
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User is not associated with a brand"
@@ -351,17 +452,29 @@ def get_phone_number_analytics(
         
         # Get phone number statistics
         total_numbers = db.query(func.count(PhoneNumberModel.id)).filter(
+<<<<<<< HEAD
             PhoneNumberModel.brand_id == current_user.brand_id
         ).scalar()
         
         active_numbers = db.query(func.count(PhoneNumberModel.id)).filter(
             PhoneNumberModel.brand_id == current_user.brand_id,
+=======
+            PhoneNumberModel.brand_id == current_brand_user.brand_id
+        ).scalar()
+        
+        active_numbers = db.query(func.count(PhoneNumberModel.id)).filter(
+            PhoneNumberModel.brand_id == current_brand_user.brand_id,
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             PhoneNumberModel.status == "active"
         ).scalar()
         
         # Get monthly cost
         monthly_cost = db.query(func.sum(PhoneNumberModel.monthly_cost)).filter(
+<<<<<<< HEAD
             PhoneNumberModel.brand_id == current_user.brand_id,
+=======
+            PhoneNumberModel.brand_id == current_brand_user.brand_id,
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
             PhoneNumberModel.status == "active"
         ).scalar() or 0.0
         
@@ -370,7 +483,11 @@ def get_phone_number_analytics(
             PhoneNumberModel.provider,
             func.count(PhoneNumberModel.id)
         ).filter(
+<<<<<<< HEAD
             PhoneNumberModel.brand_id == current_user.brand_id
+=======
+            PhoneNumberModel.brand_id == current_brand_user.brand_id
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
         ).group_by(PhoneNumberModel.provider).all()
         
         return {

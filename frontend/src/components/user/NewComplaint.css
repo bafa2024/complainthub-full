@@ -4,8 +4,13 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 2rem 1rem;
+<<<<<<< HEAD
   display: flex;
   justify-content: center;
+=======
+    display: flex;
+    justify-content: center;
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
   align-items: flex-start;
 }
 
@@ -386,7 +391,11 @@
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
+<<<<<<< HEAD
   border-radius: 8px;
+=======
+    border-radius: 8px;
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;

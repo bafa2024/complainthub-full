@@ -218,7 +218,11 @@ const createRefund = async (transactionId, reason) => {
 };
 
 // AI Management Methods
+<<<<<<< HEAD
 async getAIStatus() {
+=======
+const getAIStatus = async () => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const response = await apiClient.get('/ai/status');
         return response.data;
@@ -240,9 +244,15 @@ async getAIStatus() {
             }
         };
     }
+<<<<<<< HEAD
 },
 
 async getBrandAIInsights() {
+=======
+};
+
+const getBrandAIInsights = async () => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const response = await apiClient.get(`/ai/brand/${this.brandId}/insights`);
         return response.data;
@@ -255,9 +265,15 @@ async getBrandAIInsights() {
             recent_learning_data: 0
         };
     }
+<<<<<<< HEAD
 },
 
 async getTrainingHistory(modelType = null, limit = 10) {
+=======
+};
+
+const getTrainingHistory = async (modelType = null, limit = 10) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const params = { limit };
         if (modelType) params.model_type = modelType;
@@ -267,9 +283,15 @@ async getTrainingHistory(modelType = null, limit = 10) {
         console.error('Error getting training history:', error);
         return [];
     }
+<<<<<<< HEAD
 },
 
 async getBrandKnowledge(knowledgeType = null, language = null) {
+=======
+};
+
+const getBrandKnowledge = async (knowledgeType = null, language = null) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const params = {};
         if (knowledgeType) params.knowledge_type = knowledgeType;
@@ -280,9 +302,15 @@ async getBrandKnowledge(knowledgeType = null, language = null) {
         console.error('Error getting brand knowledge:', error);
         return [];
     }
+<<<<<<< HEAD
 },
 
 async addBrandKnowledge(knowledgeData) {
+=======
+};
+
+const addBrandKnowledge = async (knowledgeData) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const response = await apiClient.post(`/ai/brand/${this.brandId}/knowledge`, knowledgeData);
         return response.data;
@@ -290,9 +318,15 @@ async addBrandKnowledge(knowledgeData) {
         console.error('Error adding brand knowledge:', error);
         throw error;
     }
+<<<<<<< HEAD
 },
 
 async getResponseTemplates(category = null, urgency = null, language = null) {
+=======
+};
+
+const getResponseTemplates = async (category = null, urgency = null, language = null) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const params = {};
         if (category) params.category = category;
@@ -304,9 +338,15 @@ async getResponseTemplates(category = null, urgency = null, language = null) {
         console.error('Error getting response templates:', error);
         return [];
     }
+<<<<<<< HEAD
 },
 
 async addResponseTemplate(templateData) {
+=======
+};
+
+const addResponseTemplate = async (templateData) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const response = await apiClient.post(`/ai/brand/${this.brandId}/templates`, templateData);
         return response.data;
@@ -314,9 +354,15 @@ async addResponseTemplate(templateData) {
         console.error('Error adding response template:', error);
         throw error;
     }
+<<<<<<< HEAD
 },
 
 async getConversationPatterns() {
+=======
+};
+
+const getConversationPatterns = async () => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const response = await apiClient.get(`/ai/brand/${this.brandId}/insights`);
         return response.data.conversation_patterns || [];
@@ -324,9 +370,15 @@ async getConversationPatterns() {
         console.error('Error getting conversation patterns:', error);
         return [];
     }
+<<<<<<< HEAD
 },
 
 async trainModels(brandId = null, force = false) {
+=======
+};
+
+const trainModels = async (brandId = null, force = false) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const params = { force };
         if (brandId) params.brand_id = brandId;
@@ -336,9 +388,15 @@ async trainModels(brandId = null, force = false) {
         console.error('Error training models:', error);
         throw error;
     }
+<<<<<<< HEAD
 },
 
 async analyzeText(text, brandId = null) {
+=======
+};
+
+const analyzeText = async (text, brandId = null) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const params = { text };
         if (brandId) params.brand_id = brandId;
@@ -348,9 +406,15 @@ async analyzeText(text, brandId = null) {
         console.error('Error analyzing text:', error);
         throw error;
     }
+<<<<<<< HEAD
 },
 
 async generateResponse(conversationData) {
+=======
+};
+
+const generateResponse = async (conversationData) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const response = await apiClient.post('/ai/generate-response', conversationData);
         return response.data;
@@ -358,9 +422,15 @@ async generateResponse(conversationData) {
         console.error('Error generating response:', error);
         throw error;
     }
+<<<<<<< HEAD
 },
 
 async getLearningData(brandId = null, days = 30, limit = 100) {
+=======
+};
+
+const getLearningData = async (brandId = null, days = 30, limit = 100) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const params = { days, limit };
         if (brandId) params.brand_id = brandId;
@@ -370,9 +440,15 @@ async getLearningData(brandId = null, days = 30, limit = 100) {
         console.error('Error getting learning data:', error);
         return [];
     }
+<<<<<<< HEAD
 },
 
 async retrainModels(brandId = null, force = false) {
+=======
+};
+
+const retrainModels = async (brandId = null, force = false) => {
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     try {
         const params = { force };
         if (brandId) params.brand_id = brandId;
@@ -382,7 +458,11 @@ async retrainModels(brandId = null, force = false) {
         console.error('Error retraining models:', error);
         throw error;
     }
+<<<<<<< HEAD
 }
+=======
+};
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 // Phone Number Management Methods
 const getPhoneNumbers = async () => {

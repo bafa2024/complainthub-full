@@ -14,9 +14,14 @@ from .api.v1.endpoints import (
     tickets_extended, channels, analytics, billing, ai_management,
     compliance, security, phone_numbers, followup
 )
+<<<<<<< HEAD
+=======
+from .api.v1.endpoints.webhook import router as webhook_router
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 from .api.v1.routes import auth
 from .database import engine, Base
-from .config import settings
+from .config.settings import settings
+from .middleware.security import AuditMiddleware, SecurityMiddleware, RateLimitMiddleware
 import os
 
 # Configure logging
@@ -107,8 +112,16 @@ async def general_exception_handler(request, exc):
             content={"error": "Critical error occurred"}
         )
 
+<<<<<<< HEAD
 # Add CORS middleware
 app.add_middleware(CORSMiddleware, allowed_origins=["*"])
+=======
+# Add security middleware
+app.add_middleware(SecurityMiddleware)
+app.add_middleware(RateLimitMiddleware, requests_per_minute=100)
+app.add_middleware(AuditMiddleware)
+app.add_middleware(CORSMiddleware, allow_origins=settings.CORS_ORIGINS)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 # API Routers with error handling
 try:
@@ -138,6 +151,9 @@ except Exception as e:
     logger.error(f"Failed to configure API routers: {e}")
     logger.error(f"Traceback: {traceback.format_exc()}")
 
+# Include webhook routes
+app.include_router(webhook_router, prefix="/api/v1/webhook", tags=["webhooks"])
+
 @app.get("/")
 def read_root():
     """Root endpoint with error handling"""
@@ -161,8 +177,9 @@ def health_check():
         
         # Check database connection
         try:
+            from sqlalchemy import text
             with engine.connect() as conn:
-                conn.execute("SELECT 1")
+                conn.execute(text("SELECT 1"))
             health_status["database"] = "connected"
         except Exception as e:
             logger.error(f"Database health check failed: {e}")
@@ -171,7 +188,7 @@ def health_check():
         
         # Check OpenAI configuration
         try:
-            openai_key = settings.get_openai_api_key()
+            openai_key = settings.OPENAI_API_KEY
             health_status["openai"] = "configured" if openai_key else "not_configured"
         except Exception as e:
             logger.error(f"OpenAI health check failed: {e}")
@@ -200,9 +217,22 @@ def user_registration_page():
 async def startup_event():
     """Application startup event"""
     try:
+<<<<<<< HEAD
         logger.info("Application starting up...")
         # Initialize any startup tasks here
         logger.info("Application startup completed")
+=======
+        logger.info("Starting Complaint Management API...")
+        logger.info(f"Project: {settings.PROJECT_NAME}")
+        logger.info(f"API Version: {settings.API_V1_STR}")
+        
+        # Log configuration status
+        if settings.OPENAI_API_KEY:
+            logger.info("OpenAI API key is configured")
+        else:
+            logger.warning("OpenAI API key is not configured - AI features will be limited")
+            
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     except Exception as e:
         logger.error(f"Error during startup: {e}")
         logger.error(f"Traceback: {traceback.format_exc()}")

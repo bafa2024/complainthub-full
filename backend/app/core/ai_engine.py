@@ -2,7 +2,7 @@
 
 import openai
 import os
-from ..config import settings
+from ..config.settings import settings
 from ..schemas import TicketCategoryEnum, TicketUrgencyEnum
 import logging
 import json
@@ -34,7 +34,7 @@ class AIEngine:
     def __init__(self):
         try:
             # Try to get OpenAI API key from settings method
-            self.openai_api_key = settings.get_openai_api_key()
+            self.openai_api_key = settings.OPENAI_API_KEY
             self.has_openai_key = bool(self.openai_api_key and self.openai_api_key.strip())
             
             if self.has_openai_key:

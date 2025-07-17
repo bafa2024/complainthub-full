@@ -68,7 +68,11 @@ class BillingService:
                     amount=self.complaint_charge,
                     status="pending",
                     description=f"Charge for unresolved complaint #{ticket_id}",
+<<<<<<< HEAD
                     meta_data={
+=======
+                    metadata={
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                         "ticket_title": ticket.title,
                         "hours_since_creation": hours_since_creation,
                         "free_window_exceeded": True
@@ -97,7 +101,11 @@ class BillingService:
                 amount=self.complaint_charge,
                 status="completed",
                 description=f"Charge for unresolved complaint #{ticket_id}",
+<<<<<<< HEAD
                 meta_data={
+=======
+                metadata={
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                     "ticket_title": ticket.title,
                     "hours_since_creation": hours_since_creation,
                     "free_window_exceeded": True
@@ -150,7 +158,11 @@ class BillingService:
                     status="pending",
                     payment_intent_id=payment_intent.id,
                     description=f"Credit top-up of {amount} credits",
+<<<<<<< HEAD
                     meta_data={
+=======
+                    metadata={
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                         "payment_method": "stripe",
                         "payment_intent_id": payment_intent.id
                     }
@@ -276,7 +288,11 @@ class BillingService:
                 monthly_price=plan["price"],
                 current_period_start=datetime.fromtimestamp(subscription.current_period_start),
                 current_period_end=datetime.fromtimestamp(subscription.current_period_end),
+<<<<<<< HEAD
                 meta_data={
+=======
+                metadata={
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                     "stripe_subscription_id": subscription.id,
                     "plan_type": plan_type
                 }
@@ -323,7 +339,11 @@ class BillingService:
                 amount=subscription.monthly_price,
                 status="completed",
                 description=f"Monthly subscription payment - {subscription.plan_type} plan",
+<<<<<<< HEAD
                 meta_data={
+=======
+                metadata={
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                     "subscription_id": subscription.id,
                     "plan_type": subscription.plan_type,
                     "credits_added": subscription.credits_per_month
@@ -444,7 +464,11 @@ class BillingService:
                             "description": t.description,
                             "created_at": t.created_at.isoformat(),
                             "processed_at": t.processed_at.isoformat() if t.processed_at else None,
+<<<<<<< HEAD
                             "meta_data": t.meta_data
+=======
+                            "metadata": t.metadata
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                         }
                         for t in transactions
                     ],
@@ -483,7 +507,11 @@ class BillingService:
                     amount=-transaction.amount,  # Negative amount for refund
                     status="completed",
                     description=f"Refund for transaction #{transaction_id}: {reason}",
+<<<<<<< HEAD
                     meta_data={
+=======
+                    metadata={
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                         "original_transaction_id": transaction_id,
                         "stripe_refund_id": refund.id,
                         "reason": reason

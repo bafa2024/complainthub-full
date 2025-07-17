@@ -330,7 +330,11 @@ export default function PublicComplaints() {
                 </div>
                 <div className="stat">
                   <span className="stat-number">{unresolvedCount}</span>
+<<<<<<< HEAD
                   <span className="stat-label">Unresolved (>7 days)</span>
+=======
+                                          <span className="stat-label">Unresolved (&gt;7 days)</span>
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                 </div>
                 <div className="stat">
                   <span className="stat-number">{brands.length}</span>
@@ -365,7 +369,11 @@ export default function PublicComplaints() {
                     checked={showUnresolvedOnly}
                     onChange={(e) => setShowUnresolvedOnly(e.target.checked)}
                   />
+<<<<<<< HEAD
                   Show only unresolved complaints (>7 days)
+=======
+                  Show only unresolved complaints (&gt;7 days)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                 </label>
               </div>
             </div>

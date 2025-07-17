@@ -4,6 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
+<<<<<<< HEAD
+=======
+import logging
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 from app.api.v1 import deps
 from app.core.ai_engine import AIEngine

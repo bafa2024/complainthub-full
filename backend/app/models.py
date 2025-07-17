@@ -60,7 +60,10 @@ class Brand(Base):
     subscriptions = relationship("Subscription", back_populates="brand")
     payment_methods = relationship("PaymentMethod", back_populates="brand")
     phone_numbers = relationship("PhoneNumber", back_populates="brand")
+<<<<<<< HEAD
     telephony_providers = relationship("TelephonyProvider", back_populates="brand")
+=======
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     phone_number_requests = relationship("PhoneNumberRequest", back_populates="brand")
     follow_ups = relationship("FollowUpLog", back_populates="brand")
     ai_learning_data = relationship("AILearningData", back_populates="brand")
@@ -105,7 +108,10 @@ class User(Base):
     assigned_tickets = relationship("Ticket", foreign_keys="[Ticket.assignee_id]", back_populates="assignee")
     security_events = relationship("SecurityEvent", back_populates="user")
     consents = relationship("UserConsent", back_populates="user")
+<<<<<<< HEAD
     failed_login_attempts = relationship("FailedLoginAttempt", back_populates="user")
+=======
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     interactions = relationship("UserInteraction", back_populates="user")
     phone_number_requests = relationship("PhoneNumberRequest", back_populates="user")
     conversation_sessions = relationship("ConversationSession", back_populates="user")
@@ -150,7 +156,10 @@ class Ticket(Base):
     brand = relationship("Brand", back_populates="tickets")
     assignee = relationship("User", foreign_keys=[assignee_id], back_populates="assigned_tickets")
     transactions = relationship("Transaction", back_populates="ticket")
+<<<<<<< HEAD
     phone_number = relationship("PhoneNumber", back_populates="tickets")
+=======
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     follow_ups = relationship("FollowUpLog", back_populates="ticket")
     ai_learning_data = relationship("AILearningData", back_populates="ticket")
     crm_integrations = relationship("CRMIntegration", back_populates="ticket")
@@ -183,7 +192,11 @@ class Transaction(Base):
     description = Column(Text, nullable=True)
     payment_intent_id = Column(String, nullable=True)
     stripe_refund_id = Column(String, nullable=True)
+<<<<<<< HEAD
     meta_data = Column(JSON, nullable=True)
+=======
+    meta_info = Column('metadata', JSON, nullable=True)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     processed_at = Column(DateTime(timezone=True), nullable=True)
     brand = relationship("Brand", back_populates="transactions")
@@ -208,7 +221,11 @@ class Subscription(Base):
     current_period_start = Column(DateTime(timezone=True), nullable=False)
     current_period_end = Column(DateTime(timezone=True), nullable=False)
     cancelled_at = Column(DateTime(timezone=True), nullable=True)
+<<<<<<< HEAD
     meta_data = Column(JSON, nullable=True)
+=======
+    meta_info = Column('metadata', JSON, nullable=True)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     brand = relationship("Brand", back_populates="subscriptions")
@@ -224,7 +241,11 @@ class PaymentMethod(Base):
     exp_month = Column(Integer, nullable=True)
     exp_year = Column(Integer, nullable=True)
     is_default = Column(Boolean, default=False)
+<<<<<<< HEAD
     meta_data = Column(JSON, nullable=True)
+=======
+    meta_info = Column('metadata', JSON, nullable=True)
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     brand = relationship("Brand", back_populates="payment_methods")
 
@@ -463,9 +484,12 @@ class FailedLoginAttempt(Base):
     last_attempt = Column(DateTime(timezone=True), server_default=func.now())
     is_locked = Column(Boolean, default=False)
     locked_until = Column(DateTime(timezone=True), nullable=True)
+<<<<<<< HEAD
     
     # Relationships
     user = relationship("User", back_populates="failed_login_attempts")
+=======
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 class Admin(Base):
     __tablename__ = "admins"
@@ -511,7 +535,10 @@ class PhoneNumber(Base):
     
     # Relationships
     brand = relationship("Brand", back_populates="phone_numbers")
+<<<<<<< HEAD
     tickets = relationship("Ticket", back_populates="phone_number")
+=======
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 class TelephonyProvider(Base):
     __tablename__ = "telephony_providers"
@@ -589,7 +616,11 @@ class CRMIntegration(Base):
     ticket_id = Column(Integer, ForeignKey("tickets.id"), nullable=False)
     crm_type = Column(String, nullable=False)  # salesforce, zoho, freshworks, etc.
     crm_case_id = Column(String, nullable=False)
+<<<<<<< HEAD
     meta_data = Column(JSON)  # JSON string with additional CRM data
+=======
+    meta_info = Column('metadata', Text)  # JSON string with additional CRM data
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     sync_status = Column(String, default="synced")  # synced, pending, failed
     last_sync = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -620,6 +651,10 @@ class ConversationSession(Base):
     user = relationship("User", back_populates="conversation_sessions")
     ticket = relationship("Ticket", back_populates="conversation_sessions")
     conversation_turns = relationship("ConversationTurn", back_populates="session", cascade="all, delete-orphan")
+<<<<<<< HEAD
+=======
+    session_contexts = relationship("SessionContext", back_populates="session", cascade="all, delete-orphan")
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 class ConversationTurn(Base):
     __tablename__ = "conversation_turns"
@@ -716,7 +751,10 @@ Brand.brand_knowledge = relationship("BrandKnowledge", back_populates="brand")
 Brand.ai_response_templates = relationship("AIResponseTemplate", back_populates="brand")
 Brand.user_interactions = relationship("UserInteraction", back_populates="brand")
 Brand.phone_numbers = relationship("PhoneNumber", back_populates="brand")
+<<<<<<< HEAD
 Brand.telephony_providers = relationship("TelephonyProvider", back_populates="brand")
+=======
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 Brand.phone_number_requests = relationship("PhoneNumberRequest", back_populates="brand")
 Brand.follow_ups = relationship("FollowUpLog", back_populates="brand")
 Brand.conversation_sessions = relationship("ConversationSession", back_populates="brand")
@@ -725,7 +763,10 @@ Brand.email_outreach_logs = relationship("EmailOutreachLog", back_populates="bra
 
 # Add to Ticket model
 Ticket.ai_learning_data = relationship("AILearningData", back_populates="ticket")
+<<<<<<< HEAD
 Ticket.phone_number = relationship("PhoneNumber", back_populates="tickets")
+=======
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 Ticket.crm_integrations = relationship("CRMIntegration", back_populates="ticket")
 Ticket.conversation_sessions = relationship("ConversationSession", back_populates="ticket")
 

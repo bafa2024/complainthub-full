@@ -867,6 +867,7 @@ const getRevenueReport = async (filters) => {
   }
 };
 
+<<<<<<< HEAD
 const generateReport = async (reportType, format, filters) => {
   try {
     const response = await apiClient.post(`/admin/reports/generate/${reportType}`, filters, {
@@ -883,6 +884,8 @@ const generateReport = async (reportType, format, filters) => {
   }
 };
 
+=======
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 // System Health and Activity
 const getSystemHealth = async () => {
   try {
@@ -1061,7 +1064,10 @@ export default {
   getBrandsReport,
   getUsersReport,
   getRevenueReport,
+<<<<<<< HEAD
   generateReport,
+=======
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
   // System Health and Activity
   getSystemHealth,
   getRecentActivity,

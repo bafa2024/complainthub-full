@@ -11,7 +11,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "AI Complaint Management"
     API_V1_STR: str = "/api/v1"
 
-    DATABASE_URL: str = "postgresql://postgres:root@localhost:5432/complaintdb"
+    # DATABASE_URL: str = "postgresql://postgres:root@localhost:5432/complaintdb"
+    DATABASE_URL: str = "sqlite:///./voicebot.db"
 
     SECRET_KEY: str = "a_very_secret_key_that_you_should_change"
     ALGORITHM: str = "HS256"
@@ -20,7 +21,12 @@ class Settings(BaseSettings):
     # OpenAI API key with multiple possible field names
     OPENAI_API_KEY: str = Field(default="", alias="open_ai_openai_api_key")
     DEEPGRAM_API_KEY: str = ""
+<<<<<<< HEAD
     GOOGLE_API_KEY: str = ""
+=======
+    # Google Cloud API Key for TTS and other services
+    GOOGLE_API_KEY: str = ""  # <-- Add your Google API key here or set via environment variable
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     GOOGLE_APPLICATION_CREDENTIALS: str = ""
     GOOGLE_PROJECT_ID: str = ""
     
@@ -170,8 +176,8 @@ class Settings(BaseSettings):
     ]
 
     model_config = SettingsConfigDict(
-        env_file=".env", 
-        env_file_encoding='utf-8',
+        # env_file=".env",  # Temporarily disabled due to encoding issues
+        # env_file_encoding='utf-8',
         extra='ignore',  # Allow extra fields from environment variables
         case_sensitive=False  # Make field matching case-insensitive
     )

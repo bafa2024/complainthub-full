@@ -9,8 +9,13 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc, asc
+<<<<<<< HEAD
 from app.models import User, Brand, Ticket, SystemSettings, Conversation
 from app.core.config import settings
+=======
+from app.models import User, Brand, Ticket, SystemSettings
+from app.config.settings import settings
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 logger = logging.getLogger(__name__)
 

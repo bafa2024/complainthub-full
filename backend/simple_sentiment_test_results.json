@@ -1,0 +1,170 @@
+[
+  {
+    "test_name": "Text Preprocessing 1",
+    "success": true,
+    "message": "Input: '  Hello   World!  ' -> Output: 'Hello World!'",
+    "timestamp": "2025-07-10T04:47:47.816880",
+    "details": {
+      "input": "  Hello   World!  ",
+      "expected": "Hello World!",
+      "actual": "Hello World!"
+    }
+  },
+  {
+    "test_name": "Text Preprocessing 2",
+    "success": true,
+    "message": "Input: 'I'm very angry!!!' -> Output: 'I'm very angry!!!'",
+    "timestamp": "2025-07-10T04:47:47.816880",
+    "details": {
+      "input": "I'm very angry!!!",
+      "expected": "I'm very angry!!!",
+      "actual": "I'm very angry!!!"
+    }
+  },
+  {
+    "test_name": "Text Preprocessing 3",
+    "success": false,
+    "message": "Input: 'This is a test with special chars: @#$%' -> Output: 'This is a test with special chars '",
+    "timestamp": "2025-07-10T04:47:47.816880",
+    "details": {
+      "input": "This is a test with special chars: @#$%",
+      "expected": "This is a test with special chars",
+      "actual": "This is a test with special chars "
+    }
+  },
+  {
+    "test_name": "Rule-based Sentiment 1",
+    "success": true,
+    "message": "Analyzed: 'I'm very happy with the servic...'",
+    "timestamp": "2025-07-10T04:47:47.830735",
+    "details": {
+      "sentiment_score": 0.19999999999999998,
+      "polarity": "positive",
+      "positive_count": 1,
+      "negative_count": 0
+    }
+  },
+  {
+    "test_name": "Rule-based Sentiment 2",
+    "success": true,
+    "message": "Analyzed: 'I'm extremely angry about this...'",
+    "timestamp": "2025-07-10T04:47:47.830735",
+    "details": {
+      "sentiment_score": -0.19999999999999998,
+      "polarity": "negative",
+      "positive_count": 0,
+      "negative_count": 1
+    }
+  },
+  {
+    "test_name": "Rule-based Sentiment 3",
+    "success": true,
+    "message": "Analyzed: 'This is just a normal question...'",
+    "timestamp": "2025-07-10T04:47:47.830735",
+    "details": {
+      "sentiment_score": 0.0,
+      "polarity": "neutral",
+      "positive_count": 0,
+      "negative_count": 0
+    }
+  },
+  {
+    "test_name": "Severity Assessment 1",
+    "success": true,
+    "message": "Assessed: 'This is an emergency!...'",
+    "timestamp": "2025-07-10T04:47:47.836622",
+    "details": {
+      "severity": "critical",
+      "confidence": 0.1,
+      "sentiment_influence": 0.8
+    }
+  },
+  {
+    "test_name": "Severity Assessment 2",
+    "success": true,
+    "message": "Assessed: 'I'm very angry about this issu...'",
+    "timestamp": "2025-07-10T04:47:47.837811",
+    "details": {
+      "severity": "high",
+      "confidence": 0.2,
+      "sentiment_influence": 0.7
+    }
+  },
+  {
+    "test_name": "Severity Assessment 3",
+    "success": true,
+    "message": "Assessed: 'I have a problem with my order...'",
+    "timestamp": "2025-07-10T04:47:47.839829",
+    "details": {
+      "severity": "medium",
+      "confidence": 0.1,
+      "sentiment_influence": 0.3
+    }
+  },
+  {
+    "test_name": "Emotion Detection 1",
+    "success": true,
+    "message": "Detected: 'I'm so angry about this!...'",
+    "timestamp": "2025-07-10T04:47:47.844068",
+    "details": {
+      "emotion": "anger",
+      "intensity": 0.2,
+      "confidence": 0.3333333333333333
+    }
+  },
+  {
+    "test_name": "Emotion Detection 2",
+    "success": true,
+    "message": "Detected: 'I'm very happy with the servic...'",
+    "timestamp": "2025-07-10T04:47:47.845066",
+    "details": {
+      "emotion": "joy",
+      "intensity": 0.2,
+      "confidence": 0.3333333333333333
+    }
+  },
+  {
+    "test_name": "Emotion Detection 3",
+    "success": true,
+    "message": "Detected: 'I'm worried about this issue....'",
+    "timestamp": "2025-07-10T04:47:47.846064",
+    "details": {
+      "emotion": "fear",
+      "intensity": 0.2,
+      "confidence": 0.3333333333333333
+    }
+  },
+  {
+    "test_name": "Toxicity Analysis 1",
+    "success": false,
+    "message": "Analyzed: 'You are an idiot and I hate yo...'",
+    "timestamp": "2025-07-10T04:47:47.849063",
+    "details": {
+      "toxicity_score": 0.1,
+      "abuse_level": "low",
+      "requires_escalation": false
+    }
+  },
+  {
+    "test_name": "Toxicity Analysis 2",
+    "success": true,
+    "message": "Analyzed: 'I'm not happy with this situat...'",
+    "timestamp": "2025-07-10T04:47:47.852647",
+    "details": {
+      "toxicity_score": 0.0,
+      "abuse_level": "low",
+      "requires_escalation": false
+    }
+  },
+  {
+    "test_name": "Toxicity Analysis 3",
+    "success": false,
+    "message": "Analyzed: 'This is completely unacceptabl...'",
+    "timestamp": "2025-07-10T04:47:47.853635",
+    "details": {
+      "toxicity_score": 0.0,
+      "abuse_level": "low",
+      "requires_escalation": false
+    }
+  }
+]

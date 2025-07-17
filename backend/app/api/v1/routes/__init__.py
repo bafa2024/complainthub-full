@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from .crm import router as crm_router
 from .security import router as security_router
 from app.api.v1.endpoints.self_learning import router as self_learning_router
@@ -27,3 +28,8 @@ api_router.include_router(analytics_router, prefix="/analytics", tags=["Analytic
 api_router.include_router(brand_management_router, prefix="/brand-management", tags=["Brand Management"])
 api_router.include_router(users_router, prefix="/users", tags=["users"])
 api_router.include_router(admin_router, prefix="/admin", tags=["admin"])
+=======
+# This file is not being used by main.py - main.py imports directly from endpoints
+# Keeping this file for potential future use but commenting out imports to avoid conflicts
+pass
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925

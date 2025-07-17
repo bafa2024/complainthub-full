@@ -398,7 +398,11 @@ class CRMService:
             logger.error(f"Error verifying webhook signature: {e}")
             return False
     
+<<<<<<< HEAD
     def _store_crm_reference(self, ticket_id: int, crm_type: str, crm_id: str, meta_data: Dict[str, Any]):
+=======
+    def _store_crm_reference(self, ticket_id: int, crm_type: str, crm_id: str, metadata: Dict[str, Any]):
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
         """Store CRM reference in ticket"""
         try:
             ticket = self.db.query(Ticket).filter(Ticket.id == ticket_id).first()
@@ -406,7 +410,11 @@ class CRMService:
                 ticket.crm_reference = json.dumps({
                     "crm_type": crm_type,
                     "crm_id": crm_id,
+<<<<<<< HEAD
                     "meta_data": meta_data,
+=======
+                    "metadata": metadata,
+>>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                     "synced_at": datetime.utcnow().isoformat()
                 })
                 self.db.commit()
