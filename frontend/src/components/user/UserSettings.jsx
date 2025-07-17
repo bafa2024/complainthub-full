@@ -20,7 +20,17 @@ export default function UserSettings() {
     phone: user?.phone || '',
     email: user?.email || '',
     language: 'en',
-    timezone: 'Asia/Kolkata'
+    timezone: 'Asia/Kolkata',
+    address: user?.address || '',
+    dateOfBirth: user?.date_of_birth || '',
+    gender: user?.gender || '',
+    preferences: {
+      emailNotifications: true,
+      smsNotifications: false,
+      whatsappNotifications: true,
+      publicProfile: false,
+      shareAnalytics: false
+    }
   });
   
   // Security form state
@@ -39,19 +49,25 @@ export default function UserSettings() {
     emailNews: false,
     smsUrgent: true,
     smsAll: false,
-    whatsappEnable: true
+    whatsappEnable: true,
+    pushNotifications: true,
+    marketingEmails: false
   });
   
   // Privacy settings state
   const [privacy, setPrivacy] = useState({
     profileVisibility: 'anonymous',
     shareAnalytics: false,
-    shareLocation: false
+    shareLocation: false,
+    allowContact: true,
+    dataRetention: '1year'
   });
   
   // Loading states
   const [loading, setLoading] = useState(false);
   const [sessions, setSessions] = useState([]);
+  const [complaintHistory, setComplaintHistory] = useState([]);
+  const [exportLoading, setExportLoading] = useState(false);
 
   // Password strength checker
   useEffect(() => {
@@ -138,6 +154,7 @@ export default function UserSettings() {
 
   // Download data
   const handleDownloadData = async () => {
+    setExportLoading(true);
     try {
       const response = await apiClient.get('/users/me/export', { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -150,6 +167,8 @@ export default function UserSettings() {
       showAlert('success', 'Data downloaded successfully!');
     } catch (error) {
       showAlert('error', 'Failed to download data');
+    } finally {
+      setExportLoading(false);
     }
   };
 
@@ -179,18 +198,7 @@ export default function UserSettings() {
   };
 
   return (
-    <div>
-      {/* REMOVE the header section below to avoid duplicated navbar */}
-      {/* <header className="settings-header">
-        <div className="header-container">
-          <div className="logo">ComplaintHub</div>
-          <div className="header-nav">
-            <Link to="/dashboard" className="btn btn-secondary">← Back to Dashboard</Link>
-            <Link to="/" className="btn btn-primary">Logout</Link>
-          </div>
-        </div>
-      </header> */}
-
+    <div className="user-settings">
       <div className="settings-container">
         {/* Alert Messages */}
         {alert.show && (
@@ -199,436 +207,492 @@ export default function UserSettings() {
           </div>
         )}
 
-        <div className="settings-layout">
-          {/* Sidebar Navigation */}
-          <aside className="settings-sidebar">
-            <nav>
-              <ul className="sidebar-nav">
-                <li>
-                  <button 
-                    className={`sidebar-link ${activeSection === 'profile' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('profile')}
-                  >
-                    Profile
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    className={`sidebar-link ${activeSection === 'security' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('security')}
-                  >
-                    Security
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    className={`sidebar-link ${activeSection === 'notifications' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('notifications')}
-                  >
-                    Notifications
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    className={`sidebar-link ${activeSection === 'privacy' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('privacy')}
-                  >
-                    Privacy
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    className={`sidebar-link ${activeSection === 'account' ? 'active' : ''}`}
-                    onClick={() => setActiveSection('account')}
-                  >
-                    Account
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </aside>
+        {/* Settings Navigation */}
+        <div className="settings-nav">
+          <div className="nav-section">
+            <h3>Account</h3>
+            <button 
+              className={`nav-item ${activeSection === 'profile' ? 'active' : ''}`}
+              onClick={() => setActiveSection('profile')}
+            >
+              <i className="fas fa-user"></i>
+              Profile Information
+            </button>
+            <button 
+              className={`nav-item ${activeSection === 'security' ? 'active' : ''}`}
+              onClick={() => setActiveSection('security')}
+            >
+              <i className="fas fa-shield-alt"></i>
+              Security & Password
+            </button>
+            <button 
+              className={`nav-item ${activeSection === 'notifications' ? 'active' : ''}`}
+              onClick={() => setActiveSection('notifications')}
+            >
+              <i className="fas fa-bell"></i>
+              Notifications
+            </button>
+            <button 
+              className={`nav-item ${activeSection === 'privacy' ? 'active' : ''}`}
+              onClick={() => setActiveSection('privacy')}
+            >
+              <i className="fas fa-lock"></i>
+              Privacy & Data
+            </button>
+          </div>
 
-          {/* Settings Content */}
-          <div className="settings-content">
-            {/* Profile Section */}
-            {activeSection === 'profile' && (
-              <section className="settings-section">
-                <h2 className="section-title">Profile Information</h2>
-                
-                <form onSubmit={handleProfileSubmit}>
+          <div className="nav-section">
+            <h3>Data & History</h3>
+            <button 
+              className={`nav-item ${activeSection === 'history' ? 'active' : ''}`}
+              onClick={() => setActiveSection('history')}
+            >
+              <i className="fas fa-history"></i>
+              Complaint History
+            </button>
+            <button 
+              className={`nav-item ${activeSection === 'sessions' ? 'active' : ''}`}
+              onClick={() => setActiveSection('sessions')}
+            >
+              <i className="fas fa-desktop"></i>
+              Active Sessions
+            </button>
+            <button 
+              className={`nav-item ${activeSection === 'export' ? 'active' : ''}`}
+              onClick={() => setActiveSection('export')}
+            >
+              <i className="fas fa-download"></i>
+              Export Data
+            </button>
+          </div>
+
+          <div className="nav-section">
+            <h3>Account Actions</h3>
+            <button 
+              className={`nav-item ${activeSection === 'delete' ? 'active' : ''}`}
+              onClick={() => setActiveSection('delete')}
+            >
+              <i className="fas fa-trash"></i>
+              Delete Account
+            </button>
+          </div>
+        </div>
+
+        {/* Settings Content */}
+        <div className="settings-content">
+          {/* Profile Section */}
+          {activeSection === 'profile' && (
+            <div className="settings-section">
+              <h2>Profile Information</h2>
+              <form onSubmit={handleProfileSubmit}>
+                <div className="form-grid">
                   <div className="form-group">
-                    <label className="form-label">Display Name</label>
-                    <input 
-                      type="text" 
-                      className="form-control" 
+                    <label>Full Name</label>
+                    <input
+                      type="text"
                       value={profileData.displayName}
                       onChange={(e) => setProfileData({...profileData, displayName: e.target.value})}
-                      required
+                      className="form-control"
                     />
-                    <p className="form-help">This name will be visible on your complaints (can be an alias)</p>
                   </div>
                   
                   <div className="form-group">
-                    <label className="form-label">Phone Number (Primary Contact)</label>
-                    <div className="form-control-with-btn">
-                      <input 
-                        type="tel" 
-                        className="form-control" 
-                        value={profileData.phone}
-                        onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                        required
-                      />
-                      <button type="button" className="btn btn-secondary">Verify</button>
-                    </div>
-                    <p className="form-help">Used to identify your complaints</p>
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      value={profileData.email}
+                      onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                      className="form-control"
+                    />
                   </div>
                   
                   <div className="form-group">
-                    <label className="form-label">Email Address</label>
-                    <div className="form-control-with-btn">
-                      <input 
-                        type="email" 
-                        className="form-control" 
-                        value={profileData.email}
-                        onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                        required
-                      />
-                      <button type="button" className="btn btn-secondary">Verify</button>
-                    </div>
+                    <label>Phone Number</label>
+                    <input
+                      type="tel"
+                      value={profileData.phone}
+                      onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                      className="form-control"
+                    />
                   </div>
                   
                   <div className="form-group">
-                    <label className="form-label">Preferred Language</label>
-                    <select 
-                      className="form-control" 
+                    <label>Date of Birth</label>
+                    <input
+                      type="date"
+                      value={profileData.dateOfBirth}
+                      onChange={(e) => setProfileData({...profileData, dateOfBirth: e.target.value})}
+                      className="form-control"
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Gender</label>
+                    <select
+                      value={profileData.gender}
+                      onChange={(e) => setProfileData({...profileData, gender: e.target.value})}
+                      className="form-control"
+                    >
+                      <option value="">Prefer not to say</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Language</label>
+                    <select
                       value={profileData.language}
                       onChange={(e) => setProfileData({...profileData, language: e.target.value})}
+                      className="form-control"
                     >
                       <option value="en">English</option>
                       <option value="hi">Hindi</option>
-                      <option value="ta">Tamil</option>
-                      <option value="te">Telugu</option>
-                      <option value="bn">Bengali</option>
-                      <option value="mr">Marathi</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
                     </select>
                   </div>
-                  
-                  <div className="form-group">
-                    <label className="form-label">Time Zone</label>
-                    <select 
-                      className="form-control" 
-                      value={profileData.timezone}
-                      onChange={(e) => setProfileData({...profileData, timezone: e.target.value})}
-                    >
-                      <option value="Asia/Kolkata">GMT+5:30 Mumbai, Kolkata, New Delhi</option>
-                      <option value="Asia/Singapore">GMT+8:00 Singapore</option>
-                      <option value="America/New_York">GMT-5:00 Eastern Time</option>
-                      <option value="Europe/London">GMT+0:00 London</option>
-                    </select>
-                  </div>
-                  
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? 'Saving...' : 'Save Changes'}
-                  </button>
-                </form>
-              </section>
-            )}
-
-            {/* Security Section */}
-            {activeSection === 'security' && (
-              <section className="settings-section">
-                <h2 className="section-title">Security Settings</h2>
+                </div>
                 
-                <form onSubmit={handleSecuritySubmit}>
-                  <h3 style={{marginBottom: '20px', fontSize: '18px'}}>Change Password</h3>
-                  
-                  <div className="form-group">
-                    <label className="form-label">Current Password</label>
-                    <input 
-                      type="password" 
-                      className="form-control" 
-                      value={securityData.currentPassword}
-                      onChange={(e) => setSecurityData({...securityData, currentPassword: e.target.value})}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label className="form-label">New Password</label>
-                    <input 
-                      type="password" 
-                      className="form-control" 
-                      value={securityData.newPassword}
-                      onChange={(e) => setSecurityData({...securityData, newPassword: e.target.value})}
-                      required
-                    />
-                    <div className="password-strength">
-                      <div className="strength-bar">
-                        <div className={`strength-fill ${passwordStrength}`}></div>
-                      </div>
-                      <p className="form-help">Use at least 8 characters with a mix of letters, numbers & symbols</p>
-                    </div>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label className="form-label">Confirm New Password</label>
-                    <input 
-                      type="password" 
-                      className="form-control" 
-                      value={securityData.confirmPassword}
-                      onChange={(e) => setSecurityData({...securityData, confirmPassword: e.target.value})}
-                      required
-                    />
-                  </div>
-                  
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? 'Updating...' : 'Update Password'}
-                  </button>
-                  
-                  <hr style={{margin: '40px 0'}} />
-                  
-                  <h3 style={{marginBottom: '20px', fontSize: '18px'}}>Two-Factor Authentication</h3>
-                  
-                  <div className="two-factor-setup">
-                    <h4 style={{marginBottom: '10px'}}>Enhanced Security</h4>
-                    <p style={{marginBottom: '15px'}}>Add an extra layer of security to your account</p>
-                    <button type="button" className="btn btn-primary">Enable 2FA</button>
-                  </div>
-                  
-                  <h3 style={{marginBottom: '20px', fontSize: '18px'}}>Login Sessions</h3>
-                  
-                  <div className="session-item">
-                    <div className="session-info">
-                      <div>
-                        <strong>Current Session</strong><br />
-                        <span className="session-details">Chrome on Windows • Mumbai, India</span>
-                      </div>
-                      <span className="session-status active">Active now</span>
-                    </div>
-                  </div>
-                  
-                  <button type="button" className="btn btn-secondary" onClick={handleSignOutAll}>
-                    Sign Out All Other Sessions
-                  </button>
-                </form>
-              </section>
-            )}
-
-            {/* Notifications Section */}
-            {activeSection === 'notifications' && (
-              <section className="settings-section">
-                <h2 className="section-title">Notification Preferences</h2>
+                <div className="form-group">
+                  <label>Address</label>
+                  <textarea
+                    value={profileData.address}
+                    onChange={(e) => setProfileData({...profileData, address: e.target.value})}
+                    className="form-control"
+                    rows="3"
+                  />
+                </div>
                 
-                <form onSubmit={handleNotificationSubmit}>
-                  <div className="form-check-group">
-                    <h4>Email Notifications</h4>
-                    
-                    <div className="form-check">
-                      <input 
-                        type="checkbox" 
-                        id="emailResponse" 
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Security Section */}
+          {activeSection === 'security' && (
+            <div className="settings-section">
+              <h2>Security & Password</h2>
+              <form onSubmit={handleSecuritySubmit}>
+                <div className="form-group">
+                  <label>Current Password</label>
+                  <input
+                    type="password"
+                    value={securityData.currentPassword}
+                    onChange={(e) => setSecurityData({...securityData, currentPassword: e.target.value})}
+                    className="form-control"
+                    required
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>New Password</label>
+                  <input
+                    type="password"
+                    value={securityData.newPassword}
+                    onChange={(e) => setSecurityData({...securityData, newPassword: e.target.value})}
+                    className="form-control"
+                    required
+                  />
+                  <div className={`password-strength ${passwordStrength}`}>
+                    Password strength: {passwordStrength}
+                  </div>
+                </div>
+                
+                <div className="form-group">
+                  <label>Confirm New Password</label>
+                  <input
+                    type="password"
+                    value={securityData.confirmPassword}
+                    onChange={(e) => setSecurityData({...securityData, confirmPassword: e.target.value})}
+                    className="form-control"
+                    required
+                  />
+                </div>
+                
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? 'Updating...' : 'Update Password'}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Notifications Section */}
+          {activeSection === 'notifications' && (
+            <div className="settings-section">
+              <h2>Notification Preferences</h2>
+              <form onSubmit={handleNotificationSubmit}>
+                <div className="notification-options">
+                  <h3>Email Notifications</h3>
+                  <div className="checkbox-group">
+                    <label>
+                      <input
+                        type="checkbox"
                         checked={notifications.emailResponse}
                         onChange={(e) => setNotifications({...notifications, emailResponse: e.target.checked})}
                       />
-                      <label htmlFor="emailResponse">
-                        <strong>New response from brand</strong><br />
-                        <span className="form-help">Get notified when brands respond to your complaints</span>
-                      </label>
-                    </div>
-                    
-                    <div className="form-check">
-                      <input 
-                        type="checkbox" 
-                        id="emailStatus" 
+                      Brand responses to complaints
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
                         checked={notifications.emailStatus}
                         onChange={(e) => setNotifications({...notifications, emailStatus: e.target.checked})}
                       />
-                      <label htmlFor="emailStatus">
-                        <strong>Ticket status changes</strong><br />
-                        <span className="form-help">Updates when your ticket status changes</span>
-                      </label>
-                    </div>
-                    
-                    <div className="form-check">
-                      <input 
-                        type="checkbox" 
-                        id="emailWeekly" 
+                      Status updates on complaints
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
                         checked={notifications.emailWeekly}
                         onChange={(e) => setNotifications({...notifications, emailWeekly: e.target.checked})}
                       />
-                      <label htmlFor="emailWeekly">
-                        <strong>Weekly summary</strong><br />
-                        <span className="form-help">Summary of all your tickets and their status</span>
-                      </label>
-                    </div>
-                    
-                    <div className="form-check">
-                      <input 
-                        type="checkbox" 
-                        id="emailNews" 
-                        checked={notifications.emailNews}
-                        onChange={(e) => setNotifications({...notifications, emailNews: e.target.checked})}
+                      Weekly summary emails
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={notifications.marketingEmails}
+                        onChange={(e) => setNotifications({...notifications, marketingEmails: e.target.checked})}
                       />
-                      <label htmlFor="emailNews">
-                        <strong>Platform updates</strong><br />
-                        <span className="form-help">New features and important announcements</span>
-                      </label>
-                    </div>
+                      Marketing and promotional emails
+                    </label>
                   </div>
                   
-                  <div className="form-check-group">
-                    <h4>SMS Notifications</h4>
-                    
-                    <div className="form-check">
-                      <input 
-                        type="checkbox" 
-                        id="smsUrgent" 
+                  <h3>SMS Notifications</h3>
+                  <div className="checkbox-group">
+                    <label>
+                      <input
+                        type="checkbox"
                         checked={notifications.smsUrgent}
                         onChange={(e) => setNotifications({...notifications, smsUrgent: e.target.checked})}
                       />
-                      <label htmlFor="smsUrgent">
-                        <strong>Urgent updates only</strong><br />
-                        <span className="form-help">Critical updates that need immediate attention</span>
-                      </label>
-                    </div>
-                    
-                    <div className="form-check">
-                      <input 
-                        type="checkbox" 
-                        id="smsAll" 
+                      Urgent updates only
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
                         checked={notifications.smsAll}
                         onChange={(e) => setNotifications({...notifications, smsAll: e.target.checked})}
                       />
-                      <label htmlFor="smsAll">
-                        <strong>All ticket updates</strong><br />
-                        <span className="form-help">SMS for every ticket status change</span>
-                      </label>
-                    </div>
+                      All updates via SMS
+                    </label>
                   </div>
                   
-                  <div className="form-check-group">
-                    <h4>WhatsApp Notifications</h4>
-                    
-                    <div className="form-check">
-                      <input 
-                        type="checkbox" 
-                        id="whatsappEnable" 
+                  <h3>Other Notifications</h3>
+                  <div className="checkbox-group">
+                    <label>
+                      <input
+                        type="checkbox"
                         checked={notifications.whatsappEnable}
                         onChange={(e) => setNotifications({...notifications, whatsappEnable: e.target.checked})}
                       />
-                      <label htmlFor="whatsappEnable">
-                        <strong>Enable WhatsApp notifications</strong><br />
-                        <span className="form-help">Receive updates via WhatsApp</span>
-                      </label>
-                    </div>
-                    
-                    <p className="whatsapp-number">
-                      Number: {profileData.phone} <a href="#" style={{color: '#3498db'}}>Change</a>
-                    </p>
+                      WhatsApp notifications
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={notifications.pushNotifications}
+                        onChange={(e) => setNotifications({...notifications, pushNotifications: e.target.checked})}
+                      />
+                      Push notifications
+                    </label>
                   </div>
-                  
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? 'Saving...' : 'Save Preferences'}
-                  </button>
-                </form>
-              </section>
-            )}
-
-            {/* Privacy Section */}
-            {activeSection === 'privacy' && (
-              <section className="settings-section">
-                <h2 className="section-title">Privacy Settings</h2>
+                </div>
                 
-                <form onSubmit={handlePrivacySubmit}>
-                  <h3 style={{marginBottom: '20px', fontSize: '18px'}}>Public Profile Visibility</h3>
-                  
-                  <div 
-                    className={`privacy-option ${privacy.profileVisibility === 'anonymous' ? 'selected' : ''}`}
-                    onClick={() => setPrivacy({...privacy, profileVisibility: 'anonymous'})}
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Preferences'}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Privacy Section */}
+          {activeSection === 'privacy' && (
+            <div className="settings-section">
+              <h2>Privacy & Data Settings</h2>
+              <form onSubmit={handlePrivacySubmit}>
+                <div className="form-group">
+                  <label>Profile Visibility</label>
+                  <select
+                    value={privacy.profileVisibility}
+                    onChange={(e) => setPrivacy({...privacy, profileVisibility: e.target.value})}
+                    className="form-control"
                   >
-                    <h5>Anonymous</h5>
-                    <p>Your complaints will be shown as "User****XXX"</p>
-                  </div>
-                  
-                  <div 
-                    className={`privacy-option ${privacy.profileVisibility === 'partial' ? 'selected' : ''}`}
-                    onClick={() => setPrivacy({...privacy, profileVisibility: 'partial'})}
-                  >
-                    <h5>Partial Name</h5>
-                    <p>Show only your first name on public complaints</p>
-                  </div>
-                  
-                  <div 
-                    className={`privacy-option ${privacy.profileVisibility === 'full' ? 'selected' : ''}`}
-                    onClick={() => setPrivacy({...privacy, profileVisibility: 'full'})}
-                  >
-                    <h5>Full Name</h5>
-                    <p>Display your full name on public complaints</p>
-                  </div>
-                  
-                  <hr style={{margin: '30px 0'}} />
-                  
-                  <h3 style={{marginBottom: '20px', fontSize: '18px'}}>Data Sharing</h3>
-                  
-                  <div className="form-check">
-                    <input 
-                      type="checkbox" 
-                      id="shareAnalytics" 
+                    <option value="anonymous">Anonymous (recommended)</option>
+                    <option value="firstname">First Name Only</option>
+                    <option value="fullname">Full Name</option>
+                  </select>
+                </div>
+                
+                <div className="checkbox-group">
+                  <label>
+                    <input
+                      type="checkbox"
                       checked={privacy.shareAnalytics}
                       onChange={(e) => setPrivacy({...privacy, shareAnalytics: e.target.checked})}
                     />
-                    <label htmlFor="shareAnalytics">
-                      <strong>Share anonymous usage data</strong><br />
-                      <span className="form-help">Help us improve the platform with anonymous analytics</span>
-                    </label>
-                  </div>
-                  
-                  <div className="form-check">
-                    <input 
-                      type="checkbox" 
-                      id="shareLocation" 
+                    Share analytics data to improve service
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
                       checked={privacy.shareLocation}
                       onChange={(e) => setPrivacy({...privacy, shareLocation: e.target.checked})}
                     />
-                    <label htmlFor="shareLocation">
-                      <strong>Share location on complaints</strong><br />
-                      <span className="form-help">Show your city/region on public complaints</span>
-                    </label>
-                  </div>
-                  
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? 'Updating...' : 'Update Privacy Settings'}
-                  </button>
-                </form>
-              </section>
-            )}
+                    Allow location sharing for better support
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={privacy.allowContact}
+                      onChange={(e) => setPrivacy({...privacy, allowContact: e.target.checked})}
+                    />
+                    Allow brands to contact me directly
+                  </label>
+                </div>
+                
+                <div className="form-group">
+                  <label>Data Retention</label>
+                  <select
+                    value={privacy.dataRetention}
+                    onChange={(e) => setPrivacy({...privacy, dataRetention: e.target.value})}
+                    className="form-control"
+                  >
+                    <option value="6months">6 months</option>
+                    <option value="1year">1 year</option>
+                    <option value="2years">2 years</option>
+                    <option value="indefinite">Indefinite</option>
+                  </select>
+                </div>
+                
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Privacy Settings'}
+                </button>
+              </form>
+            </div>
+          )}
 
-            {/* Account Section */}
-            {activeSection === 'account' && (
-              <section className="settings-section">
-                <h2 className="section-title">Account Management</h2>
+          {/* History Section */}
+          {activeSection === 'history' && (
+            <div className="settings-section">
+              <h2>Complaint History</h2>
+              <div className="history-stats">
+                <div className="stat-card">
+                  <h3>Total Complaints</h3>
+                  <span className="stat-number">24</span>
+                </div>
+                <div className="stat-card">
+                  <h3>Resolved</h3>
+                  <span className="stat-number">18</span>
+                </div>
+                <div className="stat-card">
+                  <h3>Pending</h3>
+                  <span className="stat-number">6</span>
+                </div>
+              </div>
+              
+              <div className="history-list">
+                <h3>Recent Complaints</h3>
+                <div className="complaint-items">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="complaint-item">
+                      <div className="complaint-info">
+                        <h4>Complaint #{i}</h4>
+                        <p>Brand: TechCorp</p>
+                        <p>Status: {i % 2 === 0 ? 'Resolved' : 'In Progress'}</p>
+                      </div>
+                      <div className="complaint-actions">
+                        <Link to={`/tickets/${i}`} className="btn btn-sm btn-outline">
+                          View
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sessions Section */}
+          {activeSection === 'sessions' && (
+            <div className="settings-section">
+              <h2>Active Sessions</h2>
+              <div className="sessions-list">
+                <div className="session-item current">
+                  <div className="session-info">
+                    <h4>Current Session</h4>
+                    <p>Chrome on Windows • 192.168.1.100</p>
+                    <p>Last active: Just now</p>
+                  </div>
+                  <span className="session-status">Active</span>
+                </div>
                 
-                <div style={{marginBottom: '30px'}}>
-                  <h3 style={{marginBottom: '20px', fontSize: '18px'}}>Account Data</h3>
-                  
-                  <button className="btn btn-secondary" style={{marginRight: '10px'}} onClick={handleDownloadData}>
-                    Download My Data
+                <div className="session-item">
+                  <div className="session-info">
+                    <h4>Mobile Session</h4>
+                    <p>Safari on iPhone • 192.168.1.101</p>
+                    <p>Last active: 2 hours ago</p>
+                  </div>
+                  <button className="btn btn-sm btn-danger">Terminate</button>
+                </div>
+              </div>
+              
+              <button onClick={handleSignOutAll} className="btn btn-warning">
+                Sign Out All Sessions
+              </button>
+            </div>
+          )}
+
+          {/* Export Section */}
+          {activeSection === 'export' && (
+            <div className="settings-section">
+              <h2>Export Your Data</h2>
+              <p>Download all your personal data including complaints, settings, and activity history.</p>
+              
+              <div className="export-options">
+                <div className="export-option">
+                  <h4>Complete Data Export</h4>
+                  <p>Includes all your complaints, profile data, and settings</p>
+                  <button onClick={handleDownloadData} className="btn btn-primary" disabled={exportLoading}>
+                    {exportLoading ? 'Preparing...' : 'Download JSON'}
                   </button>
-                  <button className="btn btn-secondary">Export Complaints History</button>
-                  
-                  <p className="form-help">
-                    Download all your personal data and complaint history in a machine-readable format
-                  </p>
                 </div>
                 
-                <div className="danger-zone">
-                  <h4>Danger Zone</h4>
-                  <p style={{marginBottom: '15px'}}>Once you delete your account, there is no going back. Please be certain.</p>
-                  <button className="btn btn-danger" onClick={handleDeleteAccount}>Delete Account</button>
+                <div className="export-option">
+                  <h4>Complaints Only</h4>
+                  <p>Export just your complaint history</p>
+                  <button className="btn btn-outline">Download CSV</button>
                 </div>
-              </section>
-            )}
-          </div>
+              </div>
+            </div>
+          )}
+
+          {/* Delete Account Section */}
+          {activeSection === 'delete' && (
+            <div className="settings-section">
+              <h2>Delete Account</h2>
+              <div className="delete-warning">
+                <i className="fas fa-exclamation-triangle"></i>
+                <h3>This action cannot be undone</h3>
+                <p>Deleting your account will permanently remove all your data including:</p>
+                <ul>
+                  <li>All your complaints and their history</li>
+                  <li>Personal information and settings</li>
+                  <li>Notification preferences</li>
+                  <li>Account activity logs</li>
+                </ul>
+                <p>You will receive a confirmation email before the deletion is processed.</p>
+              </div>
+              
+              <button onClick={handleDeleteAccount} className="btn btn-danger">
+                Delete My Account
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

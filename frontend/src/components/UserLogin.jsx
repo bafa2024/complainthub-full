@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./user-login.css"; // Adjust the path if you use /assets
 
 export default function UserLogin({ onLogin }) {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -34,49 +33,57 @@ export default function UserLogin({ onLogin }) {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <a href="/" className="back-link">
-          <span>&larr;</span> Back to Home
-        </a>
-        <div className="auth-header">
-          <h2>Login to ComplaintHub</h2>
-          <p>Enter your email and password to access your account.</p>
-        </div>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label" htmlFor="email">Email Address</label>
-            <input
-              className="form-control"
-              type="email"
-              id="email"
-              name="email"
-              autoComplete="username"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
+    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+      <div className="card shadow-lg" style={{ maxWidth: "400px", width: "100%" }}>
+        <div className="card-body p-4">
+          <a href="/" className="btn btn-link text-decoration-none mb-3">
+            <i className="bi bi-arrow-left"></i> Back to Home
+          </a>
+          <div className="text-center mb-4">
+            <h2 className="h3 mb-2">Login to ComplaintHub</h2>
+            <p className="text-muted">Enter your email and password to access your account.</p>
           </div>
-          <div className="form-group">
-            <label className="form-label" htmlFor="password">Password</label>
-            <input
-              className="form-control"
-              type="password"
-              id="password"
-              name="password"
-              autoComplete="current-password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label" htmlFor="email">Email Address</label>
+              <input
+                className="form-control"
+                type="email"
+                id="email"
+                name="email"
+                autoComplete="username"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label" htmlFor="password">Password</label>
+              <input
+                className="form-control"
+                type="password"
+                id="password"
+                name="password"
+                autoComplete="current-password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-primary w-100 mb-3">
+              Login
+            </button>
+            {message && (
+              <div className={`alert ${message.includes('successful') ? 'alert-success' : 'alert-danger'}`}>
+                {message}
+              </div>
+            )}
+          </form>
+          <div className="text-center mt-3">
+            <small className="text-muted">
+              Don't have an account? <a href="/signup" className="text-decoration-none">Sign Up</a>
+            </small>
           </div>
-          <button type="submit" className="btn-primary" style={{ width: "100%" }}>
-            Login
-          </button>
-          {message && <div style={{ marginTop: 16, color: "#e74c3c" }}>{message}</div>}
-        </form>
-        <div style={{ marginTop: 24, textAlign: "center", fontSize: 14 }}>
-          Don't have an account? <a href="/signup" style={{ color: "#3498db" }}>Sign Up</a>
         </div>
       </div>
     </div>

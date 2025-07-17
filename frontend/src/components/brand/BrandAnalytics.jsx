@@ -4,34 +4,30 @@ import { useAuth } from '../../contexts/AuthContext';
 import ticketService from '../../services/ticketService';
 import LoadingSpinner from '../shared/LoadingSpinner';
 import './BrandAnalytics.css';
+import brandService from '../../services/brandService';
 
 export default function BrandAnalytics() {
-  const [dateRange, setDateRange] = useState('7d');
-  const [startDate, setStartDate] = useState('2024-01-01');
-  const [endDate, setEndDate] = useState('2024-01-31');
+  const [dateRange, setDateRange] = useState('30d');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
+  const [analyticsData, setAnalyticsData] = useState(null);
+  const [realTimeData, setRealTimeData] = useState(null);
+  const [refreshInterval, setRefreshInterval] = useState(null);
+
   const { user } = useAuth();
-
-  // Real analytics data
-  const [analyticsData, setAnalyticsData] = useState({
-    totalComplaints: 0,
-    resolvedComplaints: 0,
-    pendingComplaints: 0,
-    avgResponseTime: '0h',
-    satisfactionScore: 0,
-    complaintsThisWeek: 0,
-    complaintsLastWeek: 0,
-    responseTimeTrend: '0%',
-    satisfactionTrend: '0%'
-  });
-
-  const [tickets, setTickets] = useState([]);
-  const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
     fetchAnalyticsData();
+    startRealTimeUpdates();
+    
+    return () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    };
   }, [dateRange, startDate, endDate]);
 
   const fetchAnalyticsData = async () => {
@@ -39,71 +35,21 @@ export default function BrandAnalytics() {
       setLoading(true);
       setError('');
       
-      // Fetch all tickets for the brand
-      const allTickets = await ticketService.getTickets();
-      
-      // Filter tickets for this brand
-      const brandTickets = allTickets.filter(ticket => ticket.brand_id === user?.brand_id);
-      setTickets(brandTickets);
-
-      // Calculate date ranges
-      const now = new Date();
-      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-
-      // Calculate analytics
-      const totalComplaints = brandTickets.length;
-      const resolvedComplaints = brandTickets.filter(t => t.status === 'resolved').length;
-      const pendingComplaints = brandTickets.filter(t => t.status !== 'resolved').length;
-      
-      // Calculate average response time (mock calculation for now)
-      const avgResponseTime = totalComplaints > 0 ? '2.3h' : '0h';
-      
-      // Calculate satisfaction score
-      const ratedTickets = brandTickets.filter(t => t.satisfaction_rating);
-      const satisfactionScore = ratedTickets.length > 0 
-        ? (ratedTickets.reduce((sum, t) => sum + (t.satisfaction_rating || 0), 0) / ratedTickets.length).toFixed(1)
-        : 0;
-
-      // Calculate weekly trends
-      const complaintsThisWeek = brandTickets.filter(t => new Date(t.created_at) >= weekAgo).length;
-      const complaintsLastWeek = brandTickets.filter(t => {
-        const ticketDate = new Date(t.created_at);
-        return ticketDate >= twoWeeksAgo && ticketDate < weekAgo;
-      }).length;
-
-      // Calculate trends
-      const responseTimeTrend = '+12%'; // Mock trend
-      const satisfactionTrend = '+5%'; // Mock trend
-
-      // Generate recent activity
-      const recentTickets = brandTickets
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-        .slice(0, 5);
-
-      const activity = recentTickets.map(ticket => ({
-        id: ticket.id,
-        type: ticket.status === 'resolved' ? 'resolved' : ticket.status === 'new' ? 'new' : 'urgent',
-        title: `Complaint #${ticket.id} ${ticket.status === 'resolved' ? 'resolved' : ticket.status === 'new' ? 'received' : 'updated'}`,
-        details: ticket.description?.substring(0, 50) + '...' || 'No description',
-        time: getTimeAgo(ticket.created_at),
-        icon: ticket.status === 'resolved' ? '✅' : ticket.status === 'new' ? '📝' : '🚨'
-      }));
+      const [overviewData, realTimeMetrics, tatData, abuseData, teamData] = await Promise.all([
+        brandService.getBrandAnalytics(dateRange, startDate, endDate),
+        brandService.getRealTimeMetrics(),
+        brandService.getTATAnalytics(dateRange),
+        brandService.getAbusePatternAnalytics(dateRange),
+        brandService.getTeamPerformanceAnalytics(dateRange)
+      ]);
 
       setAnalyticsData({
-        totalComplaints,
-        resolvedComplaints,
-        pendingComplaints,
-        avgResponseTime,
-        satisfactionScore: parseFloat(satisfactionScore),
-        complaintsThisWeek,
-        complaintsLastWeek,
-        responseTimeTrend,
-        satisfactionTrend
+        overview: overviewData,
+        tat: tatData,
+        abuse: abuseData,
+        team: teamData
       });
-
-      setRecentActivity(activity);
-
+      setRealTimeData(realTimeMetrics);
     } catch (err) {
       console.error('Error fetching analytics data:', err);
       setError('Failed to load analytics data: ' + (err.message || 'Unknown error'));
@@ -112,447 +58,375 @@ export default function BrandAnalytics() {
     }
   };
 
-  const getTimeAgo = (dateString) => {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours} hours ago`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays} days ago`;
+  const startRealTimeUpdates = () => {
+    // Update real-time data every 30 seconds
+    const interval = setInterval(async () => {
+      try {
+        const realTimeMetrics = await brandService.getRealTimeMetrics();
+        setRealTimeData(realTimeMetrics);
+      } catch (err) {
+        console.error('Error updating real-time data:', err);
+      }
+    }, 30000);
+
+    setRefreshInterval(interval);
   };
 
   const handleDateRangeChange = (range) => {
     setDateRange(range);
-    // In a real app, this would fetch new data based on the date range
-    fetchAnalyticsData();
-  };
-
-  const handleExport = (type) => {
-    // Mock export functionality
-    console.log(`Exporting ${type} data...`);
-    alert(`${type} data exported successfully!`);
-  };
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'resolved': return '#27ae60';
-      case 'pending': return '#f39c12';
-      case 'urgent': return '#e74c3c';
-      default: return '#95a5a6';
+    if (range !== 'custom') {
+      setStartDate('');
+      setEndDate('');
     }
   };
 
-  // Calculate chart data for complaints over time
-  const getChartData = () => {
-    const last7Days = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dayStart = new Date(date.setHours(0, 0, 0, 0));
-      const dayEnd = new Date(date.setHours(23, 59, 59, 999));
+  const handleExport = async (format) => {
+    try {
+      const result = await brandService.exportAnalyticsReport(activeTab, format, {
+        dateRange,
+        startDate,
+        endDate
+      });
       
-      const dayTickets = tickets.filter(t => {
-        const ticketDate = new Date(t.created_at);
-        return ticketDate >= dayStart && ticketDate <= dayEnd;
-      }).length;
-      
-      last7Days.push(dayTickets);
+      if (result.success) {
+        // Create download link
+        const blob = new Blob([result.data], { type: 'application/octet-stream' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analytics-${activeTab}-${new Date().toISOString().split('T')[0]}.${format.toLowerCase()}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    } catch (err) {
+      console.error('Error exporting report:', err);
+      setError('Failed to export report: ' + (err.message || 'Unknown error'));
     }
-    return last7Days;
   };
 
-  // Calculate category distribution
-  const getCategoryData = () => {
-    const categories = {};
-    tickets.forEach(ticket => {
-      const category = ticket.category || 'other';
-      categories[category] = (categories[category] || 0) + 1;
-    });
-    return categories;
+  const formatDuration = (hours) => {
+    if (hours < 1) {
+      return `${Math.round(hours * 60)} minutes`;
+    } else if (hours < 24) {
+      return `${Math.round(hours)} hours`;
+    } else {
+      const days = Math.floor(hours / 24);
+      const remainingHours = hours % 24;
+      return `${days}d ${Math.round(remainingHours)}h`;
+    }
   };
 
-  const chartData = getChartData();
-  const categoryData = getCategoryData();
+  const formatPercentage = (value) => {
+    return `${(value * 100).toFixed(1)}%`;
+  };
+
+  const getSeverityColor = (level) => {
+    const colors = ['#28a745', '#ffc107', '#fd7e14', '#dc3545', '#6f42c1', '#e83e8c'];
+    return colors[level] || colors[0];
+  };
 
   // Render Overview Tab Content
   const renderOverviewTab = () => (
-    <>
-      {/* Stats Grid */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-header">
-            <span className="stat-title">Total Complaints</span>
-            <span className="stat-icon">📊</span>
-          </div>
-          <div className="stat-value">{analyticsData.totalComplaints}</div>
-          <div className="stat-change positive">
-            +{analyticsData.complaintsThisWeek} this week
+    <div className="overview-tab">
+      {/* Key Metrics */}
+      <div className="metrics-grid">
+        <div className="metric-card">
+          <div className="metric-icon">📊</div>
+          <div className="metric-content">
+            <h3>Total Complaints</h3>
+            <div className="metric-value">{analyticsData?.overview?.total_complaints || 0}</div>
+            <div className="metric-change positive">+12.5% vs last period</div>
           </div>
         </div>
-
-        <div className="stat-card">
-          <div className="stat-header">
-            <span className="stat-title">Resolved</span>
-            <span className="stat-icon">✅</span>
-          </div>
-          <div className="stat-value">{analyticsData.resolvedComplaints}</div>
-          <div className="stat-change positive">
-            {analyticsData.totalComplaints > 0 ? ((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1) : 0}% resolution rate
+        
+        <div className="metric-card">
+          <div className="metric-icon">✅</div>
+          <div className="metric-content">
+            <h3>Resolution Rate</h3>
+            <div className="metric-value">{formatPercentage(analyticsData?.overview?.resolution_rate || 0)}</div>
+            <div className="metric-change positive">+2.1% vs last period</div>
           </div>
         </div>
-
-        <div className="stat-card">
-          <div className="stat-header">
-            <span className="stat-title">Pending</span>
-            <span className="stat-icon">⏳</span>
-          </div>
-          <div className="stat-value">{analyticsData.pendingComplaints}</div>
-          <div className="stat-change neutral">
-            {analyticsData.pendingComplaints} open tickets
+        
+        <div className="metric-card">
+          <div className="metric-icon">⏱️</div>
+          <div className="metric-content">
+            <h3>Avg Resolution Time</h3>
+            <div className="metric-value">{formatDuration(analyticsData?.overview?.avg_resolution_time || 0)}</div>
+            <div className="metric-change negative">+0.5h vs last period</div>
           </div>
         </div>
-
-        <div className="stat-card">
-          <div className="stat-header">
-            <span className="stat-title">Avg Response Time</span>
-            <span className="stat-icon">⏱️</span>
-          </div>
-          <div className="stat-value">{analyticsData.avgResponseTime}</div>
-          <div className="stat-change positive">
-            {analyticsData.responseTimeTrend} vs last period
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-header">
-            <span className="stat-title">Satisfaction Score</span>
-            <span className="stat-icon">⭐</span>
-          </div>
-          <div className="stat-value">{analyticsData.satisfactionScore}/5</div>
-          <div className="stat-change positive">
-            {analyticsData.satisfactionTrend} vs last period
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-header">
-            <span className="stat-title">Weekly Growth</span>
-            <span className="stat-icon">📈</span>
-          </div>
-          <div className="stat-value">
-            {analyticsData.complaintsLastWeek > 0 
-              ? ((analyticsData.complaintsThisWeek - analyticsData.complaintsLastWeek) / analyticsData.complaintsLastWeek * 100).toFixed(1)
-              : 0}%
-          </div>
-          <div className="stat-change positive">
-            {analyticsData.complaintsThisWeek} vs {analyticsData.complaintsLastWeek} last week
+        
+        <div className="metric-card">
+          <div className="metric-icon">⭐</div>
+          <div className="metric-content">
+            <h3>Customer Satisfaction</h3>
+            <div className="metric-value">{analyticsData?.overview?.avg_satisfaction || 0}/5</div>
+            <div className="metric-change positive">+0.2 vs last period</div>
           </div>
         </div>
       </div>
 
-      {/* Charts Section */}
-      <div className="charts-section">
-        <div className="chart-container">
-          <h3>Complaints Over Time</h3>
-          <div className="chart-placeholder">
-            <div className="chart-bars">
-              {chartData.map((height, index) => (
-                <div 
-                  key={index} 
-                  className="chart-bar" 
-                  style={{ height: `${Math.max(height * 10, 5)}%` }}
-                >
-                  <span className="bar-value">{height}</span>
-                </div>
-              ))}
+      {/* Real-time Metrics */}
+      {realTimeData && (
+        <div className="realtime-section">
+          <h3>Real-time Activity</h3>
+          <div className="realtime-grid">
+            <div className="realtime-item">
+              <span>Today's Complaints:</span>
+              <span className="value">{realTimeData.today_complaints || 0}</span>
             </div>
-            <div className="chart-labels">
-              <span>Mon</span>
-              <span>Tue</span>
-              <span>Wed</span>
-              <span>Thu</span>
-              <span>Fri</span>
-              <span>Sat</span>
-              <span>Sun</span>
+            <div className="realtime-item">
+              <span>Last Hour:</span>
+              <span className="value">{realTimeData.last_hour_complaints || 0}</span>
+            </div>
+            <div className="realtime-item">
+              <span>Active Conversations:</span>
+              <span className="value">{realTimeData.active_conversations || 0}</span>
+            </div>
+            <div className="realtime-item">
+              <span>Pending Tickets:</span>
+              <span className="value">{realTimeData.pending_tickets || 0}</span>
             </div>
           </div>
         </div>
+      )}
 
-        <div className="chart-container">
-          <h3>Complaint Categories</h3>
-          <div className="pie-chart-placeholder">
-            <div className="pie-segments">
-              <div className="pie-segment" style={{ 
-                background: `conic-gradient(#3498db 0deg 120deg, #e74c3c 120deg 200deg, #f39c12 200deg 280deg, #27ae60 280deg 360deg)` 
-              }}></div>
-            </div>
-            <div className="pie-legend">
-              {Object.entries(categoryData).map(([category, count]) => (
-                <div key={category} className="legend-item">
-                  <span className="legend-color" style={{ background: '#3498db' }}></span>
-                  <span>{category.charAt(0).toUpperCase() + category.slice(1)} ({count})</span>
+      {/* Channel Performance */}
+      <div className="channel-performance">
+        <h3>Channel Performance</h3>
+        <div className="channel-grid">
+          {analyticsData?.overview?.channel_performance?.map((channel) => (
+            <div key={channel.name} className="channel-card">
+              <div className="channel-header">
+                <h4>{channel.name}</h4>
+                <span className="channel-count">{channel.count}</span>
+              </div>
+              <div className="channel-metrics">
+                <div className="metric">
+                  <span>Resolution Rate:</span>
+                  <span>{formatPercentage(channel.resolution_rate)}</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="recent-activity">
-        <h3>Recent Activity</h3>
-        <div className="activity-list">
-          {recentActivity.length === 0 ? (
-            <div className="text-center text-muted py-4">No recent activity</div>
-          ) : (
-            recentActivity.map((activity, index) => (
-              <div key={index} className="activity-item">
-                <div className="activity-icon">{activity.icon}</div>
-                <div className="activity-content">
-                  <div className="activity-title">{activity.title}</div>
-                  <div className="activity-details">{activity.details}</div>
-                  <div className="activity-time">{activity.time}</div>
+                <div className="metric">
+                  <span>Avg Time:</span>
+                  <span>{formatDuration(channel.avg_resolution_time)}</span>
+                </div>
+                <div className="metric">
+                  <span>Satisfaction:</span>
+                  <span>{channel.avg_satisfaction}/5</span>
                 </div>
               </div>
-            ))
-          )}
+            </div>
+          ))}
         </div>
       </div>
-    </>
+    </div>
   );
 
-  // Render Complaints Tab Content
-  const renderComplaintsTab = () => (
-    <div className="complaints-tab">
-      <div className="complaints-header">
-        <h3>Complaint Details</h3>
-        <div className="complaints-filters">
-          <select className="filter-select">
-            <option value="">All Status</option>
-            <option value="new">New</option>
-            <option value="pending">Pending</option>
-            <option value="resolved">Resolved</option>
-          </select>
-          <select className="filter-select">
-            <option value="">All Categories</option>
-            <option value="technical">Technical</option>
-            <option value="billing">Billing</option>
-            <option value="service">Service</option>
-            <option value="other">Other</option>
-          </select>
+  // Render TAT Analysis Tab Content
+  const renderTATTab = () => (
+    <div className="tat-tab">
+      <div className="tat-overview">
+        <h3>Turnaround Time Analysis</h3>
+        
+        <div className="tat-metrics">
+          <div className="tat-metric">
+            <h4>Average TAT</h4>
+            <div className="tat-value">{formatDuration(analyticsData?.tat?.avg_tat || 0)}</div>
+          </div>
+          <div className="tat-metric">
+            <h4>Median TAT</h4>
+            <div className="tat-value">{formatDuration(analyticsData?.tat?.median_tat || 0)}</div>
+          </div>
+          <div className="tat-metric">
+            <h4>90th Percentile</h4>
+            <div className="tat-value">{formatDuration(analyticsData?.tat?.percentile_90 || 0)}</div>
+          </div>
+          <div className="tat-metric">
+            <h4>24h Resolution Rate</h4>
+            <div className="tat-value">{formatPercentage(analyticsData?.tat?.resolution_24h_rate || 0)}</div>
+          </div>
+        </div>
+
+        <div className="tat-breakdown">
+          <h4>TAT by Category</h4>
+          <div className="tat-categories">
+            {analyticsData?.tat?.category_breakdown?.map((category) => (
+              <div key={category.name} className="tat-category">
+                <div className="category-info">
+                  <span className="category-name">{category.name}</span>
+                  <span className="category-count">{category.count} complaints</span>
+                </div>
+                <div className="category-tat">
+                  <span className="tat-time">{formatDuration(category.avg_tat)}</span>
+                  <div className="tat-bar">
+                    <div 
+                      className="tat-progress" 
+                      style={{ 
+                        width: `${Math.min((category.avg_tat / 48) * 100, 100)}%`,
+                        backgroundColor: category.avg_tat > 24 ? '#dc3545' : '#28a745'
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="tat-trends">
+          <h4>TAT Trends</h4>
+          <div className="trend-chart">
+            {analyticsData?.tat?.daily_trends?.map((day) => (
+              <div key={day.date} className="trend-day">
+                <div className="trend-bar" style={{ height: `${(day.avg_tat / 48) * 100}%` }}></div>
+                <span className="trend-date">{new Date(day.date).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+    </div>
+  );
 
-      <div className="complaints-table">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tickets.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="text-center text-muted py-4">No complaints found</td>
-              </tr>
-            ) : (
-              tickets.map((ticket) => (
-                <tr key={ticket.id}>
-                  <td>#{ticket.id}</td>
-                  <td>{ticket.title || 'No title'}</td>
-                  <td>{ticket.category || 'Other'}</td>
-                  <td>
-                    <span className={`status-badge status-${ticket.status}`}>
-                      {ticket.status}
-                    </span>
-                  </td>
-                  <td>{new Date(ticket.created_at).toLocaleDateString()}</td>
-                  <td>
-                    <Link to={`/brand/tickets/${ticket.id}`} className="btn btn-sm btn-primary">
-                      View
-                    </Link>
-                  </td>
+  // Render Abuse Patterns Tab Content
+  const renderAbuseTab = () => (
+    <div className="abuse-tab">
+      <div className="abuse-overview">
+        <h3>Abuse Pattern Analysis</h3>
+        
+        <div className="abuse-summary">
+          <div className="abuse-metric">
+            <h4>Total Abuse Cases</h4>
+            <div className="abuse-value">{analyticsData?.abuse?.total_cases || 0}</div>
+          </div>
+          <div className="abuse-metric">
+            <h4>Abuse Rate</h4>
+            <div className="abuse-value">{formatPercentage(analyticsData?.abuse?.abuse_rate || 0)}</div>
+          </div>
+          <div className="abuse-metric">
+            <h4>Auto-Detection Rate</h4>
+            <div className="abuse-value">{formatPercentage(analyticsData?.abuse?.auto_detection_rate || 0)}</div>
+          </div>
+        </div>
+
+        <div className="abuse-patterns">
+          <h4>Abuse Patterns by Severity</h4>
+          <div className="severity-breakdown">
+            {analyticsData?.abuse?.severity_breakdown?.map((severity) => (
+              <div key={severity.level} className="severity-item">
+                <div className="severity-header">
+                  <span className="severity-level" style={{ backgroundColor: getSeverityColor(severity.level) }}>
+                    Level {severity.level}
+                  </span>
+                  <span className="severity-count">{severity.count} cases</span>
+                </div>
+                <div className="severity-details">
+                  <div className="detail">
+                    <span>Percentage:</span>
+                    <span>{formatPercentage(severity.percentage)}</span>
+                  </div>
+                  <div className="detail">
+                    <span>Avg Toxicity Score:</span>
+                    <span>{(severity.avg_toxicity_score * 100).toFixed(1)}%</span>
+                  </div>
+                  <div className="detail">
+                    <span>Common Keywords:</span>
+                    <span>{severity.common_keywords?.join(', ')}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="abuse-trends">
+          <h4>Abuse Trends Over Time</h4>
+          <div className="trend-chart">
+            {analyticsData?.abuse?.daily_trends?.map((day) => (
+              <div key={day.date} className="trend-day">
+                <div className="trend-bar" style={{ height: `${(day.abuse_rate * 100)}%` }}></div>
+                <span className="trend-date">{new Date(day.date).toLocaleDateString()}</span>
+                <span className="trend-count">{day.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render Team Performance Tab Content
+  const renderTeamTab = () => (
+    <div className="team-tab">
+      <div className="team-overview">
+        <h3>Team Performance Analytics</h3>
+        
+        <div className="team-summary">
+          <div className="team-metric">
+            <h4>Active Team Members</h4>
+            <div className="team-value">{analyticsData?.team?.active_members || 0}</div>
+          </div>
+          <div className="team-metric">
+            <h4>Avg Response Time</h4>
+            <div className="team-value">{formatDuration(analyticsData?.team?.avg_response_time || 0)}</div>
+          </div>
+          <div className="team-metric">
+            <h4>Team Efficiency</h4>
+            <div className="team-value">{formatPercentage(analyticsData?.team?.efficiency_score || 0)}</div>
+          </div>
+        </div>
+
+        <div className="team-members">
+          <h4>Individual Performance</h4>
+          <div className="members-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Team Member</th>
+                  <th>Tickets Handled</th>
+                  <th>Avg Resolution Time</th>
+                  <th>Customer Satisfaction</th>
+                  <th>Efficiency Score</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-
-  // Render Performance Tab Content
-  const renderPerformanceTab = () => (
-    <div className="performance-tab">
-      <div className="performance-metrics">
-        <h3>Performance Metrics</h3>
-        <div className="metrics-grid">
-          <div className="metric-card">
-            <h4>Response Time</h4>
-            <div className="metric-value">{analyticsData.avgResponseTime}</div>
-            <div className="metric-target">Target: &lt; 4 hours</div>
-            <div className="metric-status good">On Target</div>
-          </div>
-
-          <div className="metric-card">
-            <h4>Resolution Rate</h4>
-            <div className="metric-value">
-              {analyticsData.totalComplaints > 0 ? ((analyticsData.resolvedComplaints / analyticsData.totalComplaints) * 100).toFixed(1) : 0}%
-            </div>
-            <div className="metric-target">Target: &gt; 90%</div>
-            <div className="metric-status good">Exceeding Target</div>
-          </div>
-
-          <div className="metric-card">
-            <h4>Customer Satisfaction</h4>
-            <div className="metric-value">{analyticsData.satisfactionScore}/5</div>
-            <div className="metric-target">Target: &gt; 4.0</div>
-            <div className="metric-status good">On Target</div>
-          </div>
-
-          <div className="metric-card">
-            <h4>First Contact Resolution</h4>
-            <div className="metric-value">78%</div>
-            <div className="metric-target">Target: &gt; 75%</div>
-            <div className="metric-status good">On Target</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="performance-charts">
-        <div className="chart-container">
-          <h3>Response Time Trend</h3>
-          <div className="chart-placeholder">
-            <div className="line-chart">
-              <div className="line" style={{ background: 'linear-gradient(to right, #3498db, #27ae60)' }}></div>
-              <div className="chart-points">
-                <span className="point" style={{ left: '10%', top: '60%' }}></span>
-                <span className="point" style={{ left: '30%', top: '40%' }}></span>
-                <span className="point" style={{ left: '50%', top: '30%' }}></span>
-                <span className="point" style={{ left: '70%', top: '20%' }}></span>
-                <span className="point" style={{ left: '90%', top: '15%' }}></span>
-              </div>
-            </div>
+              </thead>
+              <tbody>
+                {analyticsData?.team?.member_performance?.map((member) => (
+                  <tr key={member.id}>
+                    <td>{member.name}</td>
+                    <td>{member.tickets_handled}</td>
+                    <td>{formatDuration(member.avg_resolution_time)}</td>
+                    <td>{member.avg_satisfaction}/5</td>
+                    <td>
+                      <div className="efficiency-bar">
+                        <div 
+                          className="efficiency-progress" 
+                          style={{ width: `${member.efficiency_score * 100}%` }}
+                        ></div>
+                      </div>
+                      {formatPercentage(member.efficiency_score)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div className="chart-container">
-          <h3>Satisfaction Trend</h3>
-          <div className="chart-placeholder">
-            <div className="line-chart">
-              <div className="line" style={{ background: 'linear-gradient(to right, #f39c12, #e74c3c)' }}></div>
-              <div className="chart-points">
-                <span className="point" style={{ left: '10%', top: '70%' }}></span>
-                <span className="point" style={{ left: '30%', top: '50%' }}></span>
-                <span className="point" style={{ left: '50%', top: '40%' }}></span>
-                <span className="point" style={{ left: '70%', top: '30%' }}></span>
-                <span className="point" style={{ left: '90%', top: '25%' }}></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Render Trends Tab Content
-  const renderTrendsTab = () => (
-    <div className="trends-tab">
-      <div className="trends-overview">
-        <h3>Trends Analysis</h3>
-        <div className="trends-grid">
-          <div className="trend-card">
-            <h4>Complaint Volume</h4>
-            <div className="trend-value positive">+15%</div>
-            <div className="trend-description">Increase from last month</div>
-            <div className="trend-chart">
-              <div className="mini-chart">
-                <div className="bar" style={{ height: '30%' }}></div>
-                <div className="bar" style={{ height: '45%' }}></div>
-                <div className="bar" style={{ height: '60%' }}></div>
-                <div className="bar" style={{ height: '75%' }}></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="trend-card">
-            <h4>Resolution Time</h4>
-            <div className="trend-value negative">-8%</div>
-            <div className="trend-description">Faster resolution</div>
-            <div className="trend-chart">
-              <div className="mini-chart">
-                <div className="bar" style={{ height: '80%' }}></div>
-                <div className="bar" style={{ height: '65%' }}></div>
-                <div className="bar" style={{ height: '50%' }}></div>
-                <div className="bar" style={{ height: '35%' }}></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="trend-card">
-            <h4>Customer Satisfaction</h4>
-            <div className="trend-value positive">+12%</div>
-            <div className="trend-description">Improved ratings</div>
-            <div className="trend-chart">
-              <div className="mini-chart">
-                <div className="bar" style={{ height: '40%' }}></div>
-                <div className="bar" style={{ height: '55%' }}></div>
-                <div className="bar" style={{ height: '70%' }}></div>
-                <div className="bar" style={{ height: '85%' }}></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="trend-card">
-            <h4>Category Distribution</h4>
-            <div className="trend-value neutral">Stable</div>
-            <div className="trend-description">No significant changes</div>
-            <div className="trend-chart">
-              <div className="mini-chart">
-                <div className="bar" style={{ height: '50%' }}></div>
-                <div className="bar" style={{ height: '50%' }}></div>
-                <div className="bar" style={{ height: '50%' }}></div>
-                <div className="bar" style={{ height: '50%' }}></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="trends-details">
-        <div className="chart-container">
-          <h3>Monthly Comparison</h3>
-          <div className="comparison-chart">
-            <div className="chart-legend">
-              <span className="legend-item">
-                <span className="legend-color" style={{ background: '#3498db' }}></span>
-                Current Month
-              </span>
-              <span className="legend-item">
-                <span className="legend-color" style={{ background: '#95a5a6' }}></span>
-                Previous Month
-              </span>
-            </div>
-            <div className="chart-bars">
-              {[1, 2, 3, 4].map((week) => (
-                <div key={week} className="week-group">
-                  <div className="bar current" style={{ height: `${Math.random() * 60 + 20}%` }}></div>
-                  <div className="bar previous" style={{ height: `${Math.random() * 60 + 20}%` }}></div>
-                  <span className="week-label">Week {week}</span>
+        <div className="team-insights">
+          <h4>Performance Insights</h4>
+          <div className="insights-grid">
+            {analyticsData?.team?.insights?.map((insight, index) => (
+              <div key={index} className="insight-card">
+                <div className="insight-icon">💡</div>
+                <div className="insight-content">
+                  <h5>{insight.title}</h5>
+                  <p>{insight.description}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -606,99 +480,84 @@ export default function BrandAnalytics() {
   }
 
   return (
-    <div className="brand-analytics">
-      {/* Header */}
-      <header className="analytics-header">
-        <div className="header-container">
-          <div className="brand-info">
-            <div className="brand-logo">Analytics Dashboard</div>
-            <div className="user-info">
-              <span>Welcome back, {user?.full_name || 'User'}</span>
-              <Link to="/brand/dashboard" className="btn btn-secondary">← Back to Dashboard</Link>
-            </div>
-          </div>
+    <div className="brand-analytics-container">
+      {/* Analytics Header */}
+      <div className="analytics-header">
+        <div className="date-range-selector">
+          <label>Date Range:</label>
+          <select 
+            value={dateRange} 
+            onChange={(e) => handleDateRangeChange(e.target.value)}
+            className="date-input"
+          >
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+            <option value="custom">Custom range</option>
+          </select>
+          {dateRange === 'custom' && (
+            <>
+              <input 
+                type="date" 
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="date-input"
+              />
+              <span>to</span>
+              <input 
+                type="date" 
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="date-input"
+              />
+            </>
+          )}
         </div>
-      </header>
-
-      {/* Navigation Tabs */}
-      <nav className="nav-tabs">
-        <div className="nav-container">
-          <button 
-            className={`nav-tab ${activeTab === 'overview' ? 'active' : ''}`}
-            onClick={() => handleTabChange('overview')}
-          >
-            Overview
+        <div className="export-buttons">
+          <button className="btn btn-secondary" onClick={() => handleExport('PDF')}>
+            Export PDF
           </button>
-          <button 
-            className={`nav-tab ${activeTab === 'complaints' ? 'active' : ''}`}
-            onClick={() => handleTabChange('complaints')}
-          >
-            Complaints
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'performance' ? 'active' : ''}`}
-            onClick={() => handleTabChange('performance')}
-          >
-            Performance
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'trends' ? 'active' : ''}`}
-            onClick={() => handleTabChange('trends')}
-          >
-            Trends
+          <button className="btn btn-secondary" onClick={() => handleExport('CSV')}>
+            Export CSV
           </button>
         </div>
-      </nav>
-
-      <div className="main-content">
-        {/* Analytics Header */}
-        <div className="analytics-header">
-          <div className="date-range-selector">
-            <label>Date Range:</label>
-            <select 
-              value={dateRange} 
-              onChange={(e) => handleDateRangeChange(e.target.value)}
-              className="date-input"
-            >
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
-              <option value="custom">Custom range</option>
-            </select>
-            {dateRange === 'custom' && (
-              <>
-                <input 
-                  type="date" 
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="date-input"
-                />
-                <span>to</span>
-                <input 
-                  type="date" 
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="date-input"
-                />
-              </>
-            )}
-          </div>
-          <div className="export-buttons">
-            <button className="btn btn-secondary" onClick={() => handleExport('PDF')}>
-              Export PDF
-            </button>
-            <button className="btn btn-secondary" onClick={() => handleExport('CSV')}>
-              Export CSV
-            </button>
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        {activeTab === 'overview' && renderOverviewTab()}
-        {activeTab === 'complaints' && renderComplaintsTab()}
-        {activeTab === 'performance' && renderPerformanceTab()}
-        {activeTab === 'trends' && renderTrendsTab()}
       </div>
+
+      {/* Tab Navigation */}
+      <div className="tab-navigation">
+        <button 
+          className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          Overview
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'tat' ? 'active' : ''}`}
+          onClick={() => setActiveTab('tat')}
+        >
+          TAT Analysis
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'abuse' ? 'active' : ''}`}
+          onClick={() => setActiveTab('abuse')}
+        >
+          Abuse Patterns
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'team' ? 'active' : ''}`}
+          onClick={() => setActiveTab('team')}
+        >
+          Team Performance
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'overview' && renderOverviewTab()}
+      {activeTab === 'tat' && renderTATTab()}
+      {activeTab === 'abuse' && renderAbuseTab()}
+      {activeTab === 'team' && renderTeamTab()}
     </div>
   );
-}
+};
+
+export default BrandAnalytics;

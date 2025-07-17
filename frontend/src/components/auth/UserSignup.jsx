@@ -85,12 +85,6 @@ const UserSignup = () => {
                             >
                                 Lodge Voice
                             </button>
-                            <button 
-                                onClick={() => navigate('/chat')} 
-                                className="btn btn-secondary"
-                            >
-                                Chat
-                            </button>
                         </div>
                     </div>
 

@@ -35,10 +35,10 @@ export default function ContactPage() {
     },
     {
       icon: '💬',
-      title: 'Live Chat',
+      title: 'Support',
       description: 'Available 24/7',
-      value: 'Start Chat',
-      action: '#live-chat'
+      value: 'Contact Support',
+      action: 'mailto:support@complainthub.com'
     },
     {
       icon: '📞',
@@ -53,7 +53,7 @@ export default function ContactPage() {
   const faqs = [
     {
       question: 'How do I lodge a complaint?',
-      answer: 'You can lodge a complaint through multiple channels: voice call, WhatsApp, Telegram, web chat, or our website. Simply choose your preferred method and follow the guided process.'
+      answer: 'You can lodge a complaint through multiple channels: call our 24/7 hotline (1-800-555-0199), WhatsApp, Telegram, Instagram, LinkedIn, or our website. Simply choose your preferred method and follow the guided process.'
     },
     {
       question: 'How long does it take to resolve a complaint?',

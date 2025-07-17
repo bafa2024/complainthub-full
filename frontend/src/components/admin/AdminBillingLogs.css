@@ -1,0 +1,493 @@
+/* AdminBillingLogs.css */
+
+.admin-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Stats Cards */
+.stat-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .card-body {
+  padding: 24px;
+  text-align: center;
+  position: relative;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 24px;
+  color: white;
+}
+
+.stat-icon.revenue {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-icon.transactions {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-icon.pending {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-icon.subscriptions {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* Filter Section */
+.filter-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.filter-section .card-body {
+  padding: 24px;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-select,
+.form-control {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.form-select:focus,
+.form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Table Styles */
+.table-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.table-card .card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 20px 24px;
+}
+
+.table-card .card-header h4 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.table {
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  border: none;
+  padding: 16px 12px;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+  transform: scale(1.01);
+}
+
+.table tbody td {
+  padding: 16px 12px;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+/* Badge Styles */
+.badge {
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bg-success {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+}
+
+.bg-danger {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+.bg-primary {
+  background-color: #cce7ff !important;
+  color: #004085 !important;
+}
+
+.bg-warning {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+}
+
+.bg-info {
+  background-color: #d1ecf1 !important;
+  color: #0c5460 !important;
+}
+
+.bg-secondary {
+  background-color: #e2e3e5 !important;
+  color: #383d41 !important;
+}
+
+/* Action Buttons */
+.btn-group-sm .btn {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  margin: 0 2px;
+}
+
+.btn-outline-primary {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.btn-outline-primary:hover {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.btn-outline-info {
+  border-color: #17a2b8;
+  color: #17a2b8;
+}
+
+.btn-outline-info:hover {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+/* Pagination */
+.pagination {
+  margin: 0;
+}
+
+.page-link {
+  border: none;
+  color: #667eea;
+  padding: 12px 16px;
+  margin: 0 2px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.page-link:hover {
+  background-color: #667eea;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.page-item.active .page-link {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.page-item.disabled .page-link {
+  color: #6c757d;
+  background-color: transparent;
+}
+
+/* Loading Spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  color: #667eea;
+}
+
+/* Currency Formatting */
+.text-success {
+  color: #28a745 !important;
+  font-weight: 600;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+  font-weight: 600;
+}
+
+/* Links */
+.table a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.table a:hover {
+  color: #5a6fd8;
+  text-decoration: underline;
+}
+
+/* Header Section */
+.header-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-section h1 {
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.header-section p {
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Export Button */
+.btn-outline-primary {
+  border-color: #667eea;
+  color: #667eea;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-primary:hover {
+  background-color: #667eea;
+  border-color: #667eea;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 15px;
+  }
+  
+  .stat-card .card-body {
+    padding: 16px;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .table-responsive {
+    font-size: 0.9rem;
+  }
+  
+  .btn-group-sm .btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .header-section {
+    padding: 16px;
+  }
+  
+  .header-section h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .stat-card {
+    margin-bottom: 16px;
+  }
+  
+  .filter-section .card-body {
+    padding: 16px;
+  }
+  
+  .form-select,
+  .form-control {
+    font-size: 0.85rem;
+  }
+  
+  .table thead th {
+    font-size: 0.75rem;
+    padding: 12px 8px;
+  }
+  
+  .table tbody td {
+    padding: 12px 8px;
+    font-size: 0.85rem;
+  }
+  
+  .badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+  
+  .page-link {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Print Styles */
+@media print {
+  .btn,
+  .btn-group,
+  .pagination {
+    display: none !important;
+  }
+  
+  .stat-card {
+    box-shadow: none;
+    border: 1px solid #dee2e6;
+  }
+  
+  .table {
+    box-shadow: none;
+  }
+  
+  .table thead th {
+    background-color: #f8f9fa !important;
+    color: #000 !important;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .admin-container {
+    background-color: #1a1a1a;
+  }
+  
+  .stat-card,
+  .filter-section,
+  .table-card,
+  .header-section {
+    background-color: #2d2d2d;
+    color: #ffffff;
+  }
+  
+  .stat-value {
+    color: #ffffff;
+  }
+  
+  .form-label {
+    color: #cccccc;
+  }
+  
+  .form-select,
+  .form-control {
+    background-color: #3d3d3d;
+    border-color: #4d4d4d;
+    color: #ffffff;
+  }
+  
+  .table thead th {
+    background-color: #3d3d3d;
+    color: #ffffff;
+  }
+  
+  .table tbody tr:hover {
+    background-color: #3d3d3d;
+  }
+  
+  .table tbody td {
+    border-bottom-color: #4d4d4d;
+  }
+} 

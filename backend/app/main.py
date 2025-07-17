@@ -9,7 +9,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from .api.v1.endpoints import users, login, tickets, brands, webhook, admin, chat, testing, tickets_extended
+from .api.v1.endpoints import (
+    login, users, brands, tickets, webhook, admin, chat, testing,
+    tickets_extended, channels, analytics, billing, ai_management,
+    compliance, security, phone_numbers, followup
+)
 from .api.v1.routes import auth
 from .database import engine, Base
 from .config import settings
@@ -103,28 +107,8 @@ async def general_exception_handler(request, exc):
             content={"error": "Critical error occurred"}
         )
 
-# CORS Middleware
-try:
-    origins = [
-        "http://localhost",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    logger.info("CORS middleware configured successfully")
-except Exception as e:
-    logger.error(f"Failed to configure CORS middleware: {e}")
+# Add CORS middleware
+app.add_middleware(CORSMiddleware, allowed_origins=["*"])
 
 # API Routers with error handling
 try:
@@ -139,6 +123,14 @@ try:
     api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
     api_router.include_router(testing.router, prefix="/testing", tags=["testing"])
     api_router.include_router(tickets_extended.router, prefix="/tickets_extended", tags=["tickets_extended"])
+    api_router.include_router(channels.router, prefix="/channels", tags=["channels"])
+    api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
+    api_router.include_router(billing.router, prefix="/billing", tags=["billing"])
+    api_router.include_router(ai_management.router, prefix="/ai", tags=["ai-management"])
+    api_router.include_router(compliance.router, prefix="/compliance", tags=["compliance"])
+    api_router.include_router(security.router, prefix="/security", tags=["security"])
+    api_router.include_router(phone_numbers.router, prefix="/phone-numbers", tags=["phone-numbers"])
+    api_router.include_router(followup.router, prefix="/followup", tags=["followup"])
 
     app.include_router(api_router, prefix="/api/v1")
     logger.info("API routers configured successfully")
@@ -190,58 +182,42 @@ def health_check():
         logger.error(f"Error in health check: {e}")
         return {"status": "error", "message": "Health check failed"}
 
-@app.get("/api/v1/test")
+@app.get("/test")
 def test_endpoint():
-    """Test endpoint with error handling"""
-    try:
-        return {"message": "API is working!", "path": "/api/v1/test"}
-    except Exception as e:
-        logger.error(f"Error in test endpoint: {e}")
-        raise HTTPException(status_code=500, detail="Test endpoint failed")
+    """Test endpoint for debugging"""
+    return {"message": "Backend is running successfully!"}
 
 @app.get("/register")
 def user_registration_page():
-    """Serve the user registration HTML page with error handling"""
+    """Serve user registration page"""
     try:
-        html_file_path = os.path.join(os.path.dirname(__file__), "..", "user_registration.html")
-        if os.path.exists(html_file_path):
-            return FileResponse(html_file_path, media_type="text/html")
-        else:
-            logger.error(f"Registration page not found at: {html_file_path}")
-            return JSONResponse(
-                status_code=404,
-                content={"error": "Registration page not found"}
-            )
+        return FileResponse("user_registration.html")
     except Exception as e:
         logger.error(f"Error serving registration page: {e}")
-        return JSONResponse(
-            status_code=500,
-            content={"error": "Failed to serve registration page"}
-        )
+        raise HTTPException(status_code=404, detail="Registration page not found")
 
-# Startup and shutdown events
 @app.on_event("startup")
 async def startup_event():
-    """Application startup event with error handling"""
+    """Application startup event"""
     try:
-        logger.info("Starting Complaint Management API...")
-        logger.info(f"Project: {settings.PROJECT_NAME}")
-        logger.info(f"API Version: {settings.API_V1_STR}")
-        
-        # Log configuration status
-        if settings.get_openai_api_key():
-            logger.info("OpenAI API key is configured")
-        else:
-            logger.warning("OpenAI API key is not configured - AI features will be limited")
-            
+        logger.info("Application starting up...")
+        # Initialize any startup tasks here
+        logger.info("Application startup completed")
     except Exception as e:
         logger.error(f"Error during startup: {e}")
         logger.error(f"Traceback: {traceback.format_exc()}")
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    """Application shutdown event with error handling"""
+    """Application shutdown event"""
     try:
-        logger.info("Shutting down Complaint Management API...")
+        logger.info("Application shutting down...")
+        # Cleanup tasks here
+        logger.info("Application shutdown completed")
     except Exception as e:
-        logger.error(f"Error during shutdown: {e}") 
+        logger.error(f"Error during shutdown: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000) 

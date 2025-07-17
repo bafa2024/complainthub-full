@@ -25,6 +25,8 @@ export const CHANNELS = {
   VOICE: 'voice',
   WHATSAPP: 'whatsapp',
   TELEGRAM: 'telegram',
+  INSTAGRAM: 'instagram',
+  LINKEDIN: 'linkedin',
   WEB: 'web',
   OTHER: 'other',
 };

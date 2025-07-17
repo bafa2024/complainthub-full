@@ -1,72 +1,342 @@
-import React, { useState, useRef } from 'react';
-import './VoiceRecorder.css'; // We will create this CSS file next
+import React, { useState, useRef, useEffect } from 'react';
+import './VoiceRecorder.css';
 
-// SVG Icons
-const MicIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-mic-fill" viewBox="0 0 16 16"><path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/><path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/></svg>;
-const StopIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-stop-fill" viewBox="0 0 16 16"><path d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5"/></svg>;
-
-const VoiceRecorder = ({ onRecordingComplete }) => {
+const VoiceRecorder = ({
+  onRecordingComplete,
+  onRecordingStart,
+  onRecordingStop,
+  maxDuration = 300, // 5 minutes in seconds
+  autoPlay = false,
+  showWaveform = true,
+  className = '',
+  disabled = false,
+  placeholder = 'Click to start recording...'
+}) => {
   const [isRecording, setIsRecording] = useState(false);
-  const [audioURL, setAudioURL] = useState('');
-  const [error, setError] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [error, setError] = useState(null);
+  const [isSupported, setIsSupported] = useState(true);
+
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const timerRef = useRef(null);
+  const audioRef = useRef(null);
+  const streamRef = useRef(null);
 
-  const handleStartRecording = async () => {
-    setError('');
-    setAudioURL('');
+  useEffect(() => {
+    // Check if browser supports MediaRecorder
+    if (!navigator.mediaDevices || !window.MediaRecorder) {
+      setIsSupported(false);
+      setError('Voice recording is not supported in this browser');
+      return;
+    }
+
+    // Check for microphone permission
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(() => {
+        setIsSupported(true);
+        setError(null);
+      })
+      .catch(() => {
+        setIsSupported(false);
+        setError('Microphone access is required for voice recording');
+      });
+
+    return () => {
+      cleanup();
+    };
+  }, []);
+
+  const cleanup = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+    }
+  };
+
+  const startRecording = async () => {
+    if (disabled || !isSupported) return;
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      setError(null);
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 44100
+        } 
+      });
+      
+      streamRef.current = stream;
       audioChunksRef.current = [];
-
-      mediaRecorderRef.current.ondataavailable = event => {
-        audioChunksRef.current.push(event.data);
-      };
-
-      mediaRecorderRef.current.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        const url = URL.createObjectURL(audioBlob);
-        setAudioURL(url);
-        if (onRecordingComplete) {
-          onRecordingComplete(audioBlob);
+      
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported('audio/webm') 
+          ? 'audio/webm' 
+          : 'audio/mp4'
+      });
+      
+      mediaRecorderRef.current = mediaRecorder;
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
         }
       };
-
-      mediaRecorderRef.current.start();
+      
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { 
+          type: mediaRecorder.mimeType 
+        });
+        setAudioBlob(audioBlob);
+        
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url);
+        
+        onRecordingComplete?.(audioBlob, url);
+      };
+      
+      mediaRecorder.onerror = (event) => {
+        setError('Recording failed: ' + event.error);
+        stopRecording();
+      };
+      
+      mediaRecorder.start();
       setIsRecording(true);
+      setRecordingTime(0);
+      
+      // Start timer
+      timerRef.current = setInterval(() => {
+        setRecordingTime(prev => {
+          if (prev >= maxDuration) {
+            stopRecording();
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+      
+      onRecordingStart?.();
+      
     } catch (err) {
-      console.error("Error accessing microphone:", err);
-      setError("Microphone access denied. Please check your browser permissions.");
+      setError('Failed to start recording: ' + err.message);
     }
   };
 
-  const handleStopRecording = () => {
-    if (mediaRecorderRef.current) {
+  const stopRecording = () => {
+    if (!isRecording) return;
+    
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
-      setIsRecording(false);
+    }
+    
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    
+    setIsRecording(false);
+    onRecordingStop?.();
+  };
+
+  const playAudio = () => {
+    if (!audioRef.current || !audioUrl) return;
+    
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
     }
   };
 
-  return (
-    <div className="voice-recorder-box my-3">
-      <div className="d-flex align-items-center">
-        {!isRecording ? (
-          <button type="button" className="btn btn-danger record-btn" onClick={handleStartRecording}>
-            <MicIcon />
-          </button>
-        ) : (
-          <button type="button" className="btn btn-secondary record-btn is-recording" onClick={handleStopRecording}>
-            <StopIcon />
-          </button>
-        )}
-        <div className="flex-grow-1 ms-3">
-          {isRecording && <div className="recording-status">Recording...</div>}
-          {!isRecording && !audioURL && <div className="text-muted">Press the red button to record your complaint.</div>}
-          {audioURL && <audio src={audioURL} controls className="w-100" />}
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
+  };
+
+  const handleAudioTimeUpdate = () => {
+    // This can be used for progress bar updates
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const deleteRecording = () => {
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+    }
+    setAudioBlob(null);
+    setAudioUrl(null);
+    setRecordingTime(0);
+  };
+
+  const downloadRecording = () => {
+    if (!audioBlob) return;
+    
+    const url = URL.createObjectURL(audioBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `recording-${new Date().toISOString().slice(0, 19)}.webm`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  if (!isSupported) {
+    return (
+      <div className={`voice-recorder error ${className}`}>
+        <div className="error-message">
+          <i className="fas fa-exclamation-triangle"></i>
+          <p>{error}</p>
         </div>
       </div>
-      {error && <div className="alert alert-danger mt-2">{error}</div>}
+    );
+  }
+
+  return (
+    <div className={`voice-recorder ${className}`}>
+      {/* Error Display */}
+      {error && (
+        <div className="error-banner">
+          <i className="fas fa-exclamation-circle"></i>
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="error-close">
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+      )}
+
+      {/* Recording Controls */}
+      <div className="recording-controls">
+        {!audioUrl ? (
+          <button
+            className={`record-button ${isRecording ? 'recording' : ''}`}
+            onClick={isRecording ? stopRecording : startRecording}
+            disabled={disabled}
+          >
+            <div className="record-icon">
+              {isRecording ? (
+                <i className="fas fa-stop"></i>
+              ) : (
+                <i className="fas fa-microphone"></i>
+              )}
+            </div>
+            <span className="record-text">
+              {isRecording ? 'Stop Recording' : placeholder}
+            </span>
+          </button>
+        ) : (
+          <div className="playback-controls">
+            <button
+              className={`play-button ${isPlaying ? 'playing' : ''}`}
+              onClick={playAudio}
+              disabled={disabled}
+            >
+              <i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
+            </button>
+            <div className="audio-info">
+              <span className="audio-duration">
+                {formatTime(Math.floor(audioRef.current?.duration || 0))}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Recording Timer */}
+      {isRecording && (
+        <div className="recording-timer">
+          <div className="timer-display">
+            <i className="fas fa-clock"></i>
+            <span>{formatTime(recordingTime)}</span>
+          </div>
+          <div className="recording-indicator">
+            <div className="pulse-dot"></div>
+            <span>Recording...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Audio Player */}
+      {audioUrl && (
+        <div className="audio-player">
+          <audio
+            ref={audioRef}
+            src={audioUrl}
+            onEnded={handleAudioEnded}
+            onTimeUpdate={handleAudioTimeUpdate}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            autoPlay={autoPlay}
+          />
+          
+          {showWaveform && (
+            <div className="waveform-container">
+              <div className="waveform">
+                {/* Simple waveform visualization */}
+                {Array.from({ length: 50 }, (_, i) => (
+                  <div
+                    key={i}
+                    className="waveform-bar"
+                    style={{
+                      height: `${Math.random() * 60 + 20}%`,
+                      animationDelay: `${i * 0.1}s`
+                    }}
+                  ></div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div className="audio-actions">
+            <button
+              onClick={downloadRecording}
+              className="action-button"
+              title="Download Recording"
+            >
+              <i className="fas fa-download"></i>
+            </button>
+            <button
+              onClick={deleteRecording}
+              className="action-button delete"
+              title="Delete Recording"
+            >
+              <i className="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Progress Bar for Max Duration */}
+      {isRecording && (
+        <div className="progress-container">
+          <div 
+            className="progress-bar"
+            style={{ 
+              width: `${(recordingTime / maxDuration) * 100}%` 
+            }}
+          ></div>
+        </div>
+      )}
     </div>
   );
 };
