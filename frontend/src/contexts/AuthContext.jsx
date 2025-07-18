@@ -12,7 +12,7 @@ export const useAuth = () => {
 };
 
 // Mockup mode configuration
-const MOCKUP_MODE = false; // Set to false to enable real API calls
+const MOCKUP_MODE = true; // Set to false to enable real API calls
 const MOCK_USER = {
   id: 1,
   email: 'demo@example.com',

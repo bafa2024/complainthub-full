@@ -637,6 +637,89 @@ tr:hover {
   animation: spin 1s linear infinite;
 }
 
+/* Bootstrap Conflict Resolution */
+/* Ensure our custom styles take precedence over Bootstrap where needed */
+
+/* Ensure our Header styles aren't overridden by Bootstrap - applies to all pages */
+.header-wrapper .container {
+  max-width: 1200px !important;
+  padding-left: var(--space-lg, 1.5rem) !important;
+  padding-right: var(--space-lg, 1.5rem) !important;
+}
+
+/* Ensure custom navigation styles - applies to all pages including admin and brand */
+.navbar {
+  padding: 0 !important;
+}
+
+/* Ensure no borders on navigation elements - applies to all pages */
+.header-wrapper .navbar,
+.header-wrapper .nav-wrapper,
+.header-wrapper .auth-section,
+.header-wrapper .user-menu {
+  border: none !important;
+  border-top: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-bottom: none !important;
+}
+
+/* Ensure HomePage specific styles aren't overridden */
+.homepage .section-container {
+  max-width: var(--container-xl) !important;
+  padding: 0 var(--space-lg) !important;
+}
+
+/* Ensure auth form styles */
+.auth-container {
+  padding: var(--space-lg, 1.5rem) !important;
+}
+
+.auth-form {
+  padding: var(--space-2xl, 3rem) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ensure responsive spacing variables work */
+@media (max-width: 768px) {
+  .header-wrapper .container {
+    padding-left: var(--space-md, 1rem) !important;
+    padding-right: var(--space-md, 1rem) !important;
+  }
+  
+  .homepage .section-container {
+    padding: 0 var(--space-md) !important;
+  }
+  
+  .auth-container {
+    padding: var(--space-md, 1rem) !important;
+  }
+  
+  .auth-form {
+    padding: var(--space-xl, 2rem) !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-wrapper .container {
+    padding-left: var(--space-sm, 0.5rem) !important;
+    padding-right: var(--space-sm, 0.5rem) !important;
+  }
+  
+  .homepage .section-container {
+    padding: 0 var(--space-sm) !important;
+  }
+  
+  .auth-container {
+    padding: var(--space-sm, 0.5rem) !important;
+  }
+  
+  .auth-form {
+    padding: var(--space-lg, 1.5rem) !important;
+  }
+}
+
 /* Accessibility */
 .sr-only {
   position: absolute;

@@ -365,7 +365,7 @@ export default function PublicComplaints() {
                     checked={showUnresolvedOnly}
                     onChange={(e) => setShowUnresolvedOnly(e.target.checked)}
                   />
-                  Show only unresolved complaints (>7 days)
+                  Show only unresolved complaints (&gt;7 days)
                 </label>
               </div>
             </div>
