@@ -41,10 +41,7 @@ import ResponsiveTest from './components/shared/ResponsiveTest';
 import AdminReports from './components/admin/AdminReports';
 import BrandManage from './components/brand/BrandManage';
 import AdminSecurity from './components/admin/AdminSecurity';
-<<<<<<< HEAD
-=======
 import TestingDashboard from './components/TestingDashboard';
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 import './App.css';
 import './utils/responsive.css';

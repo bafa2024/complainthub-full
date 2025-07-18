@@ -560,4 +560,3 @@ export default function BrandAnalytics() {
   );
 };
 
-export default BrandAnalytics;
