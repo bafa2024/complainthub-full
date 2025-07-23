@@ -9,7 +9,19 @@
       "Bash(npm install)",
       "Bash(curl:*)",
       "Bash(npm run dev:*)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(git archive:*)",
+      "Bash(dir:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(npm audit:*)",
+      "Bash(node server.js)",
+      "Bash(taskkill:*)",
+      "Bash(npm install:*)",
+      "Bash(npm test)",
+      "Bash(del:*)",
+      "Bash(rm:*)",
+      "Bash(npm test:*)"
     ],
     "deny": []
   }

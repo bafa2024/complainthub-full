@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets - Brand Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: #3498db;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .nav-tabs ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-tabs a {
+            display: block;
+            padding: 15px 0;
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs a:hover,
+        .nav-tabs a.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Search and Filter Section */
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-dropdown {
+            padding: 8px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Quick Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Tickets Table */
+        .tickets-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Priority Badge */
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .priority-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .priority-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-new {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-resolved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-reopened {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Time Warning */
+        .time-warning {
+            color: #e74c3c;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .time-ok {
+            color: #6c757d;
+        }
+
+        /* Sentiment Indicator */
+        .sentiment {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ced4da;
+            color: #495057;
+        }
+
+        .btn-outline:hover {
+            background: #f8f9fa;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover {
+            background: #f8f9fa;
+        }
+
+        .pagination button.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Channel Icon */
+        .channel-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        /* Checkbox */
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .data-table {
+                font-size: 14px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-tabs ul {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-dropdown {
+                width: 100%;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .bulk-actions {
+                width: 100%;
+            }
+
+            .bulk-actions .btn {
+                flex: 1;
+            }
+
+            .data-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand-info">
+                <div class="brand-logo">T</div>
+                <div>
+                    <h2>TechGiant Electronics</h2>
+                    <p style="color: #6c757d; font-size: 14px;">Brand Portal</p>
+                </div>
+            </div>
+            <div class="user-menu">
+                <span>Welcome, John Doe</span>
+                <button class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <ul>
+            <li><a href="brand-dashboard.html">Dashboard</a></li>
+            <li><a href="brand-tickets.html" class="active">Tickets</a></li>
+            <li><a href="brand-analytics.html">Analytics</a></li>
+            <li><a href="brand-settings.html">Settings</a></li>
+            <li><a href="brand-billing.html">Billing</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value">24</div>
+                <div class="stat-label">New Tickets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">15</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Urgent (<24h)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">142</div>
+                <div class="stat-label">Resolved Today</div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="search-section">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search by ticket ID, customer, or issue...">
+                <button class="btn btn-primary">Search</button>
+            </div>
+            <div class="filters">
+                <select class="filter-dropdown">
+                    <option>All Status</option>
+                    <option>New</option>
+                    <option>In Progress</option>
+                    <option>Resolved</option>
+                    <option>Reopened</option>
+                </select>
+                <select class="filter-dropdown">
+                    <option>All Categories</option>
+                    <option>Complaint</option>
+                    <option>Feedback</option>
+                    <option>Suggestion</option>
+                    <option>Support</option>
+                </select>
+                <select class="filter-dropdown">
+                    <option>All Priorities</option>
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Low</option>
+                </select>
+                <select class="filter-dropdown">
+                    <option>All Channels</option>
+                    <option>Voice Call</option>
+                    <option>WhatsApp</option>
+                    <option>Web Chat</option>
+                    <option>Telegram</option>
+                </select>
+                <select class="filter-dropdown">
+                    <option>All Agents</option>
+                    <option>Unassigned</option>
+                    <option>John Doe</option>
+                    <option>Jane Smith</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Tickets Table -->
+        <div class="tickets-section">
+            <div class="section-header">
+                <h3 class="section-title">All Tickets</h3>
+                <div class="bulk-actions">
+                    <button class="btn btn-outline">Bulk Assign</button>
+                    <button class="btn btn-outline">Export</button>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>Ticket ID</th>
+                        <th>Customer</th>
+                        <th>Issue</th>
+                        <th>Category</th>
+                        <th>Channel</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Time Left</th>
+                        <th>Sentiment</th>
+                        <th>Assigned To</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><strong>#CMP-2024-001</strong></td>
+                        <td>User****234</td>
+                        <td>Laptop screen showing dead pixels</td>
+                        <td>Complaint</td>
+                        <td><span class="channel-icon">📞 Voice</span></td>
+                        <td><span class="priority-badge priority-high">High</span></td>
+                        <td><span class="status-badge status-new">New</span></td>
+                        <td><span class="time-warning">⚠️ 2h 15m</span></td>
+                        <td><span class="sentiment">😠 -0.8</span></td>
+                        <td>Unassigned</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary" onclick="location.href='ticket-detail-brand.html'">View</button>
+                                <button class="btn btn-outline">Assign</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><strong>#CMP-2024-002</strong></td>
+                        <td>User****567</td>
+                        <td>Delivery delayed for over a week</td>
+                        <td>Complaint</td>
+                        <td><span class="channel-icon">💬 WhatsApp</span></td>
+                        <td><span class="priority-badge priority-medium">Medium</span></td>
+                        <td><span class="status-badge status-in-progress">In Progress</span></td>
+                        <td><span class="time-ok">22h 45m</span></td>
+                        <td><span class="sentiment">😐 -0.3</span></td>
+                        <td>John Doe</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">View</button>
+                                <button class="btn btn-outline">Reply</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><strong>#FDB-2024-003</strong></td>
+                        <td>User****890</td>
+                        <td>Great service, very satisfied</td>
+                        <td>Feedback</td>
+                        <td><span class="channel-icon">🌐 Web Chat</span></td>
+                        <td><span class="priority-badge priority-low">Low</span></td>
+                        <td><span class="status-badge status-resolved">Resolved</span></td>
+                        <td><span class="time-ok">N/A</span></td>
+                        <td><span class="sentiment">😊 +0.9</span></td>
+                        <td>Jane Smith</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">View</button>
+                                <button class="btn btn-outline">Archive</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td><strong>#SUG-2024-004</strong></td>
+                        <td>User****123</td>
+                        <td>Add dark mode to mobile app</td>
+                        <td>Suggestion</td>
+                        <td><span class="channel-icon">📱 Telegram</span></td>
+                        <td><span class="priority-badge priority-low">Low</span></td>
+                        <td><span class="status-badge status-new">New</span></td>
+                        <td><span class="time-ok">N/A</span></td>
+                        <td><span class="sentiment">😊 +0.5</span></td>
+                        <td>Unassigned</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">View</button>
+                                <button class="btn btn-outline">Forward</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="background: #fff3cd;">
+                        <td><input type="checkbox"></td>
+                        <td><strong>#CMP-2024-005</strong></td>
+                        <td>User****456</td>
+                        <td>Product not working as advertised</td>
+                        <td>Complaint</td>
+                        <td><span class="channel-icon">📞 Voice</span></td>
+                        <td><span class="priority-badge priority-high">High</span></td>
+                        <td><span class="status-badge status-reopened">Reopened</span></td>
+                        <td><span class="time-warning">⚠️ 30m</span></td>
+                        <td><span class="sentiment">😡 -0.9</span></td>
+                        <td>John Doe</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">View</button>
+                                <button class="btn btn-secondary">Escalate</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button disabled>←</button>
+                <button class="active">1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>4</button>
+                <button>5</button>
+                <button>...</button>
+                <button>15</button>
+                <button>→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Select all checkbox
+        document.querySelector('th input[type="checkbox"]').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('td input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        // Filter change handlers
+        document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+            dropdown.addEventListener('change', function() {
+                console.log('Filter changed:', this.value);
+                // In real implementation, this would filter the table
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                console.log('Searching for:', this.value);
+                // In real implementation, this would search the tickets
+            }
+        });
+
+        // Bulk actions
+        document.querySelector('.btn-outline').addEventListener('click', function() {
+            const checkedBoxes = document.querySelectorAll('td input[type="checkbox"]:checked');
+            if (checkedBoxes.length === 0) {
+                alert('Please select at least one ticket');
+            } else {
+                console.log(`${checkedBoxes.length} tickets selected for bulk action`);
+            }
+        });
+    </script>
+</body>
+</html>

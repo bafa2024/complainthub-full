@@ -219,11 +219,7 @@ class MLTrainingService:
                     json.dump(metadata, f, indent=2)
                 
                 # Update AI engine metadata
-<<<<<<< HEAD
-                self.ai_engine.meta_data = metadata
-=======
                 self.ai_engine.model_metadata = metadata
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
                 
                 # Save training record to database
                 self._save_training_record(metadata, "intent_classifier")

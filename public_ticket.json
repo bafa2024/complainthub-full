@@ -1,0 +1,11 @@
+{
+  "fullName": "Jane Smith",
+  "email": "jane.smith@example.com",
+  "phone": "+1234567890",
+  "brandName": "TechCorp",
+  "title": "Defective smartphone with cracked screen",
+  "description": "I received a smartphone that has several issues including a cracked screen, non-functional camera, and battery that drains within 2 hours. The device was purchased brand new and should be in perfect condition.",
+  "category": "Product Quality",
+  "priority": "high",
+  "isAnonymous": false
+} 

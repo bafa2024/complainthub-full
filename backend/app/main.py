@@ -12,13 +12,10 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .api.v1.endpoints import (
     login, users, brands, tickets, webhook, admin, chat, testing,
     tickets_extended, channels, analytics, billing, ai_management,
-    compliance, security, phone_numbers, followup
+    security, phone_numbers, followup, conversation, voice
 )
-<<<<<<< HEAD
-=======
-from .api.v1.endpoints.webhook import router as webhook_router
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 from .api.v1.routes import auth
+from .api.v1.endpoints.webhook import router as webhook_router
 from .database import engine, Base
 from .config.settings import settings
 from .middleware.security import AuditMiddleware, SecurityMiddleware, RateLimitMiddleware
@@ -112,16 +109,11 @@ async def general_exception_handler(request, exc):
             content={"error": "Critical error occurred"}
         )
 
-<<<<<<< HEAD
-# Add CORS middleware
-app.add_middleware(CORSMiddleware, allowed_origins=["*"])
-=======
 # Add security middleware
 app.add_middleware(SecurityMiddleware)
 app.add_middleware(RateLimitMiddleware, requests_per_minute=100)
 app.add_middleware(AuditMiddleware)
 app.add_middleware(CORSMiddleware, allow_origins=settings.CORS_ORIGINS)
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 # API Routers with error handling
 try:
@@ -140,10 +132,12 @@ try:
     api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
     api_router.include_router(billing.router, prefix="/billing", tags=["billing"])
     api_router.include_router(ai_management.router, prefix="/ai", tags=["ai-management"])
-    api_router.include_router(compliance.router, prefix="/compliance", tags=["compliance"])
+    # api_router.include_router(compliance.router, prefix="/compliance", tags=["compliance"])
     api_router.include_router(security.router, prefix="/security", tags=["security"])
     api_router.include_router(phone_numbers.router, prefix="/phone-numbers", tags=["phone-numbers"])
     api_router.include_router(followup.router, prefix="/followup", tags=["followup"])
+    api_router.include_router(conversation.router, prefix="/conversation", tags=["conversation"])
+    api_router.include_router(voice.router, prefix="/voice", tags=["voice"])
 
     app.include_router(api_router, prefix="/api/v1")
     logger.info("API routers configured successfully")
@@ -217,11 +211,6 @@ def user_registration_page():
 async def startup_event():
     """Application startup event"""
     try:
-<<<<<<< HEAD
-        logger.info("Application starting up...")
-        # Initialize any startup tasks here
-        logger.info("Application startup completed")
-=======
         logger.info("Starting Complaint Management API...")
         logger.info(f"Project: {settings.PROJECT_NAME}")
         logger.info(f"API Version: {settings.API_V1_STR}")
@@ -231,8 +220,6 @@ async def startup_event():
             logger.info("OpenAI API key is configured")
         else:
             logger.warning("OpenAI API key is not configured - AI features will be limited")
-            
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     except Exception as e:
         logger.error(f"Error during startup: {e}")
         logger.error(f"Traceback: {traceback.format_exc()}")

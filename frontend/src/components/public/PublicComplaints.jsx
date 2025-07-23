@@ -577,7 +577,7 @@ export default function PublicComplaints() {
               <h2>Have a complaint? Make your voice heard!</h2>
               <p>Join thousands of consumers who are holding brands accountable for their service quality.</p>
               <div className="cta-buttons">
-                <Link to="/new-complaint" className="btn btn-primary">
+                <Link to="/submit-complaint" className="btn btn-primary">
                   📝 Lodge a Complaint
                 </Link>
                 <Link to="/voice-complaint" className="btn btn-secondary">

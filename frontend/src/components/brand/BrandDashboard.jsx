@@ -15,7 +15,7 @@ const BrandDashboard = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { user } = useAuth(); // Get brand user info
+  const { user, logout } = useAuth(); // Get brand user info and logout function
 
   useEffect(() => {
     const fetchBrandTickets = async () => {
@@ -180,6 +180,13 @@ const BrandDashboard = () => {
               <Link to="/brand/manage-brands" className="list-group-item list-group-item-action">
                 <span className="sidebar-link-icon me-2" role="img" aria-label="brands">🏢</span> Manage Brands
               </Link>
+              <button 
+                onClick={logout}
+                className="list-group-item list-group-item-action text-danger"
+                style={{ border: 'none', background: 'none' }}
+              >
+                <span className="sidebar-link-icon me-2" role="img" aria-label="logout">🚪</span> Logout
+              </button>
             </div>
           </div>
         </div>

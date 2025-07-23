@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Settings - ComplaintHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: #3498db;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .nav-tabs ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-tabs a {
+            display: block;
+            padding: 15px 0;
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs a:hover,
+        .nav-tabs a.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        /* Settings Navigation */
+        .settings-nav {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .settings-nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .settings-nav a {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+            padding-bottom: 10px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .settings-nav a.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Settings Sections */
+        .settings-section {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-text {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        /* Phone Number Display */
+        .phone-display {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .phone-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+
+        /* Integration Cards */
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .integration-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .integration-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .integration-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .integration-logo {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #6c757d;
+        }
+
+        .integration-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #3498db;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #3498db;
+            color: #3498db;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* API Keys Section */
+        .api-key-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .api-key-input .form-control {
+            flex: 1;
+        }
+
+        /* Notification Preferences */
+        .notification-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .notification-info p {
+            font-size: 14px;
+            color: #6c757d;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-tabs ul {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .settings-nav ul {
+                flex-direction: column;
+            }
+
+            .integration-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand-info">
+                <div class="brand-logo">T</div>
+                <div>
+                    <h2>TechGiant Electronics</h2>
+                    <p style="color: #6c757d; font-size: 14px;">Brand Portal</p>
+                </div>
+            </div>
+            <div class="user-menu">
+                <span>Welcome, John Doe</span>
+                <button class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <ul>
+            <li><a href="brand-dashboard.html">Dashboard</a></li>
+            <li><a href="brand-tickets.html">Tickets</a></li>
+            <li><a href="brand-analytics.html">Analytics</a></li>
+            <li><a href="brand-settings.html" class="active">Settings</a></li>
+            <li><a href="brand-billing.html">Billing</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Settings Navigation -->
+        <div class="settings-nav">
+            <ul>
+                <li><a href="#general" class="active" onclick="showTab('general')">General</a></li>
+                <li><a href="#integrations" onclick="showTab('integrations')">Integrations</a></li>
+                <li><a href="#notifications" onclick="showTab('notifications')">Notifications</a></li>
+                <li><a href="#security" onclick="showTab('security')">Security</a></li>
+            </ul>
+        </div>
+
+        <!-- General Settings -->
+        <div id="general-tab" class="tab-content active">
+            <div class="settings-section">
+                <h3 class="section-title">Complaint Hotline</h3>
+                <div class="phone-display">
+                    <p style="color: #6c757d;">Your dedicated toll-free number for customer complaints</p>
+                    <div class="phone-number">+1-800-HELP-234</div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary">Generate New Number</button>
+                        <button class="btn btn-secondary" style="margin-left: 10px;">Configure IVR</button>
+                        <button class="btn btn-outline" style="margin-left: 10px;">Download QR Code</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">Business Information</h3>
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-control" value="TechGiant Electronics">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Industry</label>
+                        <select class="form-control">
+                            <option selected>Electronics & Technology</option>
+                            <option>Fashion & Apparel</option>
+                            <option>Food & Beverage</option>
+                            <option>Healthcare</option>
+                            <option>Finance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Support Email</label>
+                        <input type="email" class="form-control" value="support@techgiant.com">
+                        <p class="form-text">This email will receive complaint notifications</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Company Website</label>
+                        <input type="url" class="form-control" value="https://www.techgiant.com">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">Auto-Routing Rules</h3>
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Route complaints to:</label>
+                        <select class="form-control">
+                            <option>Support Team Queue</option>
+                            <option>Specific Agent</option>
+                            <option>Round Robin</option>
+                            <option>Based on Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Route feedback/suggestions to:</label>
+                        <select class="form-control">
+                            <option>Product Team</option>
+                            <option>Marketing Team</option>
+                            <option>No Auto-Assignment</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Rules</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Integrations Tab -->
+        <div id="integrations-tab" class="tab-content">
+            <div class="settings-section">
+                <h3 class="section-title">CRM Integrations</h3>
+                <div class="integration-grid">
+                    <div class="integration-card">
+                        <div class="integration-header">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="integration-logo">SF</div>
+                                <h4>Salesforce</h4>
+                            </div>
+                            <span class="integration-status status-connected">Connected</span>
+                        </div>
+                        <p style="color: #6c757d; margin-bottom: 15px;">Sync tickets with Salesforce Service Cloud</p>
+                        <button class="btn btn-outline">Configure</button>
+                    </div>
+
+                    <div class="integration-card">
+                        <div class="integration-header">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="integration-logo">Z</div>
+                                <h4>Zoho CRM</h4>
+                            </div>
+                            <span class="integration-status status-disconnected">Not Connected</span>
+                        </div>
+                        <p style="color: #6c757d; margin-bottom: 15px;">Connect with Zoho Desk for ticket management</p>
+                        <button class="btn btn-primary">Connect</button>
+                    </div>
+
+                    <div class="integration-card">
+                        <div class="integration-header">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="integration-logo">FW</div>
+                                <h4>Freshworks</h4>
+                            </div>
+                            <span class="integration-status status-disconnected">Not Connected</span>
+                        </div>
+                        <p style="color: #6c757d; margin-bottom: 15px;">Integrate with Freshdesk support system</p>
+                        <button class="btn btn-primary">Connect</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">Custom Webhook Integration</h3>
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Webhook URL</label>
+                        <input type="url" class="form-control" placeholder="https://your-crm.com/webhook">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Authentication Method</label>
+                        <select class="form-control">
+                            <option>API Key</option>
+                            <option>Basic Auth</option>
+                            <option>Bearer Token</option>
+                            <option>HMAC Signature</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Secret/API Key</label>
+                        <div class="api-key-input">
+                            <input type="password" class="form-control" placeholder="Enter your API key">
+                            <button type="button" class="btn btn-secondary">Test Connection</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Events to Send:</label>
+                        <div style="margin-top: 10px;">
+                            <label style="display: block; margin-bottom: 10px;">
+                                <input type="checkbox" checked> New ticket created
+                            </label>
+                            <label style="display: block; margin-bottom: 10px;">
+                                <input type="checkbox" checked> Ticket status updated
+                            </label>
+                            <label style="display: block; margin-bottom: 10px;">
+                                <input type="checkbox"> User rating received
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Integration</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div id="notifications-tab" class="tab-content">
+            <div class="settings-section">
+                <h3 class="section-title">Email Notifications</h3>
+                <div class="notification-item">
+                    <div class="notification-info">
+                        <h4>New Complaints</h4>
+                        <p>Receive email alerts for new customer complaints</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-info">
+                        <h4>Urgent Tickets</h4>
+                        <p>Get notified when tickets are approaching the 24-hour deadline</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-info">
+                        <h4>User Ratings</h4>
+                        <p>Receive notifications when users rate their experience</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-info">
+                        <h4>Daily Summary</h4>
+                        <p>Get a daily summary of all ticket activities</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">SMS/WhatsApp Notifications</h3>
+                <div class="notification-item">
+                    <div class="notification-info">
+                        <h4>Critical Alerts Only</h4>
+                        <p>SMS alerts for critical issues and system downtime</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label class="form-label">Alert Phone Number</label>
+                    <input type="tel" class="form-control" value="+1 (555) 123-4567">
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tab -->
+        <div id="security-tab" class="tab-content">
+            <div class="settings-section">
+                <h3 class="section-title">API Access</h3>
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <div class="api-key-input">
+                        <input type="text" class="form-control" value="sk_live_TG_xxxxxxxxxxxxxxxxxxx" readonly>
+                        <button type="button" class="btn btn-secondary">Regenerate</button>
+                    </div>
+                    <p class="form-text">Use this key to integrate with external systems</p>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">IP Whitelisting</h3>
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Allowed IP Addresses</label>
+                        <textarea class="form-control" rows="4" placeholder="Enter one IP address per line">192.168.1.100
+203.0.113.0/24</textarea>
+                        <p class="form-text">Leave empty to allow access from any IP address</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update IP Whitelist</button>
+                </form>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">Two-Factor Authentication</h3>
+                <p style="margin-bottom: 20px;">Add an extra layer of security to your account</p>
+                <button class="btn btn-primary">Enable 2FA</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all links
+            document.querySelectorAll('.settings-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Set active link
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

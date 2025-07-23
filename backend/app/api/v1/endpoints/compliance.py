@@ -12,27 +12,16 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 
 from ....database import get_db
-<<<<<<< HEAD
-from ....models import User, Brand, Ticket, Message, Admin, SecurityEvent
-from ....schemas import UserResponse, BrandResponse, TicketResponse
+from ....models import User as UserModel, Brand as BrandModel, Ticket as TicketModel, Admin, SecurityEvent
+from ....schemas import User as UserSchema, Brand as BrandSchema, Ticket as TicketSchema
+from ....api.v1.deps import get_current_user, get_current_active_admin
 from ....core.security import (
-    get_current_user, 
-    get_current_admin, 
     encrypt_data, 
     decrypt_data,
     mask_sensitive_data,
     log_security_event
 )
 from ....config.settings import settings
-=======
-from ....models import User, Brand, Ticket, Admin, SecurityEvent
-from ....schemas import User, Brand, Ticket
-from ....core.security import (
-    log_failed_login_attempt, is_account_locked, clear_failed_attempts
-)
-from ....config.settings import settings
-from ....api.v1.deps import get_current_active_admin
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -41,11 +30,7 @@ router = APIRouter()
 async def export_user_data(
     user_id: int,
     background_tasks: BackgroundTasks,
-<<<<<<< HEAD
-    current_admin: Admin = Depends(get_current_admin),
-=======
     current_admin: Admin = Depends(get_current_active_admin),
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     db: Session = Depends(get_db)
 ):
     """Export all user data in GDPR-compliant format."""
@@ -144,11 +129,7 @@ async def export_user_data(
 async def delete_user_data(
     user_id: int,
     background_tasks: BackgroundTasks,
-<<<<<<< HEAD
-    current_admin: Admin = Depends(get_current_admin),
-=======
     current_admin: Admin = Depends(get_current_active_admin),
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     db: Session = Depends(get_db)
 ):
     """Delete all user data (GDPR right to be forgotten)."""
@@ -203,11 +184,7 @@ async def delete_user_data(
 
 @router.get("/gdpr/retention-policy")
 async def get_retention_policy(
-<<<<<<< HEAD
-    current_admin: Admin = Depends(get_current_admin)
-=======
     current_admin: Admin = Depends(get_current_active_admin)
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 ):
     """Get current data retention policy."""
     retention_policy = {
@@ -248,11 +225,7 @@ async def get_retention_policy(
 @router.post("/gdpr/update-retention-policy")
 async def update_retention_policy(
     policy_updates: Dict[str, Any],
-<<<<<<< HEAD
-    current_admin: Admin = Depends(get_current_admin)
-=======
     current_admin: Admin = Depends(get_current_active_admin)
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 ):
     """Update data retention policy (admin only)."""
     try:
@@ -280,11 +253,7 @@ async def update_retention_policy(
 
 @router.get("/gdpr/data-inventory")
 async def get_data_inventory(
-<<<<<<< HEAD
-    current_admin: Admin = Depends(get_current_admin),
-=======
     current_admin: Admin = Depends(get_current_active_admin),
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     db: Session = Depends(get_db)
 ):
     """Get comprehensive data inventory for GDPR compliance."""
@@ -352,11 +321,7 @@ async def get_data_inventory(
 async def update_user_consent(
     user_id: int,
     consent_data: Dict[str, bool],
-<<<<<<< HEAD
-    current_admin: Admin = Depends(get_current_admin),
-=======
     current_admin: Admin = Depends(get_current_active_admin),
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     db: Session = Depends(get_db)
 ):
     """Update user consent preferences."""
@@ -389,11 +354,7 @@ async def update_user_consent(
 @router.get("/gdpr/consent/{user_id}")
 async def get_user_consent(
     user_id: int,
-<<<<<<< HEAD
-    current_admin: Admin = Depends(get_current_admin),
-=======
     current_admin: Admin = Depends(get_current_active_admin),
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     db: Session = Depends(get_db)
 ):
     """Get user consent preferences."""
@@ -419,11 +380,7 @@ async def get_user_consent(
 @router.post("/gdpr/breach-notification")
 async def report_data_breach(
     breach_data: Dict[str, Any],
-<<<<<<< HEAD
-    current_admin: Admin = Depends(get_current_admin)
-=======
     current_admin: Admin = Depends(get_current_active_admin)
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 ):
     """Report a data breach for GDPR compliance."""
     try:
@@ -468,11 +425,7 @@ async def report_data_breach(
 
 @router.get("/gdpr/breach-history")
 async def get_breach_history(
-<<<<<<< HEAD
-    current_admin: Admin = Depends(get_current_admin),
-=======
     current_admin: Admin = Depends(get_current_active_admin),
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     db: Session = Depends(get_db)
 ):
     """Get history of reported data breaches."""

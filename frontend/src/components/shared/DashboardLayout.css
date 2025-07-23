@@ -1,0 +1,200 @@
+/* DashboardLayout.css - Layout for dashboard pages with sidebar */
+
+.dashboard-layout {
+  display: flex;
+  min-height: calc(100vh - 60px); /* Account for header height */
+  background: #f8f9fa;
+  position: relative;
+}
+
+/* ===== SIDEBAR TOGGLE BUTTON (Mobile) ===== */
+.sidebar-toggle-btn {
+  position: fixed;
+  top: 70px; /* Below the header */
+  left: 1rem;
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.25rem;
+}
+
+.sidebar-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.sidebar-toggle-btn:active {
+  transform: translateY(0);
+}
+
+/* ===== MAIN CONTENT AREA ===== */
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-main.with-sidebar {
+  margin-left: 280px; /* Match sidebar width */
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  .dashboard-main {
+    margin-left: 0 !important; /* No sidebar margin on mobile */
+  }
+  
+  .dashboard-content {
+    padding: 1rem;
+    padding-top: 5rem; /* Account for toggle button */
+  }
+  
+  .sidebar-toggle-btn {
+    display: flex;
+  }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .dashboard-main.with-sidebar {
+    margin-left: 280px;
+  }
+  
+  .dashboard-content {
+    padding: 1.5rem;
+  }
+  
+  .sidebar-toggle-btn {
+    display: none;
+  }
+}
+
+/* Desktop and above */
+@media (min-width: 1025px) {
+  .dashboard-main.with-sidebar {
+    margin-left: 280px;
+  }
+  
+  .dashboard-content {
+    padding: 2rem 3rem;
+  }
+  
+  .sidebar-toggle-btn {
+    display: none;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+  .dashboard-main.with-sidebar {
+    margin-left: 300px; /* Match larger sidebar width */
+  }
+  
+  .dashboard-content {
+    padding: 2.5rem 3rem;
+    max-width: 1400px;
+  }
+}
+
+/* ===== CONTENT STYLING ===== */
+.dashboard-content h1,
+.dashboard-content h2,
+.dashboard-content h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.dashboard-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-content .card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.dashboard-content .card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-content .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.dashboard-content .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.dashboard-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 3px;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb:hover {
+  background: #5a67d8;
+}
+
+/* ===== ACCESSIBILITY ===== */
+.sidebar-toggle-btn:focus {
+  outline: 2px solid rgba(102, 126, 234, 0.5);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-main,
+  .sidebar-toggle-btn,
+  .dashboard-content .card,
+  .dashboard-content .btn-primary {
+    transition: none;
+  }
+  
+  .sidebar-toggle-btn:hover,
+  .dashboard-content .btn-primary:hover {
+    transform: none;
+  }
+}

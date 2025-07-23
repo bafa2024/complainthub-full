@@ -6,11 +6,7 @@ import os
 import tempfile
 from typing import Dict, Any, Optional, List
 import requests
-<<<<<<< HEAD
-from ..config import settings
-=======
 from app.config.settings import settings
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 import json
 import traceback
 import uuid

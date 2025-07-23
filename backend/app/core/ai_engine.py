@@ -1,6 +1,5 @@
 # backend/app/core/ai_engine.py
 
-import openai
 import os
 from ..config.settings import settings
 from ..schemas import TicketCategoryEnum, TicketUrgencyEnum
@@ -38,7 +37,6 @@ class AIEngine:
             self.has_openai_key = bool(self.openai_api_key and self.openai_api_key.strip())
             
             if self.has_openai_key:
-                openai.api_key = self.openai_api_key
                 logger.info("OpenAI API key configured successfully")
             else:
                 logger.warning("OpenAI API key not found. AI features will use fallback responses.")
@@ -292,7 +290,10 @@ class AIEngine:
             # Enhance system prompt with learning context
             enhanced_system_prompt = f"{system_prompt}\n\nContext: {context}" if context else system_prompt
             
-            response = openai.ChatCompletion.create(
+            from openai import OpenAI
+            client = OpenAI(api_key=self.openai_api_key)
+            
+            response = client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": enhanced_system_prompt},
@@ -302,14 +303,14 @@ class AIEngine:
             )
             return response.choices[0].message.content.strip()
             
-        except openai.error.AuthenticationError as e:
-            logger.error(f"OpenAI authentication error: {e}")
-            return "I understand your concern. Let me help you with that. Could you please provide more details about when this issue occurred?"
-        except openai.error.RateLimitError as e:
-            logger.error(f"OpenAI rate limit error: {e}")
-            return "I understand your concern. Let me help you with that. Could you please provide more details about when this issue occurred?"
-        except openai.error.APIError as e:
-            logger.error(f"OpenAI API error: {e}")
+        except Exception as openai_error:
+            # Handle any OpenAI API errors
+            if "authentication" in str(openai_error).lower():
+                logger.error(f"OpenAI authentication error: {openai_error}")
+            elif "rate_limit" in str(openai_error).lower():
+                logger.error(f"OpenAI rate limit error: {openai_error}")
+            else:
+                logger.error(f"OpenAI API error: {openai_error}")
             return "I understand your concern. Let me help you with that. Could you please provide more details about when this issue occurred?"
         except Exception as e:
             logger.error(f"Unexpected error calling OpenAI API: {e}")

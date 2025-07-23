@@ -295,7 +295,7 @@ export default function ComplaintTracking() {
 
                 {/* Actions */}
                 <div className="complaint-actions">
-                  <Link to="/new-complaint" className="btn btn-primary">
+                  <Link to="/submit-complaint" className="btn btn-primary">
                     Submit New Complaint
                   </Link>
                   <Link to="/complaints" className="btn btn-secondary">

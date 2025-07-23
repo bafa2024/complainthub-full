@@ -9,6 +9,8 @@ import PublicComplaints from './components/public/PublicComplaints';
 import ComplaintTracking from './components/public/ComplaintTracking';
 import ContactPage from './components/public/ContactPage';
 import HelpCenter from './components/public/HelpCenter';
+import NewComplaintForm from './components/public/NewComplaintForm';
+import TestForm from './components/public/TestForm';
 import UserLogin from './components/auth/UserLogin';
 import UserSignup from './components/auth/UserSignup';
 import BrandLogin from './components/auth/BrandLogin';
@@ -42,6 +44,11 @@ import AdminReports from './components/admin/AdminReports';
 import BrandManage from './components/brand/BrandManage';
 import AdminSecurity from './components/admin/AdminSecurity';
 import TestingDashboard from './components/TestingDashboard';
+import TestingPage from './components/TestingPage';
+import DebugAuth from './components/DebugAuth';
+import BrandAuthTest from './components/BrandAuthTest';
+import WebChatTest from './components/public/WebChatTest';
+import VoiceTest from './components/public/VoiceTest';
 
 import './App.css';
 import './utils/responsive.css';
@@ -52,16 +59,42 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 const ProtectedRoute = ({ children, roles }) => {
   const { isAuthenticated, user, loading, mockupMode } = useAuth();
   
-  if (loading) { return <div>Loading...</div>; }
+  console.log('🔒 ProtectedRoute check:', {
+    isAuthenticated,
+    userRole: user?.role,
+    allowedRoles: roles,
+    loading,
+    mockupMode,
+    user: user
+  });
+  
+  if (loading) { 
+    console.log('⏳ Loading...');
+    return <div>Loading...</div>; 
+  }
   
   // In mockup mode, allow access to all routes
   if (mockupMode) {
+    console.log('🔧 Mockup mode - allowing access');
     return children;
   }
   
   // Normal authentication flow
-  if (!isAuthenticated) { return <Navigate to="/login" replace />; }
-  if (roles && !roles.includes(user?.role)) { return <Navigate to="/unauthorized" replace />; }
+  if (!isAuthenticated) { 
+    console.log('🔒 Not authenticated, redirecting to login');
+    return <Navigate to="/login" replace />; 
+  }
+  
+  if (roles && !roles.includes(user?.role)) { 
+    console.log('🚫 Role check failed:', {
+      userRole: user?.role,
+      allowedRoles: roles,
+      user: user
+    });
+    return <Navigate to="/unauthorized" replace />; 
+  }
+  
+  console.log('✅ Access granted for role:', user?.role);
   return children;
 };
 
@@ -74,6 +107,7 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/complaints" element={<PublicComplaints />} />
+            <Route path="/submit-complaint" element={<TestForm />} />
             <Route path="/track-complaint" element={<ComplaintTracking />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/help" element={<HelpCenter />} />
@@ -86,6 +120,11 @@ function App() {
             <Route path="/team-invitation/:token" element={<TeamInvitation />} />
             <Route path="/responsive-test" element={<ResponsiveTest />} />
             <Route path="/test" element={<TestingDashboard />} />
+            <Route path="/auth-test" element={<TestingPage />} />
+            <Route path="/debug-auth" element={<DebugAuth />} />
+            <Route path="/brand-auth-test" element={<BrandAuthTest />} />
+            <Route path="/chat-test" element={<WebChatTest />} />
+            <Route path="/voice-test" element={<VoiceTest />} />
             
             {/* User Portal Routes */}
             <Route path="/dashboard" element={<ProtectedRoute roles={['user']}><UserDashboard /></ProtectedRoute>} />

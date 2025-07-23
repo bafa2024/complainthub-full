@@ -6,15 +6,9 @@ from celery import Celery
 from celery.schedules import crontab
 from app.config.settings import settings
 from datetime import datetime, timedelta
-<<<<<<< HEAD
 from app.database.session import SessionLocal
 from app.services.followup_service import FollowUpService
-from app.models.followup_log import FollowUpLog
-=======
-from app.database import SessionLocal
-from app.services.followup_service import FollowUpService
 from app.models import FollowUpLog
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 
 logger = logging.getLogger(__name__)
 
@@ -143,11 +137,7 @@ celery_app.conf.beat_schedule = {
     # Monthly tasks (1st of month 7 AM UTC)
     "monthly-billing-reports": {
         "task": "app.tasks.billing_tasks.generate_monthly_billing_reports",
-<<<<<<< HEAD
-        "schedule": crontab(day=1, hour=7, minute=0),  # 1st of month 7 AM
-=======
         "schedule": crontab(day_of_month=1, hour=7, minute=0),  # 1st of month 7 AM
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     },
 }
 

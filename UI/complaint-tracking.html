@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Complaint - ComplaintHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        /* Main Container */
+        .main-container {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Search Section */
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .search-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .search-subtitle {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .search-btn {
+            padding: 12px 30px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #2980b9;
+        }
+        
+        /* Complaint Details */
+        .complaint-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+        }
+        
+        .complaint-container.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Complaint Header */
+        .complaint-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 30px;
+        }
+        
+        .ticket-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .complaint-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* Status Section */
+        .status-section {
+            padding: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .current-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .status-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        
+        .status-icon.new {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-icon.progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-icon.resolved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-icon.reopened {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-info h3 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .status-info p {
+            color: #7f8c8d;
+        }
+        
+        /* Progress Timeline */
+        .progress-timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .progress-timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 2px;
+            background: #3498db;
+            z-index: 1;
+            transition: width 0.5s ease;
+        }
+        
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .timeline-step.completed .step-circle {
+            background: #27ae60;
+        }
+        
+        .timeline-step.active .step-circle {
+            background: #3498db;
+            transform: scale(1.1);
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .timeline-step.completed .step-label,
+        .timeline-step.active .step-label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .detail-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        /* Timeline Section */
+        .timeline-section {
+            padding: 30px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: -30px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .timeline-marker.complaint {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+        
+        .timeline-marker.response {
+            border-color: #27ae60;
+            color: #27ae60;
+        }
+        
+        .timeline-marker.update {
+            border-color: #f39c12;
+            color: #f39c12;
+        }
+        
+        .timeline-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .timeline-message {
+            color: #495057;
+            line-height: 1.6;
+        }
+        
+        /* Action Section */
+        .action-section {
+            padding: 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Not Found State */
+        .not-found {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .not-found.show {
+            display: block;
+        }
+        
+        .not-found-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .not-found h3 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .not-found p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        /* Public/Private Toggle */
+        .visibility-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: #e0e0e0;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #3498db;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .toggle-switch.active::after {
+            left: 27px;
+        }
+        
+        /* Rating Section */
+        .rating-section {
+            background: #d4edda;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 30px;
+        }
+        
+        .rating-stars {
+            font-size: 36px;
+            margin: 20px 0;
+        }
+        
+        .rating-stars span {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .rating-stars span:hover {
+            transform: scale(1.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .search-btn {
+                width: 100%;
+            }
+            
+            .complaint-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .current-status {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .progress-timeline {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .timeline-step {
+                min-width: 100px;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">ComplaintHub</div>
+            <div class="header-nav">
+                <a href="user-dashboard.html" class="btn btn-secondary">Dashboard</a>
+                <a href="index.html" class="btn btn-primary">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Search Section -->
+        <div class="search-section">
+            <h1 class="search-title">Track Your Complaint</h1>
+            <p class="search-subtitle">Enter your complaint ticket number to see real-time status</p>
+            
+            <form class="search-form" onsubmit="trackComplaint(event)">
+                <input type="text" class="search-input" id="ticketInput" placeholder="Enter ticket number (e.g., CMP-2024-001)" required>
+                <button type="submit" class="search-btn">Track</button>
+            </form>
+        </div>
+
+        <!-- Complaint Details (Initially Hidden) -->
+        <div class="complaint-container" id="complaintDetails">
+            <!-- Complaint Header -->
+            <div class="complaint-header">
+                <h2 class="ticket-number" id="ticketNumber">#CMP-2024-001</h2>
+                <div class="complaint-meta">
+                    <span>📅 Filed on Dec 15, 2024</span>
+                    <span>🏢 TechGiant Electronics</span>
+                    <span>📞 Voice Complaint</span>
+                </div>
+            </div>
+
+            <!-- Status Section -->
+            <div class="status-section">
+                <div class="current-status">
+                    <div class="status-icon progress" id="statusIcon">
+                        ⚡
+                    </div>
+                    <div class="status-info">
+                        <h3 id="statusText">In Progress</h3>
+                        <p id="statusDesc">Your complaint is being actively reviewed by the brand</p>
+                    </div>
+                    <div style="margin-left: auto;">
+                        <div class="visibility-toggle">
+                            <span>Make Public</span>
+                            <div class="toggle-switch" id="visibilityToggle" onclick="toggleVisibility()"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Timeline -->
+                <div class="progress-timeline">
+                    <div class="progress-line" id="progressLine" style="width: 66%;"></div>
+                    
+                    <div class="timeline-step completed">
+                        <div class="step-circle">✓</div>
+                        <div class="step-label">Complaint Filed</div>
+                    </div>
+                    <div class="timeline-step completed">
+                        <div class="step-circle">✓</div>
+                        <div class="step-label">Brand Notified</div>
+                    </div>
+                    <div class="timeline-step active">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Under Review</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Resolved</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Grid -->
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="detail-label">Complaint Type</div>
+                    <div class="detail-value">Product Quality</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Category</div>
+                    <div class="detail-value">Electronics - Laptop</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Priority Level</div>
+                    <div class="detail-value" style="color: #e74c3c;">High Priority</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Expected Resolution</div>
+                    <div class="detail-value">Within 24 hours</div>
+                </div>
+            </div>
+
+            <!-- Timeline Section -->
+            <div class="timeline-section">
+                <h3 class="section-title">Activity Timeline</h3>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker response">✓</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-title">Brand Response</span>
+                                <span class="timeline-time">Today, 10:30 AM</span>
+                            </div>
+                            <div class="timeline-message">
+                                We have received your complaint and are investigating the issue with your laptop screen. 
+                                Our technical team will review your case and get back to you within 24 hours with a resolution.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker update">🔔</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-title">Status Update</span>
+                                <span class="timeline-time">Dec 15, 3:00 PM</span>
+                            </div>
+                            <div class="timeline-message">
+                                Your complaint has been assigned to a specialist team for review.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker complaint">📢</div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-title">Complaint Filed</span>
+                                <span class="timeline-time">Dec 15, 2:30 PM</span>
+                            </div>
+                            <div class="timeline-message">
+                                Laptop screen showing dead pixels after 2 weeks of purchase. This is unacceptable for a premium product. 
+                                Need immediate replacement or refund. Order number: ORD-2024-8976543.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Section -->
+            <div class="action-section">
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="addUpdate()">Add Update</button>
+                    <button class="btn btn-secondary" onclick="contactBrand()">Contact Brand</button>
+                    <button class="btn btn-danger" onclick="escalate()">Escalate Issue</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resolved Complaint Section (Alternative View) -->
+        <div class="complaint-container" id="resolvedComplaint" style="display: none;">
+            <!-- Similar structure but for resolved complaints -->
+            <div class="complaint-header" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                <h2 class="ticket-number">#CMP-2024-002</h2>
+                <div class="complaint-meta">
+                    <span>📅 Filed on Dec 10, 2024</span>
+                    <span>🏢 FastFashion Store</span>
+                    <span>💬 Chat Complaint</span>
+                </div>
+            </div>
+
+            <div class="status-section">
+                <div class="current-status">
+                    <div class="status-icon resolved">
+                        ✅
+                    </div>
+                    <div class="status-info">
+                        <h3>Resolved</h3>
+                        <p>Your complaint has been successfully resolved</p>
+                    </div>
+                </div>
+
+                <!-- Progress Timeline - All Completed -->
+                <div class="progress-timeline">
+                    <div class="progress-line" style="width: 100%;"></div>
+                    
+                    <div class="timeline-step completed">
+                        <div class="step-circle">✓</div>
+                        <div class="step-label">Complaint Filed</div>
+                    </div>
+                    <div class="timeline-step completed">
+                        <div class="step-circle">✓</div>
+                        <div class="step-label">Brand Notified</div>
+                    </div>
+                    <div class="timeline-step completed">
+                        <div class="step-circle">✓</div>
+                        <div class="step-label">Under Review</div>
+                    </div>
+                    <div class="timeline-step completed">
+                        <div class="step-circle">✓</div>
+                        <div class="step-label">Resolved</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating Section -->
+            <div class="rating-section">
+                <h3>How was your experience?</h3>
+                <p>Rate the brand's response to your complaint</p>
+                <div class="rating-stars" id="ratingStars">
+                    <span onclick="setRating(1)">⭐</span>
+                    <span onclick="setRating(2)">⭐</span>
+                    <span onclick="setRating(3)">⭐</span>
+                    <span onclick="setRating(4)">⭐</span>
+                    <span onclick="setRating(5)">⭐</span>
+                </div>
+                <button class="btn btn-success" onclick="submitRating()">Submit Rating</button>
+            </div>
+
+            <!-- Resolution Details -->
+            <div class="timeline-section">
+                <h3 class="section-title">Resolution Summary</h3>
+                <div class="timeline-content" style="background: #d4edda; border-color: #c3e6cb;">
+                    <div class="timeline-header">
+                        <span class="timeline-title" style="color: #155724;">Final Resolution</span>
+                        <span class="timeline-time">Dec 12, 2024, 4:00 PM</span>
+                    </div>
+                    <div class="timeline-message" style="color: #155724;">
+                        We have processed a full refund for your order. The amount of ₹2,499 will be credited to your account within 5-7 business days. 
+                        We apologize for the inconvenience and have taken steps to improve our quality control process.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Not Found State -->
+        <div class="not-found" id="notFound">
+            <div class="not-found-icon">🔍</div>
+            <h3>Complaint Not Found</h3>
+            <p>We couldn't find a complaint with that ticket number.</p>
+            <p>Please check your ticket number and try again.</p>
+            <button class="btn btn-primary" onclick="resetSearch()">Try Again</button>
+        </div>
+    </main>
+
+    <!-- Add Update Modal -->
+    <div id="updateModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 20px;">Add Update to Your Complaint</h3>
+            <textarea style="width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 6px; resize: vertical; min-height: 100px;" placeholder="Provide additional information or updates..."></textarea>
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeUpdateModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitUpdate()">Submit Update</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Track Complaint
+        function trackComplaint(event) {
+            event.preventDefault();
+            
+            const ticketNumber = document.getElementById('ticketInput').value.toUpperCase();
+            
+            // Hide all sections first
+            document.getElementById('complaintDetails').classList.remove('show');
+            document.getElementById('resolvedComplaint').style.display = 'none';
+            document.getElementById('notFound').classList.remove('show');
+            
+            // Simulate API call
+            setTimeout(() => {
+                if (ticketNumber === 'CMP-2024-001') {
+                    // Show in-progress complaint
+                    document.getElementById('complaintDetails').classList.add('show');
+                    document.getElementById('ticketNumber').textContent = '#' + ticketNumber;
+                } else if (ticketNumber === 'CMP-2024-002') {
+                    // Show resolved complaint
+                    document.getElementById('resolvedComplaint').style.display = 'block';
+                    document.getElementById('resolvedComplaint').classList.add('show');
+                } else {
+                    // Show not found
+                    document.getElementById('notFound').classList.add('show');
+                }
+                
+                // Scroll to results
+                window.scrollTo({
+                    top: document.querySelector('.search-section').offsetHeight + 100,
+                    behavior: 'smooth'
+                });
+            }, 500);
+        }
+
+        // Toggle Visibility
+        function toggleVisibility() {
+            const toggle = document.getElementById('visibilityToggle');
+            toggle.classList.toggle('active');
+            
+            if (toggle.classList.contains('active')) {
+                alert('Your complaint is now public and visible to other users');
+            } else {
+                alert('Your complaint is now private');
+            }
+        }
+
+        // Action Functions
+        function addUpdate() {
+            document.getElementById('updateModal').style.display = 'flex';
+        }
+
+        function closeUpdateModal() {
+            document.getElementById('updateModal').style.display = 'none';
+        }
+
+        function submitUpdate() {
+            alert('Your update has been added to the complaint');
+            closeUpdateModal();
+            
+            // Add new timeline item (in production, this would be dynamic)
+            const timeline = document.querySelector('.timeline');
+            const newItem = document.createElement('div');
+            newItem.className = 'timeline-item';
+            newItem.innerHTML = `
+                <div class="timeline-marker update">💬</div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <span class="timeline-title">Customer Update</span>
+                        <span class="timeline-time">Just now</span>
+                    </div>
+                    <div class="timeline-message">
+                        ${document.querySelector('#updateModal textarea').value}
+                    </div>
+                </div>
+            `;
+            timeline.insertBefore(newItem, timeline.firstChild);
+        }
+
+        function contactBrand() {
+            alert('Opening communication channel with TechGiant Electronics...');
+        }
+
+        function escalate() {
+            if (confirm('Are you sure you want to escalate this complaint to senior management?')) {
+                alert('Your complaint has been escalated. You will receive a response within 24 hours.');
+            }
+        }
+
+        function resetSearch() {
+            document.getElementById('ticketInput').value = '';
+            document.getElementById('complaintDetails').classList.remove('show');
+            document.getElementById('resolvedComplaint').style.display = 'none';
+            document.getElementById('notFound').classList.remove('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Rating Functions
+        let selectedRating = 0;
+
+        function setRating(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('#ratingStars span');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.style.color = '#f39c12';
+                    star.style.transform = 'scale(1.2)';
+                } else {
+                    star.style.color = '#ccc';
+                    star.style.transform = 'scale(1)';
+                }
+            });
+        }
+
+        function submitRating() {
+            if (selectedRating === 0) {
+                alert('Please select a rating');
+                return;
+            }
+            alert(`Thank you for rating ${selectedRating} stars! Your feedback helps improve service quality.`);
+        }
+
+        // Animate progress bar on load
+        window.addEventListener('load', () => {
+            const progressLine = document.getElementById('progressLine');
+            if (progressLine) {
+                setTimeout(() => {
+                    progressLine.style.width = '66%';
+                }, 500);
+            }
+        });
+
+        // Allow tracking by pressing Enter
+        document.getElementById('ticketInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                trackComplaint(e);
+            }
+        });
+    </script>
+</body>
+</html>

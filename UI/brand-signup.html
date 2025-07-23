@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Your Brand - ComplaintHub Business</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .signup-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .signup-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .business-badge {
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #3498db;
+            text-decoration: none;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .signup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .signup-header h2 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .signup-header p {
+            color: #7f8c8d;
+        }
+        
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #7f8c8d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .step.active .step-circle {
+            background: #3498db;
+            color: white;
+        }
+        
+        .step.completed .step-circle {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .step.active .step-label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        /* Form Styles */
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-help {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+            margin-right: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        .auth-footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            display: none;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-steps {
+                margin-bottom: 30px;
+            }
+            
+            .step-label {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-card">
+            <span class="business-badge">BUSINESS PORTAL</span>
+            
+            <a href="index.html" class="back-link">
+                <span>←</span> Back to Home
+            </a>
+            
+            <div class="signup-header">
+                <h2>Register Your Brand</h2>
+                <p>Join thousands of brands providing better customer service</p>
+            </div>
+            
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step active" id="step1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Business Info</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Account Setup</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Verification</div>
+                </div>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            
+            <!-- Step 1: Business Information -->
+            <form id="signupForm">
+                <div class="form-section active" id="section1">
+                    <div class="form-group full-width">
+                        <label class="form-label">Company Name <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="companyName" placeholder="Your Company Name" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Industry <span class="required">*</span></label>
+                            <select class="form-control" id="industry" required>
+                                <option value="">Select Industry</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="fashion">Fashion & Apparel</option>
+                                <option value="food">Food & Beverage</option>
+                                <option value="healthcare">Healthcare</option>
+                                <option value="finance">Finance</option>
+                                <option value="retail">Retail</option>
+                                <option value="services">Services</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Number of Employees</label>
+                            <select class="form-control" id="employees">
+                                <option value="">Select Range</option>
+                                <option value="1-10">1-10</option>
+                                <option value="11-50">11-50</option>
+                                <option value="51-200">51-200</option>
+                                <option value="201-500">201-500</option>
+                                <option value="500+">500+</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label class="form-label">Business Registration Number</label>
+                        <input type="text" class="form-control" id="regNumber" placeholder="GST/VAT/Registration Number (Optional)">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Support Email <span class="required">*</span></label>
+                            <input type="email" class="form-control" id="supportEmail" placeholder="support@yourcompany.com" required>
+                            <p class="form-help">Complaint notifications will be sent here</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Support Phone</label>
+                            <input type="tel" class="form-control" id="supportPhone" placeholder="+91 98765 43210">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label class="form-label">Company Website</label>
+                        <input type="url" class="form-control" id="website" placeholder="https://yourcompany.com">
+                    </div>
+                    
+                    <div class="form-navigation">
+                        <div></div>
+                        <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next: Account Setup →</button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Account Setup -->
+                <div class="form-section" id="section2">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">First Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="firstName" placeholder="John" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Last Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="lastName" placeholder="Doe" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label class="form-label">Your Business Email <span class="required">*</span></label>
+                        <input type="email" class="form-control" id="adminEmail" placeholder="admin@yourcompany.com" required>
+                        <p class="form-help">You'll use this to login to your dashboard</p>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Create Password <span class="required">*</span></label>
+                            <input type="password" class="form-control" id="password" placeholder="Min. 8 characters" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password <span class="required">*</span></label>
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter password" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label class="form-label">Your Role</label>
+                        <select class="form-control" id="role">
+                            <option value="owner">Owner/CEO</option>
+                            <option value="manager">Customer Service Manager</option>
+                            <option value="support">Support Head</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep(1)">← Previous</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep(3)">Next: Verification →</button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Verification & Terms -->
+                <div class="form-section" id="section3">
+                    <div class="form-group full-width">
+                        <label class="form-label">How did you hear about us?</label>
+                        <select class="form-control" id="source">
+                            <option value="">Please select</option>
+                            <option value="search">Google/Search Engine</option>
+                            <option value="social">Social Media</option>
+                            <option value="referral">Friend/Colleague Referral</option>
+                            <option value="ad">Advertisement</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 15px;">Pricing Information</h4>
+                        <ul style="margin-left: 20px; color: #495057;">
+                            <li>Free access to feedback, suggestions, and support tickets</li>
+                            <li>Complaints are free if resolved within 24 hours</li>
+                            <li>₹50 charge per complaint if not resolved after 24 hours</li>
+                            <li>Credits can be purchased and topped up anytime</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: flex; align-items: start; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="terms" required style="margin-top: 3px;">
+                            <span style="font-size: 14px;">
+                                I agree to the <a href="#">Terms of Service</a>, <a href="#">Privacy Policy</a>, 
+                                and understand the pricing model
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: flex; align-items: start; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="newsletter">
+                            <span style="font-size: 14px;">
+                                Send me tips and updates about improving customer service
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep(2)">← Previous</button>
+                        <button type="submit" class="btn btn-primary">Complete Registration</button>
+                    </div>
+                </div>
+                
+                <!-- Success Message -->
+                <div class="success-message" id="successMessage">
+                    <h3>🎉 Registration Successful!</h3>
+                    <p style="margin: 15px 0;">Welcome to ComplaintHub Business Portal</p>
+                    <p>We've sent a verification email to your registered email address.</p>
+                    <p style="margin-top: 20px;">
+                        <a href="brand-login.html" class="btn btn-primary">Go to Login</a>
+                    </p>
+                </div>
+            </form>
+            
+            <div class="auth-footer">
+                Already registered? <a href="brand-login.html">Login to Dashboard</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentStep = 1;
+        
+        function showStep(step) {
+            // Hide all sections
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show current section
+            document.getElementById(`section${step}`).classList.add('active');
+            
+            // Update progress steps
+            document.querySelectorAll('.step').forEach((stepEl, index) => {
+                stepEl.classList.remove('active', 'completed');
+                if (index + 1 < step) {
+                    stepEl.classList.add('completed');
+                } else if (index + 1 === step) {
+                    stepEl.classList.add('active');
+                }
+            });
+        }
+        
+        function nextStep(step) {
+            // Validate current step
+            if (!validateStep(currentStep)) {
+                return;
+            }
+            
+            currentStep = step;
+            showStep(step);
+            window.scrollTo(0, 0);
+        }
+        
+        function prevStep(step) {
+            currentStep = step;
+            showStep(step);
+            window.scrollTo(0, 0);
+        }
+        
+        function validateStep(step) {
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            if (step === 1) {
+                const companyName = document.getElementById('companyName').value;
+                const industry = document.getElementById('industry').value;
+                const supportEmail = document.getElementById('supportEmail').value;
+                
+                if (!companyName || !industry || !supportEmail) {
+                    showError('Please fill in all required fields');
+                    return false;
+                }
+                
+                if (!isValidEmail(supportEmail)) {
+                    showError('Please enter a valid support email');
+                    return false;
+                }
+            } else if (step === 2) {
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const adminEmail = document.getElementById('adminEmail').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (!firstName || !lastName || !adminEmail || !password || !confirmPassword) {
+                    showError('Please fill in all required fields');
+                    return false;
+                }
+                
+                if (!isValidEmail(adminEmail)) {
+                    showError('Please enter a valid email');
+                    return false;
+                }
+                
+                if (password.length < 8) {
+                    showError('Password must be at least 8 characters');
+                    return false;
+                }
+                
+                if (password !== confirmPassword) {
+                    showError('Passwords do not match');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+        
+        // Form submission
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!document.getElementById('terms').checked) {
+                showError('Please accept the terms and conditions');
+                return;
+            }
+            
+            // Hide form and show success message
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.querySelector('.progress-steps').style.display = 'none';
+            document.querySelector('.auth-footer').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

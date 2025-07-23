@@ -9,50 +9,263 @@ import uuid
 from app.api.v1.deps import get_db, get_current_user
 from app.core.conversation_manager import ConversationManager
 from app.core.ai_engine import AIEngine
-from app.models import User, Brand, ConversationSession, ConversationTurn, FollowUpTemplate
+from app.models import User, Brand, ConversationSession, ConversationTurn, FollowUpTemplate, Ticket
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.post("/process-message")
-def process_message(
-    session_id: str,
-    message: str,
-    brand_id: int,
-    channel: str = "web",
-    language: str = "en",
-    user_id: Optional[int] = None,
+@router.post("/chat")
+async def process_chat_message(
+    request: dict,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Process a user message with contextual follow-ups"""
+    """
+    Process a chat message from user and return AI response.
+    This is the main conversational AI endpoint.
+    """
     try:
-        # Check if user has access to this brand
-        if current_user.role != "admin" and current_user.brand_id != brand_id:
-            raise HTTPException(status_code=403, detail="Access denied to this brand")
+        logger.info(f"Processing chat message from user {current_user.id}")
         
+        message = request.get("message", "")
+        brand_id = request.get("brand_id")
+        channel_type = request.get("channel_type", "webchat")
+        language = request.get("language", "en")
+        brand_context = request.get("brand_context", "")
+        
+        # Initialize AI engine
         ai_engine = AIEngine()
-        conversation_manager = ConversationManager(db, ai_engine)
         
-        result = conversation_manager.process_message(
-            session_id=session_id,
-            user_message=message,
-            brand_id=brand_id,
-            channel=channel,
-            language=language,
-            user_id=user_id or current_user.id
+        # Get or create conversation session
+        session_id = request.get("session_id") or str(uuid.uuid4())
+        
+        # Get conversation history (simplified for now)
+        conversation_history = []
+        
+        # Process message with AI
+        ai_response = await process_message_with_ai(
+            message, conversation_history, brand_context, language, current_user.id, ai_engine
         )
+        
+        # If AI suggests creating a ticket, create it
+        ticket_id = None
+        if ai_response.get("create_ticket", False):
+            ticket_data = ai_response.get("ticket_data", {})
+            try:
+                # Create ticket using ticket service
+                from app.services.ticket_service import TicketService
+                ticket_service = TicketService(db)
+                
+                ticket = ticket_service.create_ticket(
+                    title=ticket_data.get("title", "Customer inquiry via chat"),
+                    description=ticket_data.get("description", message),
+                    category=ticket_data.get("category", "complaint"),
+                    urgency=ticket_data.get("urgency", "medium"),
+                    user_id=current_user.id,
+                    brand_id=brand_id,
+                    language=language,
+                    channel=channel_type,
+                    metadata={
+                        "session_id": session_id,
+                        "ai_analysis": ai_response.get("metadata", {}),
+                        "sentiment_score": ticket_data.get("sentiment_score", 0.0),
+                        "toxicity_score": ticket_data.get("metadata", {}).get("toxicity_score", 0.0)
+                    }
+                )
+                
+                ticket_id = ticket.id
+                logger.info(f"Created ticket {ticket_id} from conversation session {session_id}")
+                
+            except Exception as e:
+                logger.error(f"Failed to create ticket from conversation: {e}")
+                # Continue without ticket creation
         
         return {
             "success": True,
+            "response": ai_response["response"],
             "session_id": session_id,
-            "response": result
+            "metadata": ai_response.get("metadata", {}),
+            "requires_followup": ai_response.get("requires_followup", False),
+            "ticket_created": ai_response.get("create_ticket", False),
+            "ticket_id": ticket_id,
+            "suggested_actions": ai_response.get("suggested_actions", [])
         }
         
     except Exception as e:
-        logger.error(f"Error processing message: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error processing chat message: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+async def process_message_with_ai(
+    message: str, 
+    conversation_history: List[Dict[str, Any]], 
+    brand_context: str = "",
+    language: str = "en",
+    user_id: int = None,
+    ai_engine: AIEngine = None
+) -> Dict[str, Any]:
+    """Process message with AI engine and return structured response."""
+    try:
+        if not ai_engine:
+            ai_engine = AIEngine()
+            
+        # Detect language if not specified
+        if not language or language == "auto":
+            language_detection = ai_engine.detect_language(message)
+            language = language_detection["language_code"]
+        
+        # Analyze message with context
+        analysis = ai_engine.analyze_text_with_context(message, brand_context)
+        
+        # Determine if this is a complete complaint or needs follow-up
+        follow_up_needed = should_ask_followup(analysis, conversation_history)
+        
+        if follow_up_needed:
+            # Generate follow-up question
+            response = ai_engine.generate_follow_up_question(
+                conversation_history, brand_context, language
+            )
+            
+            return {
+                "response": response,
+                "requires_followup": True,
+                "create_ticket": False,
+                "metadata": {
+                    "analysis": analysis,
+                    "language": language,
+                    "conversation_turns": len(conversation_history)
+                }
+            }
+        else:
+            # Generate final response and prepare ticket data
+            response = generate_completion_response(analysis, language)
+            ticket_data = extract_ticket_data(analysis, conversation_history, brand_context)
+            
+            return {
+                "response": response,
+                "requires_followup": False,
+                "create_ticket": True,
+                "ticket_data": ticket_data,
+                "metadata": {
+                    "analysis": analysis,
+                    "language": language,
+                    "conversation_turns": len(conversation_history)
+                },
+                "suggested_actions": ["create_ticket", "send_confirmation"]
+            }
+        
+    except Exception as e:
+        logger.error(f"Error processing message with AI: {e}")
+        return {
+            "response": "I understand your concern. Let me help you with that. Could you please provide more details?",
+            "requires_followup": True,
+            "create_ticket": False,
+            "metadata": {"error": str(e)}
+        }
+
+def should_ask_followup(analysis: Dict[str, Any], conversation_history: List[Dict[str, Any]]) -> bool:
+    """Determine if follow-up questions are needed."""
+    try:
+        # Check conversation length (max 5 turns)
+        user_messages = [msg for msg in conversation_history if msg.get("role") == "user"]
+        if len(user_messages) >= 5:
+            return False  # Stop asking questions after 5 user messages
+        
+        # Check if essential information is missing
+        intent_analysis = analysis.get("intent_analysis", {})
+        
+        # For complaints, check for essential details
+        if intent_analysis.get("category") == "complaint":
+            extracted_details = intent_analysis.get("extracted_details", "")
+            
+            # Check for missing order number, product details, etc.
+            missing_info = []
+            if not any(keyword in extracted_details.lower() for keyword in ["order", "#", "product", "item"]):
+                missing_info.append("product_order_info")
+            
+            if not any(keyword in extracted_details.lower() for keyword in ["date", "when", "yesterday", "today"]):
+                missing_info.append("date_info")
+            
+            return len(missing_info) > 0
+        
+        # For other categories, check if we have enough detail
+        if len(intent_analysis.get("extracted_details", "")) < 20:
+            return True
+        
+        return False
+        
+    except Exception as e:
+        logger.error(f"Error determining follow-up need: {e}")
+        return False
+
+def generate_completion_response(analysis: Dict[str, Any], language: str) -> str:
+    """Generate completion response when conversation is done."""
+    try:
+        intent_analysis = analysis.get("intent_analysis", {})
+        category = intent_analysis.get("category", "complaint")
+        
+        responses = {
+            "en": {
+                "complaint": "Thank you for providing the details. I've recorded your complaint and created a ticket for you. Our team will review this and get back to you within 24 hours. You'll receive a confirmation email shortly with your ticket number.",
+                "feedback": "Thank you for your valuable feedback. We've recorded your suggestions and will share them with the relevant team for consideration.",
+                "support": "Thank you for reaching out. I've created a support ticket for your inquiry. Our technical team will assist you shortly.",
+                "general": "Thank you for contacting us. I've recorded your message and our team will respond to you soon."
+            },
+            "hi": {
+                "complaint": "विवरण प्रदान करने के लिए धन्यवाद। मैंने आपकी शिकायत दर्ज की है और आपके लिए एक टिकट बनाया है। हमारी टीम इसकी समीक्षा करेगी और 24 घंटों के भीतर आपसे संपर्क करेगी।",
+                "feedback": "आपकी मूल्यवान प्रतिक्रिया के लिए धन्यवाद। हमने आपके सुझावों को दर्ज किया है।",
+                "support": "संपर्क करने के लिए धन्यवाद। मैंने आपकी पूछताछ के लिए एक सहायता टिकट बनाया है।",
+                "general": "हमसे संपर्क करने के लिए धन्यवाद। मैंने आपका संदेश दर्ज किया है।"
+            }
+        }
+        
+        lang_responses = responses.get(language, responses["en"])
+        return lang_responses.get(category, lang_responses["general"])
+        
+    except Exception as e:
+        logger.error(f"Error generating completion response: {e}")
+        return "Thank you for contacting us. We've recorded your message and will respond soon."
+
+def extract_ticket_data(
+    analysis: Dict[str, Any], 
+    conversation_history: List[Dict[str, Any]], 
+    brand_context: str
+) -> Dict[str, Any]:
+    """Extract ticket data from conversation analysis."""
+    try:
+        intent_analysis = analysis.get("intent_analysis", {})
+        sentiment_analysis = analysis.get("sentiment_analysis", {})
+        
+        # Combine all user messages
+        user_messages = [msg.get("content", "") for msg in conversation_history if msg.get("role") == "user"]
+        full_conversation = "\n".join(user_messages)
+        
+        return {
+            "title": intent_analysis.get("title", "Customer inquiry via chat"),
+            "description": full_conversation,
+            "category": intent_analysis.get("category", "complaint"),
+            "urgency": intent_analysis.get("urgency", "medium"),
+            "abuse_flag": intent_analysis.get("abuse_flag", False),
+            "sentiment_score": sentiment_analysis.get("combined_sentiment", {}).get("sentiment_score", 0.0),
+            "extracted_details": intent_analysis.get("extracted_details", ""),
+            "language": analysis.get("language_info", {}).get("language_code", "en"),
+            "channel": "webchat",
+            "metadata": {
+                "conversation_turns": len(conversation_history),
+                "ai_confidence": intent_analysis.get("ml_confidence", 0.5),
+                "toxicity_score": analysis.get("toxicity_analysis", {}).get("toxicity_score", 0.0)
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error extracting ticket data: {e}")
+        return {
+            "title": "Customer inquiry via chat",
+            "description": "Customer contacted via chat",
+            "category": "complaint",
+            "urgency": "medium",
+            "abuse_flag": False
+        }
 
 @router.get("/session/{session_id}/history")
 def get_conversation_history(

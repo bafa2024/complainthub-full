@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 200px; }
+        .result { margin-top: 10px; padding: 10px; background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <h1>Authentication Test</h1>
+    
+    <div class="test-section">
+        <h3>1. Backend Health Check</h3>
+        <button onclick="testHealth()">Test Backend Health</button>
+        <div id="health-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. User Signup</h3>
+        <input type="email" id="signup-email" placeholder="Email" value="test@example.com">
+        <input type="text" id="signup-name" placeholder="Full Name" value="Test User">
+        <input type="text" id="signup-phone" placeholder="Phone" value="+1234567890">
+        <input type="password" id="signup-password" placeholder="Password" value="password123">
+        <br>
+        <button onclick="testSignup()">Test Signup</button>
+        <div id="signup-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. User Login</h3>
+        <input type="email" id="login-email" placeholder="Email" value="test@example.com">
+        <input type="password" id="login-password" placeholder="Password" value="password123">
+        <br>
+        <button onclick="testLogin()">Test Login</button>
+        <div id="login-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Get Current User</h3>
+        <button onclick="testGetUser()">Test Get Current User</button>
+        <div id="user-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8001/api/v1';
+        let currentToken = null;
+
+        function showResult(elementId, success, message, data = null) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${success ? 'success' : 'error'}`;
+            element.innerHTML = `
+                <strong>${success ? '✅ Success' : '❌ Error'}:</strong> ${message}
+                ${data ? `<br><pre>${JSON.stringify(data, null, 2)}</pre>` : ''}
+            `;
+        }
+
+        async function testHealth() {
+            try {
+                const response = await fetch('http://localhost:8001/health');
+                const data = await response.json();
+                showResult('health-result', response.ok, 'Backend is running', data);
+            } catch (error) {
+                showResult('health-result', false, `Backend not accessible: ${error.message}`);
+            }
+        }
+
+        async function testSignup() {
+            try {
+                const userData = {
+                    email: document.getElementById('signup-email').value,
+                    full_name: document.getElementById('signup-name').value,
+                    phone_number: document.getElementById('signup-phone').value,
+                    password: document.getElementById('signup-password').value
+                };
+
+                const response = await fetch(`${API_BASE}/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+                showResult('signup-result', response.ok, 
+                    response.ok ? 'User created successfully' : data.detail || 'Signup failed', data);
+            } catch (error) {
+                showResult('signup-result', false, `Signup error: ${error.message}`);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const formData = new FormData();
+                formData.append('username', document.getElementById('login-email').value);
+                formData.append('password', document.getElementById('login-password').value);
+
+                const response = await fetch(`${API_BASE}/login/access-token`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    currentToken = data.access_token;
+                    showResult('login-result', true, 'Login successful', data);
+                } else {
+                    showResult('login-result', false, data.detail || 'Login failed', data);
+                }
+            } catch (error) {
+                showResult('login-result', false, `Login error: ${error.message}`);
+            }
+        }
+
+        async function testGetUser() {
+            if (!currentToken) {
+                showResult('user-result', false, 'No token available. Please login first.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/users/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                showResult('user-result', response.ok, 
+                    response.ok ? 'User data retrieved' : data.detail || 'Failed to get user', data);
+            } catch (error) {
+                showResult('user-result', false, `Get user error: ${error.message}`);
+            }
+        }
+
+        // Auto-test on page load
+        window.onload = function() {
+            testHealth();
+        };
+    </script>
+</body>
+</html> 

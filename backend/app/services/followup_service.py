@@ -6,11 +6,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List
 from sqlalchemy.orm import Session
 from app.models import Ticket, User, Brand, FollowUpLog
-<<<<<<< HEAD
-from app.schemas import FollowUpCreate, FollowUpUpdate
-=======
 from app.schemas import FollowUpLogCreate, FollowUpLogUpdate
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 from app.adapters.twilio_adapter import TwilioAdapter
 from app.adapters.whatsapp_adapter import WhatsAppAdapter
 from app.services.notifications import send_email

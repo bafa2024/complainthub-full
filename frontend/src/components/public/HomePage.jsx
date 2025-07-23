@@ -2,6 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 
+// Import UI styles from original design
+const uiStyles = `
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f5;
+    color: #2c3e50;
+    line-height: 1.6;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
 const HomePage = () => {
   const [activeTab, setActiveTab] = useState('monthly');
   const [scrolled, setScrolled] = useState(false);
@@ -141,18 +162,20 @@ const HomePage = () => {
     <HelmetProvider>
       <>
         <Helmet>
-          <title>ComplaintHub | Public Complaint Platform</title>
+          <title>ComplaintHub - Voice Your Concerns</title>
           <meta name="description" content="Lodge complaints, track resolutions, and hold brands accountable. Public complaint platform for consumers and businesses." />
-          <meta property="og:title" content="ComplaintHub | Public Complaint Platform" />
+          <meta property="og:title" content="ComplaintHub - Voice Your Concerns" />
           <meta property="og:description" content="Lodge complaints, track resolutions, and hold brands accountable. Public complaint platform for consumers and businesses." />
           <meta property="og:type" content="website" />
           <meta property="og:url" content={window.location.href} />
           <meta property="og:image" content="/complainthub-og.png" />
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="ComplaintHub | Public Complaint Platform" />
+          <meta name="twitter:title" content="ComplaintHub - Voice Your Concerns" />
           <meta name="twitter:description" content="Lodge complaints, track resolutions, and hold brands accountable. Public complaint platform for consumers and businesses." />
           <meta name="twitter:image" content="/complainthub-og.png" />
           <link rel="canonical" href={window.location.href} />
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+          <style>{uiStyles}</style>
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -166,106 +189,169 @@ const HomePage = () => {
         
         <div className="min-vh-100">
           {/* Hero Section */}
-          <section className="bg-gradient-primary text-white py-5">
+          <section style={{
+            background: 'linear-gradient(135deg, #3498db 0%, #2c3e50 100%)',
+            color: 'white',
+            padding: '150px 20px 100px',
+            textAlign: 'center',
+            marginTop: '80px'
+          }}>
             <div className="container">
-              <div className="row align-items-center min-vh-100">
-                <div className="col-lg-6">
-                  <div className="mb-4">
-                    <span className="badge bg-warning text-dark px-3 py-2 rounded-pill">
-                      <i className="bi bi-trophy me-2"></i>
-                      Trusted by 500+ brands worldwide
-                    </span>
-                  </div>
-                  
-                  <h1 className="display-3 fw-bold mb-4">
-                    Your Voice, <span className="text-warning">Amplified</span>
-                  </h1>
-                  
-                  <p className="lead mb-4">
-                    Transform customer complaints into powerful insights. Our AI-powered platform ensures 
-                    every voice is heard, every issue is tracked, and every brand is held accountable.
-                  </p>
-                  
-                  <div className="d-flex flex-column flex-sm-row gap-3 mb-4">
-                    <Link to="/new-complaint" className="btn btn-warning btn-lg px-4 py-3">
-                      <i className="bi bi-mic-fill me-2"></i>
-                      Lodge a Complaint
-                    </Link>
-                    <Link to="/track-complaint" className="btn btn-outline-light btn-lg px-4 py-3">
-                      <i className="bi bi-search me-2"></i>
-                      Track Complaint
-                    </Link>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <Link to="/complaints" className="text-light text-decoration-none">
-                      <i className="bi bi-globe me-2"></i>
-                      View Public Complaints
-                    </Link>
-                  </div>
-                  
-                  <div className="row text-center">
-                    <div className="col-4">
-                      <div className="h3 fw-bold text-warning">50K+</div>
-                      <div className="small">Complaints Resolved</div>
-                    </div>
-                    <div className="col-4">
-                      <div className="h3 fw-bold text-warning">500+</div>
-                      <div className="small">Brands Trust Us</div>
-                    </div>
-                    <div className="col-4">
-                      <div className="h3 fw-bold text-warning">95%</div>
-                      <div className="small">Satisfaction Rate</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="col-lg-6">
-                  <div className="card bg-dark bg-opacity-25 border-0 p-4">
-                    <div className="card-body">
-                      <div className="d-flex align-items-center mb-3">
-                        <div className="bg-warning rounded-circle p-2 me-3">🤖</div>
-                        <div className="bg-light text-dark p-3 rounded">Hello! How can I help you today?</div>
-                      </div>
-                      <div className="d-flex justify-content-end mb-3">
-                        <div className="bg-warning text-dark p-3 rounded">I have a complaint about my recent order</div>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <div className="bg-warning rounded-circle p-2 me-3">🤖</div>
-                        <div className="bg-light text-dark p-3 rounded">I understand. Let me help you file that complaint...</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <h1 style={{
+                fontSize: '48px',
+                marginBottom: '20px',
+                animation: 'fadeInUp 0.8s ease-out'
+              }}>Voice Your Concerns</h1>
+              <p style={{
+                fontSize: '20px',
+                marginBottom: '30px',
+                opacity: '0.9',
+                animation: 'fadeInUp 0.8s ease-out 0.2s',
+                animationFillMode: 'both'
+              }}>Making Brands Accountable, One Voice at a Time</p>
+              <div style={{
+                display: 'flex',
+                gap: '20px',
+                justifyContent: 'center',
+                animation: 'fadeInUp 0.8s ease-out 0.4s',
+                animationFillMode: 'both'
+              }}>
+                <Link to="/signup" style={{
+                  padding: '15px 30px',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  background: 'white',
+                  color: '#3498db',
+                  textDecoration: 'none',
+                  display: 'inline-block'
+                }} onMouseOver={(e) => {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+                }} onMouseOut={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = 'none';
+                }}>Get Started</Link>
+                <button style={{
+                  padding: '15px 30px',
+                  border: '2px solid white',
+                  borderRadius: '8px',
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  background: 'transparent',
+                  color: 'white'
+                }} onMouseOver={(e) => {
+                  e.target.style.background = 'white';
+                  e.target.style.color = '#3498db';
+                }} onMouseOut={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = 'white';
+                }} onClick={() => document.getElementById('features').scrollIntoView({behavior: 'smooth'})}>How It Works</button>
               </div>
             </div>
           </section>
 
           {/* Features Section */}
-          <section className="py-5 bg-light">
-            <div className="container">
-              <div className="text-center mb-5">
-                <h2 className="display-5 fw-bold mb-3">
-                  Everything you need to <span className="text-primary">be heard</span>
-                </h2>
-                <p className="lead text-muted">
-                  Our comprehensive platform combines cutting-edge AI technology with human-centered design 
-                  to create the most effective complaint resolution system.
-                </p>
+          <section id="features" style={{
+            padding: '80px 20px',
+            maxWidth: '1200px',
+            margin: '0 auto'
+          }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: '30px'
+            }}>
+              <div style={{
+                background: 'white',
+                padding: '40px 30px',
+                borderRadius: '12px',
+                textAlign: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'all 0.3s'
+              }} onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.boxShadow = '0 5px 20px rgba(0,0,0,0.15)';
+              }} onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+              }}>
+                <div style={{
+                  fontSize: '48px',
+                  marginBottom: '20px'
+                }}>📞</div>
+                <h3 style={{
+                  fontSize: '24px',
+                  marginBottom: '15px',
+                  color: '#2c3e50'
+                }}>Voice Complaints</h3>
+                <p style={{
+                  color: '#7f8c8d',
+                  lineHeight: '1.6'
+                }}>Call our AI-powered system to voice your complaints in your preferred language. No more typing long emails or filling complex forms.</p>
               </div>
               
-              <div className="row g-4">
-                {features.map((feature, index) => (
-                  <div key={index} className="col-md-6 col-lg-4">
-                    <div className="card h-100 border-0 shadow-sm">
-                      <div className="card-body text-center p-4">
-                        <div className="display-4 mb-3">{feature.icon}</div>
-                        <h5 className="card-title fw-bold mb-3">{feature.title}</h5>
-                        <p className="card-text text-muted">{feature.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <div style={{
+                background: 'white',
+                padding: '40px 30px',
+                borderRadius: '12px',
+                textAlign: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'all 0.3s'
+              }} onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.boxShadow = '0 5px 20px rgba(0,0,0,0.15)';
+              }} onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+              }}>
+                <div style={{
+                  fontSize: '48px',
+                  marginBottom: '20px'
+                }}>💬</div>
+                <h3 style={{
+                  fontSize: '24px',
+                  marginBottom: '15px',
+                  color: '#2c3e50'
+                }}>Multi-Channel Support</h3>
+                <p style={{
+                  color: '#7f8c8d',
+                  lineHeight: '1.6'
+                }}>Connect via WhatsApp, Telegram, Web Chat, or any platform you prefer. We're available wherever you are comfortable.</p>
+              </div>
+              
+              <div style={{
+                background: 'white',
+                padding: '40px 30px',
+                borderRadius: '12px',
+                textAlign: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'all 0.3s'
+              }} onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.boxShadow = '0 5px 20px rgba(0,0,0,0.15)';
+              }} onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+              }}>
+                <div style={{
+                  fontSize: '48px',
+                  marginBottom: '20px'
+                }}>🎯</div>
+                <h3 style={{
+                  fontSize: '24px',
+                  marginBottom: '15px',
+                  color: '#2c3e50'
+                }}>Real-Time Tracking</h3>
+                <p style={{
+                  color: '#7f8c8d',
+                  lineHeight: '1.6'
+                }}>Track your complaint status and get instant updates as brands respond. Never wonder about your complaint status again.</p>
               </div>
             </div>
           </section>

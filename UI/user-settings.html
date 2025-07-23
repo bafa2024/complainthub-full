@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - ComplaintHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        /* Main Layout */
+        .main-content {
+            margin-top: 80px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+        }
+        
+        /* Sidebar Navigation */
+        .settings-sidebar {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+        }
+        
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-link {
+            display: block;
+            padding: 10px 15px;
+            color: #7f8c8d;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-link:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+        
+        .sidebar-link.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        /* Settings Content */
+        .settings-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .settings-section {
+            display: none;
+        }
+        
+        .settings-section.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-control-with-btn {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-control-with-btn .form-control {
+            flex: 1;
+        }
+        
+        .form-help {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        /* Checkboxes and Radio */
+        .form-check {
+            display: flex;
+            align-items: start;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .form-check input {
+            margin-top: 3px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .form-check label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .form-check-group {
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .form-check-group h4 {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        
+        /* Privacy Settings */
+        .privacy-option {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .privacy-option:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        
+        .privacy-option.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+        
+        .privacy-option h5 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .privacy-option p {
+            font-size: 13px;
+            color: #6c757d;
+            margin: 0;
+        }
+        
+        /* Security Section */
+        .password-strength {
+            margin-top: 10px;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            background: #e74c3c;
+            width: 0%;
+            transition: all 0.3s;
+        }
+        
+        .strength-fill.weak {
+            width: 33%;
+            background: #e74c3c;
+        }
+        
+        .strength-fill.medium {
+            width: 66%;
+            background: #f39c12;
+        }
+        
+        .strength-fill.strong {
+            width: 100%;
+            background: #27ae60;
+        }
+        
+        .two-factor-setup {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        /* Alert Messages */
+        .alert {
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert.show {
+            display: block;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        /* Delete Account Section */
+        .danger-zone {
+            border: 2px solid #e74c3c;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 30px;
+        }
+        
+        .danger-zone h4 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-sidebar {
+                margin-bottom: 20px;
+            }
+            
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                white-space: nowrap;
+                gap: 10px;
+            }
+            
+            .sidebar-nav li {
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">ComplaintHub</div>
+            <div class="header-nav">
+                <a href="user-dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="index.html" class="btn btn-primary">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Sidebar -->
+        <aside class="settings-sidebar">
+            <nav>
+                <ul class="sidebar-nav">
+                    <li><a href="#" class="sidebar-link active" onclick="showSection('profile')">Profile</a></li>
+                    <li><a href="#" class="sidebar-link" onclick="showSection('security')">Security</a></li>
+                    <li><a href="#" class="sidebar-link" onclick="showSection('notifications')">Notifications</a></li>
+                    <li><a href="#" class="sidebar-link" onclick="showSection('privacy')">Privacy</a></li>
+                    <li><a href="#" class="sidebar-link" onclick="showSection('account')">Account</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Settings Content -->
+        <div class="settings-content">
+            <div class="alert alert-success" id="successAlert">
+                ✓ Your changes have been saved successfully!
+            </div>
+
+            <!-- Profile Section -->
+            <section id="profile" class="settings-section active">
+                <h2 class="section-title">Profile Information</h2>
+                
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label class="form-label">Display Name</label>
+                        <input type="text" class="form-control" value="John Doe" id="displayName">
+                        <p class="form-help">This name will be visible on your complaints (can be an alias)</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Phone Number (Primary Contact)</label>
+                        <div class="form-control-with-btn">
+                            <input type="tel" class="form-control" value="+91 98765 43210" id="phoneNumber" readonly>
+                            <button type="button" class="btn btn-secondary">Verify</button>
+                        </div>
+                        <p class="form-help">Used to identify your complaints</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <div class="form-control-with-btn">
+                            <input type="email" class="form-control" value="john.doe@email.com" id="email">
+                            <button type="button" class="btn btn-secondary">Verify</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Preferred Language</label>
+                        <select class="form-control" id="language">
+                            <option value="en">English</option>
+                            <option value="hi">Hindi</option>
+                            <option value="ta">Tamil</option>
+                            <option value="te">Telugu</option>
+                            <option value="bn">Bengali</option>
+                            <option value="mr">Marathi</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Time Zone</label>
+                        <select class="form-control" id="timezone">
+                            <option value="Asia/Kolkata">GMT+5:30 Mumbai, Kolkata, New Delhi</option>
+                            <option value="Asia/Singapore">GMT+8:00 Singapore</option>
+                            <option value="America/New_York">GMT-5:00 Eastern Time</option>
+                            <option value="Europe/London">GMT+0:00 London</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </section>
+
+            <!-- Security Section -->
+            <section id="security" class="settings-section">
+                <h2 class="section-title">Security Settings</h2>
+                
+                <form id="securityForm">
+                    <h3 style="margin-bottom: 20px; font-size: 18px;">Change Password</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword">
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthBar"></div>
+                            </div>
+                            <p class="form-help">Use at least 8 characters with a mix of letters, numbers & symbols</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirmPassword">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Update Password</button>
+                    
+                    <hr style="margin: 40px 0;">
+                    
+                    <h3 style="margin-bottom: 20px; font-size: 18px;">Two-Factor Authentication</h3>
+                    
+                    <div class="two-factor-setup">
+                        <h4 style="margin-bottom: 10px;">Enhanced Security</h4>
+                        <p style="margin-bottom: 15px;">Add an extra layer of security to your account</p>
+                        <button type="button" class="btn btn-primary">Enable 2FA</button>
+                    </div>
+                    
+                    <h3 style="margin-bottom: 20px; font-size: 18px;">Login Sessions</h3>
+                    
+                    <div style="border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>Current Session</strong><br>
+                                <span style="font-size: 13px; color: #6c757d;">Chrome on Windows • Mumbai, India</span>
+                            </div>
+                            <span style="color: #27ae60; font-size: 14px;">Active now</span>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-secondary">Sign Out All Other Sessions</button>
+                </form>
+            </section>
+
+            <!-- Notifications Section -->
+            <section id="notifications" class="settings-section">
+                <h2 class="section-title">Notification Preferences</h2>
+                
+                <form id="notificationForm">
+                    <div class="form-check-group">
+                        <h4>Email Notifications</h4>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="emailResponse" checked>
+                            <label for="emailResponse">
+                                <strong>New response from brand</strong><br>
+                                <span style="font-size: 13px; color: #6c757d;">Get notified when brands respond to your complaints</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="emailStatus" checked>
+                            <label for="emailStatus">
+                                <strong>Ticket status changes</strong><br>
+                                <span style="font-size: 13px; color: #6c757d;">Updates when your ticket status changes</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="emailWeekly">
+                            <label for="emailWeekly">
+                                <strong>Weekly summary</strong><br>
+                                <span style="font-size: 13px; color: #6c757d;">Summary of all your tickets and their status</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="emailNews">
+                            <label for="emailNews">
+                                <strong>Platform updates</strong><br>
+                                <span style="font-size: 13px; color: #6c757d;">New features and important announcements</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check-group">
+                        <h4>SMS Notifications</h4>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="smsUrgent" checked>
+                            <label for="smsUrgent">
+                                <strong>Urgent updates only</strong><br>
+                                <span style="font-size: 13px; color: #6c757d;">Critical updates that need immediate attention</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="smsAll">
+                            <label for="smsAll">
+                                <strong>All ticket updates</strong><br>
+                                <span style="font-size: 13px; color: #6c757d;">SMS for every ticket status change</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check-group">
+                        <h4>WhatsApp Notifications</h4>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="whatsappEnable" checked>
+                            <label for="whatsappEnable">
+                                <strong>Enable WhatsApp notifications</strong><br>
+                                <span style="font-size: 13px; color: #6c757d;">Receive updates via WhatsApp</span>
+                            </label>
+                        </div>
+                        
+                        <p style="margin-left: 26px; font-size: 14px; color: #495057;">
+                            Number: +91 98765 43210 <a href="#" style="color: #3498db;">Change</a>
+                        </p>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Preferences</button>
+                </form>
+            </section>
+
+            <!-- Privacy Section -->
+            <section id="privacy" class="settings-section">
+                <h2 class="section-title">Privacy Settings</h2>
+                
+                <form id="privacyForm">
+                    <h3 style="margin-bottom: 20px; font-size: 18px;">Public Profile Visibility</h3>
+                    
+                    <div class="privacy-option selected" onclick="selectPrivacy(this, 'anonymous')">
+                        <h5>Anonymous</h5>
+                        <p>Your complaints will be shown as "User****XXX"</p>
+                    </div>
+                    
+                    <div class="privacy-option" onclick="selectPrivacy(this, 'partial')">
+                        <h5>Partial Name</h5>
+                        <p>Show only your first name on public complaints</p>
+                    </div>
+                    
+                    <div class="privacy-option" onclick="selectPrivacy(this, 'full')">
+                        <h5>Full Name</h5>
+                        <p>Display your full name on public complaints</p>
+                    </div>
+                    
+                    <input type="hidden" id="privacyLevel" value="anonymous">
+                    
+                    <hr style="margin: 30px 0;">
+                    
+                    <h3 style="margin-bottom: 20px; font-size: 18px;">Data Sharing</h3>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="shareAnalytics">
+                        <label for="shareAnalytics">
+                            <strong>Share anonymous usage data</strong><br>
+                            <span style="font-size: 13px; color: #6c757d;">Help us improve the platform with anonymous analytics</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="shareLocation">
+                        <label for="shareLocation">
+                            <strong>Share location on complaints</strong><br>
+                            <span style="font-size: 13px; color: #6c757d;">Show your city/region on public complaints</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Update Privacy Settings</button>
+                </form>
+            </section>
+
+            <!-- Account Section -->
+            <section id="account" class="settings-section">
+                <h2 class="section-title">Account Management</h2>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 20px; font-size: 18px;">Account Data</h3>
+                    
+                    <button class="btn btn-secondary" style="margin-right: 10px;">Download My Data</button>
+                    <button class="btn btn-secondary">Export Complaints History</button>
+                    
+                    <p style="margin-top: 10px; font-size: 14px; color: #6c757d;">
+                        Download all your personal data and complaint history in a machine-readable format
+                    </p>
+                </div>
+                
+                <div class="danger-zone">
+                    <h4>Danger Zone</h4>
+                    <p style="margin-bottom: 15px;">Once you delete your account, there is no going back. Please be certain.</p>
+                    <button class="btn btn-danger" onclick="confirmDelete()">Delete Account</button>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <script>
+        // Show section based on sidebar click
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.settings-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all links
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Add active class to clicked link
+            event.target.classList.add('active');
+        }
+        
+        // Privacy option selection
+        function selectPrivacy(element, level) {
+            document.querySelectorAll('.privacy-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            document.getElementById('privacyLevel').value = level;
+        }
+        
+        // Password strength checker
+        document.getElementById('newPassword')?.addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('strengthBar');
+            
+            if (password.length < 6) {
+                strengthBar.className = 'strength-fill weak';
+            } else if (password.length < 10) {
+                strengthBar.className = 'strength-fill medium';
+            } else {
+                strengthBar.className = 'strength-fill strong';
+            }
+        });
+        
+        // Form submissions
+        document.getElementById('profileForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('success', 'Profile updated successfully!');
+        });
+        
+        document.getElementById('securityForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('success', 'Password changed successfully!');
+        });
+        
+        document.getElementById('notificationForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('success', 'Notification preferences saved!');
+        });
+        
+        document.getElementById('privacyForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('success', 'Privacy settings updated!');
+        });
+        
+        // Show alert
+        function showAlert(type, message) {
+            const alert = document.getElementById('successAlert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type} show`;
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Confirm account deletion
+        function confirmDelete() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                if (confirm('This will permanently delete all your complaints and data. Are you absolutely sure?')) {
+                    alert('Account deletion will be processed. You will receive a confirmation email.');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header Testing Manual Checklist</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        h1, h2 { 
+            color: #2c3e50; 
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        .test-section {
+            background: white;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .checklist { 
+            list-style: none; 
+            padding: 0; 
+        }
+        .checklist li {
+            background: #f8f9fa;
+            margin: 0.75rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+        .checklist li:before {
+            content: "☐";
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+            color: #667eea;
+        }
+        .status { 
+            font-weight: bold; 
+        }
+        .pass { 
+            color: #28a745; 
+        }
+        .fail { 
+            color: #dc3545; 
+        }
+        .warning { 
+            color: #ffc107; 
+        }
+        .url {
+            background: #e9ecef;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #495057;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .feature {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .instructions {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Header & Navbar Testing Manual</h1>
+    <p><strong>ComplaintHub Alpha v51.0 - Header Modernization</strong></p>
+    
+    <div class="instructions">
+        <h3>🚀 Testing Instructions</h3>
+        <p>Open your browser and navigate to <span class="url">http://localhost:5174</span></p>
+        <p>Follow this checklist to verify all header functionality works correctly.</p>
+    </div>
+
+    <div class="features">
+        <div class="feature">
+            <h4>🎨 Modern Design</h4>
+            <p>Glassmorphism effects, gradients, and smooth animations</p>
+        </div>
+        <div class="feature">
+            <h4>📱 Mobile First</h4>
+            <p>Perfect responsive behavior from 320px to 4K screens</p>
+        </div>
+        <div class="feature">
+            <h4>🔐 Role-Based Nav</h4>
+            <p>Dynamic menus for admin, brand, and user roles</p>
+        </div>
+        <div class="feature">
+            <h4>⚡ Performance</h4>
+            <p>Optimized animations with reduced motion support</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>1. 🏠 Public Header (Not Authenticated)</h2>
+        <p><strong>URL:</strong> <span class="url">http://localhost:5174</span></p>
+        <ul class="checklist">
+            <li>Header is visible and positioned at top of page</li>
+            <li>ComplaintHub logo is visible with gradient styling</li>
+            <li>Logo animates on hover (underline effect)</li>
+            <li>Navigation shows: Public Complaints, Track Complaint, Help Center, Contact</li>
+            <li>Auth buttons visible: Customer Login, Brand Login, Sign up for free, Admin Login (shield icon)</li>
+            <li>Header has glassmorphism background (semi-transparent with blur)</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>2. 📱 Mobile Responsive Behavior</h2>
+        <p><strong>Test at:</strong> 375px width (iPhone size)</p>
+        <ul class="checklist">
+            <li>Hamburger menu button appears (3 lines with gradient)</li>
+            <li>Navigation items are hidden on mobile</li>
+            <li>Auth buttons are hidden behind hamburger menu</li>
+            <li>Clicking hamburger opens full-screen mobile menu</li>
+            <li>Mobile menu slides down smoothly with animation</li>
+            <li>Menu items stack vertically with proper spacing</li>
+            <li>Touch targets are at least 44px high</li>
+            <li>Clicking hamburger again closes the menu</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>3. 💻 Desktop Responsive Behavior</h2>
+        <p><strong>Test at:</strong> 1200px+ width</p>
+        <ul class="checklist">
+            <li>Hamburger menu is completely hidden</li>
+            <li>Navigation items appear horizontally in header</li>
+            <li>Auth buttons appear in header (not in dropdown)</li>
+            <li>Logo and nav items are properly spaced</li>
+            <li>Navigation items have hover effects (gradient background, translate up)</li>
+            <li>Icons are hidden on desktop navigation (text only)</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>4. 🖱️ Scroll Behavior</h2>
+        <p><strong>Test on any page with scrollable content</strong></p>
+        <ul class="checklist">
+            <li>Header stays fixed at top when scrolling (sticky position)</li>
+            <li>After scrolling down 10px, header gains "scrolled" styling</li>
+            <li>Scrolled header has increased opacity and stronger shadow</li>
+            <li>Scrolling back to top removes the scrolled styling</li>
+            <li>All animations are smooth and performant</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>5. 🔗 Navigation Testing</h2>
+        <p><strong>Test all navigation links work correctly</strong></p>
+        <ul class="checklist">
+            <li><span class="url">/complaints</span> - Public Complaints page loads</li>
+            <li><span class="url">/track-complaint</span> - Track Complaint page loads</li>
+            <li><span class="url">/help</span> - Help Center page loads (if exists)</li>
+            <li><span class="url">/contact</span> - Contact page loads (if exists)</li>
+            <li>Header persists across all page navigations</li>
+            <li>Active page is highlighted in navigation</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>6. 🔐 Authentication Flow</h2>
+        <p><strong>Test auth button functionality</strong></p>
+        <ul class="checklist">
+            <li><strong>Customer Login</strong> button goes to <span class="url">/login</span></li>
+            <li><strong>Brand Login</strong> button goes to <span class="url">/brand/login</span></li>
+            <li><strong>Sign up for free</strong> button goes to <span class="url">/signup</span></li>
+            <li><strong>Admin Login</strong> (shield icon) goes to <span class="url">/admin/login</span></li>
+            <li>All auth forms are accessible and functional</li>
+            <li>Buttons have proper hover effects and animations</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>7. 🎨 Visual Design Elements</h2>
+        <p><strong>Check all modern design features</strong></p>
+        <ul class="checklist">
+            <li>Header has glassmorphism effect (backdrop-filter blur)</li>
+            <li>Logo text has gradient coloring</li>
+            <li>Buttons have gradient backgrounds and hover effects</li>
+            <li>Hamburger menu lines have gradient colors</li>
+            <li>Smooth transitions on all interactive elements (0.3s cubic-bezier)</li>
+            <li>Box shadows and elevation effects work properly</li>
+            <li>Border radius creates modern rounded appearance</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>8. ♿ Accessibility Features</h2>
+        <p><strong>Test keyboard navigation and screen reader support</strong></p>
+        <ul class="checklist">
+            <li>All buttons and links are keyboard focusable (Tab key)</li>
+            <li>Focus indicators are visible and clear</li>
+            <li>Hamburger button has proper aria-label</li>
+            <li>Color contrast meets WCAG standards</li>
+            <li>Reduced motion preferences are respected</li>
+            <li>Navigation is logical and predictable</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>9. 🌙 Future Features (Not Yet Implemented)</h2>
+        <p><strong>Features that will be tested after user authentication</strong></p>
+        <ul class="checklist">
+            <li><strong>User Dropdown Menu:</strong> Profile, Settings, Logout</li>
+            <li><strong>Role-Based Navigation:</strong> Admin, Brand, User menus</li>
+            <li><strong>User Avatar:</strong> Profile picture or initials</li>
+            <li><strong>Dark Mode:</strong> Theme switching capability</li>
+            <li><strong>Notifications:</strong> Badge counts and alerts</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test Results Summary</h2>
+        <p>Record your findings here:</p>
+        <ul class="checklist">
+            <li><strong>Mobile Responsiveness:</strong> <span class="status">____</span></li>
+            <li><strong>Desktop Layout:</strong> <span class="status">____</span></li>
+            <li><strong>Navigation Functionality:</strong> <span class="status">____</span></li>
+            <li><strong>Visual Design:</strong> <span class="status">____</span></li>
+            <li><strong>Accessibility:</strong> <span class="status">____</span></li>
+            <li><strong>Performance:</strong> <span class="status">____</span></li>
+        </ul>
+        
+        <h3>Overall Status:</h3>
+        <p>✅ <span class="pass">PASS</span> / ⚠️ <span class="warning">NEEDS WORK</span> / ❌ <span class="fail">FAIL</span></p>
+    </div>
+
+    <div class="instructions">
+        <h3>🔧 Next Steps</h3>
+        <p>After completing this checklist:</p>
+        <ol>
+            <li>Log any issues found during testing</li>
+            <li>Test with different user roles once authentication is working</li>
+            <li>Verify performance on different devices and browsers</li>
+            <li>Test with various screen readers for accessibility</li>
+        </ol>
+    </div>
+</body>
+</html>

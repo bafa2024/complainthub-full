@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComplaintHub - Authentication Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #2980b9;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            border-left-color: #27ae60;
+            background: #d4edda;
+        }
+        .error {
+            border-left-color: #e74c3c;
+            background: #f8d7da;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .running {
+            background: #d4edda;
+            color: #155724;
+        }
+        .stopped {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>ComplaintHub - Complete System Test</h1>
+    
+    <div class="test-section">
+        <h2>🔧 Server Status</h2>
+        <button class="test-button" onclick="testServers()">Check Server Status</button>
+        <div id="server-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔐 Authentication Tests</h2>
+        <button class="test-button" onclick="testSignup()">Test Signup</button>
+        <button class="test-button" onclick="testLogin()">Test Login</button>
+        <button class="test-button" onclick="testGetUser()">Test Get User</button>
+        <div id="auth-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🌐 Frontend Routes</h2>
+        <button class="test-button" onclick="openRoute('/login')">Open Login Page</button>
+        <button class="test-button" onclick="openRoute('/signup')">Open Signup Page</button>
+        <button class="test-button" onclick="openRoute('/dashboard')">Open Dashboard</button>
+        <button class="test-button" onclick="openRoute('/')">Open Homepage</button>
+        <div id="route-results"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8002/api/v1';
+        const FRONTEND_BASE = 'http://localhost:5173';
+        
+        let currentToken = '';
+
+        function log(elementId, message, type = 'result') {
+            const element = document.getElementById(elementId);
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            element.appendChild(div);
+        }
+
+        async function testServers() {
+            const statusDiv = document.getElementById('server-status');
+            statusDiv.innerHTML = '';
+            
+            // Test Backend
+            try {
+                const response = await fetch(`${API_BASE}/test`);
+                const data = await response.json();
+                log('server-status', `✅ Backend (8002): ${data.message}`, 'success');
+            } catch (error) {
+                log('server-status', `❌ Backend (8002): ${error.message}`, 'error');
+            }
+            
+            // Test Frontend
+            try {
+                const response = await fetch(FRONTEND_BASE);
+                if (response.ok) {
+                    log('server-status', '✅ Frontend (5173): Running', 'success');
+                } else {
+                    log('server-status', '❌ Frontend (5173): Not responding', 'error');
+                }
+            } catch (error) {
+                log('server-status', `❌ Frontend (5173): ${error.message}`, 'error');
+            }
+        }
+
+        async function testSignup() {
+            const resultsDiv = document.getElementById('auth-results');
+            
+            const userData = {
+                email: `test${Date.now()}@example.com`,
+                full_name: 'Test User',
+                phone_number: '1234567890',
+                password: 'testpass123'
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('auth-results', `✅ Signup Success: ${data.message} (User ID: ${data.user_id})`, 'success');
+                    
+                    // Store email for login test
+                    window.testUserEmail = userData.email;
+                    window.testUserPassword = userData.password;
+                } else {
+                    log('auth-results', `❌ Signup Failed: ${data.detail || JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log('auth-results', `❌ Signup Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            const resultsDiv = document.getElementById('auth-results');
+            
+            if (!window.testUserEmail) {
+                log('auth-results', '⚠️ Please run signup test first', 'error');
+                return;
+            }
+            
+            try {
+                const form = new URLSearchParams();
+                form.append('username', window.testUserEmail);
+                form.append('password', window.testUserPassword);
+                
+                const response = await fetch(`${API_BASE}/login/access-token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: form
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentToken = data.access_token;
+                    log('auth-results', `✅ Login Success: Token received (${data.token_type})`, 'success');
+                } else {
+                    log('auth-results', `❌ Login Failed: ${data.detail || JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log('auth-results', `❌ Login Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testGetUser() {
+            const resultsDiv = document.getElementById('auth-results');
+            
+            if (!currentToken) {
+                log('auth-results', '⚠️ Please run login test first', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('auth-results', `✅ Get User Success: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    log('auth-results', `❌ Get User Failed: ${data.detail || JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                log('auth-results', `❌ Get User Error: ${error.message}`, 'error');
+            }
+        }
+
+        function openRoute(path) {
+            const url = `${FRONTEND_BASE}${path}`;
+            window.open(url, '_blank');
+            log('route-results', `🔗 Opened: ${url}`, 'success');
+        }
+
+        // Auto-test servers on load
+        window.onload = function() {
+            testServers();
+        };
+    </script>
+</body>
+</html>

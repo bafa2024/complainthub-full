@@ -21,12 +21,8 @@ class Settings(BaseSettings):
     # OpenAI API key with multiple possible field names
     OPENAI_API_KEY: str = Field(default="", alias="open_ai_openai_api_key")
     DEEPGRAM_API_KEY: str = ""
-<<<<<<< HEAD
-    GOOGLE_API_KEY: str = ""
-=======
     # Google Cloud API Key for TTS and other services
     GOOGLE_API_KEY: str = ""  # <-- Add your Google API key here or set via environment variable
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
     GOOGLE_APPLICATION_CREDENTIALS: str = ""
     GOOGLE_PROJECT_ID: str = ""
     

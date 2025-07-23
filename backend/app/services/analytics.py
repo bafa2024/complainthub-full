@@ -6,11 +6,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, desc, asc
 from app import crud, schemas
-<<<<<<< HEAD
-from app.models import Ticket, User, Brand, Conversation
-=======
 from app.models import Ticket, User, Brand
->>>>>>> e5492e4fab81295b23f8d228dd093188a2d6e925
 import json
 import pandas as pd
 from collections import defaultdict, Counter

@@ -7,17 +7,6 @@ const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Close menu on route change
   useEffect(() => {
@@ -33,189 +22,113 @@ const Header = () => {
   };
 
   return (
-    <header className={`header-wrapper ${isScrolled ? 'scrolled' : ''}`}>
-        <div className="container">
-        <nav className="navbar">
-          {/* Logo */}
-          <Link to={isAuthenticated && user?.role === 'user' ? "/dashboard" : "/"} className="logo" onClick={closeMenu}>
-            <span className="logo-text">ComplaintHub</span>
-          </Link>
-          
-          {/* Mobile Menu Toggle */}
-          <button 
-            className={`menu-toggle ${isMenuOpen ? 'active' : ''}`}
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-          >
-              <span></span>
-              <span></span>
-              <span></span>
-          </button>
-          
-          {/* Navigation Wrapper */}
-          <div className={`nav-wrapper ${isMenuOpen ? 'active' : ''}`}> 
-            <ul className="nav-menu">
-              {/* Landing navigation if not logged in */}
-              {!isAuthenticated || user?.role !== 'user' ? (
-                <>
-                  <li className="nav-item">
-                    <Link 
-                      to="/" 
-                      className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
-                      onClick={closeMenu}
-                    >
-                      Home
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link 
-                      to="/complaints" 
-                      className={`nav-link ${location.pathname.startsWith('/complaints') ? 'active' : ''}`}
-                      onClick={closeMenu}
-                    >
-                      Public Complaints
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link 
-                      to="/track-complaint" 
-                      className={`nav-link ${location.pathname.startsWith('/track-complaint') ? 'active' : ''}`}
-                      onClick={closeMenu}
-                    >
-                      Track Complaint
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link 
-                      to="/help" 
-                      className={`nav-link ${location.pathname.startsWith('/help') ? 'active' : ''}`}
-                      onClick={closeMenu}
-                    >
-                      Help Center
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link 
-                      to="/contact" 
-                      className={`nav-link ${location.pathname.startsWith('/contact') ? 'active' : ''}`}
-                      onClick={closeMenu}
-                    >
-                      Contact
-                    </Link>
-                  </li>
-                </>
-              ) : (
-                // Dashboard navigation for logged-in user
-                <>
-                  <li className="nav-item">
-                    <Link 
-                      to="/dashboard" 
-                      className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
-                      onClick={closeMenu}
-                    >
-                      Dashboard
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link 
-                      to="/my-complaints" 
-                      className={`nav-link ${location.pathname.startsWith('/my-complaints') ? 'active' : ''}`}
-                      onClick={closeMenu}
-                    >
-                      My Complaints
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link 
-                      to="/new-complaint" 
-                      className={`nav-link ${location.pathname.startsWith('/new-complaint') ? 'active' : ''}`}
-                      onClick={closeMenu}
-                    >
-                      New Complaint
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link 
-                      to="/profile" 
-                      className={`nav-link ${location.pathname.startsWith('/profile') ? 'active' : ''}`}
-                      onClick={closeMenu}
-                    >
-                      Profile
-                    </Link>
-                  </li>
-                </>
-              )}
-            </ul>
-
-            {/* Auth Section */}
-            <div className="auth-section">
-              {!isAuthenticated ? (
-                <>
-                  <Link 
-                    to="/login" 
-                    className="auth-link login-link"
-                    onClick={closeMenu}
-                  >
-                    Customer Login
-                  </Link>
-                  <Link 
-                    to="/brand/login" 
-                    className="auth-link brand-login-link"
-                    onClick={closeMenu}
-                  >
-                    Brand Login
-                  </Link>
-                  <Link 
-                    to="/signup" 
-                    className="auth-link signup-link primary-btn"
-                    onClick={closeMenu}
-                  >
-                    Sign Up
-                  </Link>
-                </>
-              ) : user?.role === 'user' ? (
-                <div className="user-menu">
-                  <span className="user-name">Hi, {user?.full_name || user?.name || 'User'}</span>
-                  <button 
-                    className="logout-btn"
-                    onClick={() => {
-                      logout();
-                      closeMenu();
-                    }}
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                // For other roles, fallback to landing auth links
-                <>
-                  <Link 
-                    to="/login" 
-                    className="auth-link login-link"
-                    onClick={closeMenu}
-                  >
-                    Customer Login
-                  </Link>
-                  <Link 
-                    to="/brand/login" 
-                    className="auth-link brand-login-link"
-                    onClick={closeMenu}
-                  >
-                    Brand Login
-                  </Link>
-                  <Link 
-                    to="/signup" 
-                    className="auth-link signup-link primary-btn"
-                    onClick={closeMenu}
-                  >
-                    Sign Up
-                  </Link>
-                </>
-              )}
+    <header style={{
+      background: 'white',
+      padding: '20px 0',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+      position: 'fixed',
+      width: '100%',
+      top: 0,
+      zIndex: 100
+    }}>
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '0 20px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <Link to={isAuthenticated && user?.role === 'user' ? "/dashboard" : "/"} style={{
+          fontSize: '24px',
+          fontWeight: '700',
+          color: '#3498db',
+          textDecoration: 'none'
+        }} onClick={closeMenu}>
+          ComplaintHub
+        </Link>
+        
+        <div style={{
+          display: 'flex',
+          gap: '15px',
+          alignItems: 'center'
+        }}>
+          {!isAuthenticated ? (
+            <>
+              <Link to="/login" style={{
+                padding: '10px 20px',
+                border: '2px solid #3498db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+                textDecoration: 'none',
+                display: 'inline-block',
+                background: 'transparent',
+                color: '#3498db'
+              }} onMouseOver={(e) => {
+                e.target.style.background = '#3498db';
+                e.target.style.color = 'white';
+              }} onMouseOut={(e) => {
+                e.target.style.background = 'transparent';
+                e.target.style.color = '#3498db';
+              }} onClick={closeMenu}>Login</Link>
+              
+              <Link to="/signup" style={{
+                padding: '10px 20px',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+                textDecoration: 'none',
+                display: 'inline-block',
+                background: '#3498db',
+                color: 'white'
+              }} onMouseOver={(e) => {
+                e.target.style.background = '#2980b9';
+                e.target.style.transform = 'translateY(-1px)';
+              }} onMouseOut={(e) => {
+                e.target.style.background = '#3498db';
+                e.target.style.transform = 'translateY(0)';
+              }} onClick={closeMenu}>Sign Up</Link>
+            </>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <span style={{ color: '#2c3e50' }}>Hi, {user?.full_name || user?.name || 'User'}</span>
+              <button 
+                style={{
+                  padding: '8px 16px',
+                  border: '2px solid #e74c3c',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  background: 'transparent',
+                  color: '#e74c3c'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = '#e74c3c';
+                  e.target.style.color = 'white';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = '#e74c3c';
+                }}
+                onClick={() => {
+                  logout();
+                  closeMenu();
+                }}
+              >
+                Logout
+              </button>
             </div>
-          </div>
-        </nav>
+          )}
         </div>
+      </div>
     </header>
   );
 };
